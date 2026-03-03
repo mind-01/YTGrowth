@@ -54,6 +54,7 @@ export const TOOLS: Tool[] = [
   { id: 'audit', name: 'Channel Audit', description: 'Deep dive into channel performance', icon: ShieldCheck, category: 'Channel', path: '/tool/audit' },
   
   // Analytics Tools
+  { id: 'analytics-dash', name: 'Analytics Dashboard', description: 'Visualize your channel growth & metrics', icon: BarChart3, category: 'Analytics', path: '/tool/analytics-dash' },
   { id: 'comp-spy', name: 'Competitor Spy', description: 'See what works for others', icon: Eye, category: 'Analytics', path: '/tool/comp-spy' },
   { id: 'trending-topics', name: 'Trending Topics', description: 'What is hot right now', icon: TrendingUp, category: 'Analytics', path: '/tool/trending-topics' },
   { id: 'sentiment', name: 'Comment Sentiment', description: 'Analyze audience feedback', icon: MessageSquare, category: 'Analytics', path: '/tool/sentiment' },

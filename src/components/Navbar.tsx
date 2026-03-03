@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { ChevronDown, Search, LayoutDashboard, Sparkles } from 'lucide-react';
 import { TOOLS } from '../constants';
 import { motion, AnimatePresence } from 'motion/react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 interface NavDropdownProps {
   label: string;
@@ -47,6 +48,7 @@ function NavDropdown({ label, isOpen, onMouseEnter, onMouseLeave, children, clas
 }
 
 export default function Navbar() {
+  const { t } = useLanguage();
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -95,9 +97,9 @@ export default function Navbar() {
         <tool.icon className="w-4 h-4" />
       </div>
       <div className="min-w-0">
-        <p className="text-[13px] font-bold leading-tight mb-0.5">{tool.name}</p>
+        <p className="text-[13px] font-bold leading-tight mb-0.5">{t(`tool.${tool.id}.name`)}</p>
         <p className="text-[10px] text-brand-gray leading-tight line-clamp-1 group-hover:text-brand-gray/80">
-          {tool.description}
+          {t(`tool.${tool.id}.desc`)}
         </p>
       </div>
     </Link>
@@ -128,7 +130,7 @@ export default function Navbar() {
                     activeMenu === cat.toLowerCase() ? 'bg-brand-red text-white' : 'bg-white text-brand-gray hover:bg-gray-50'
                   }`}
                 >
-                  <span>{cat}</span>
+                  <span>{t(`cat.${cat.toLowerCase()}`)}</span>
                   <ChevronDown className={`w-4 h-4 transition-transform ${activeMenu === cat.toLowerCase() ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -160,7 +162,7 @@ export default function Navbar() {
                   activeMenu === 'all' ? 'bg-brand-red text-white' : 'bg-gray-50 text-brand-gray hover:bg-gray-100'
                 }`}
               >
-                <span>All Tools 🛠️</span>
+                <span>{t('nav.all_tools')}</span>
                 <ChevronDown className={`w-4 h-4 transition-transform ${activeMenu === 'all' ? 'rotate-180' : ''}`} />
               </button>
 
@@ -177,7 +179,7 @@ export default function Navbar() {
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-gray" />
                         <input
                           type="text"
-                          placeholder="Quick search tools..."
+                          placeholder={t('nav.quick_search')}
                           className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red transition-all shadow-sm"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
@@ -194,7 +196,7 @@ export default function Navbar() {
                         return (
                           <div key={category} className="space-y-5">
                             <h3 className="text-[11px] font-black text-brand-gray uppercase tracking-[0.25em] border-b border-gray-100 pb-3">
-                              {category === 'Analytics' ? 'Analytics & Global' : `${category} Tools`}
+                              {category === 'Analytics' ? t('cat.analytics_global') : t(`cat.${category.toLowerCase()}_tools`)}
                             </h3>
                             <div className="space-y-2">
                               {categoryTools.map(tool => renderToolLink(tool))}
@@ -206,7 +208,7 @@ export default function Navbar() {
                     
                     <div className="p-5 bg-brand-dark text-center">
                       <p className="text-[11px] font-bold text-white/50 uppercase tracking-[0.3em]">
-                        The Ultimate YouTube Growth Suite
+                        {t('nav.ultimate_suite')}
                       </p>
                     </div>
                   </motion.div>
@@ -219,14 +221,14 @@ export default function Navbar() {
               className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-brand-gray hover:text-brand-dark hover:bg-gray-50 transition-all"
             >
               <LayoutDashboard className="w-4 h-4" />
-              Dashboard
+              {t('nav.dashboard')}
             </Link>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
           <button className="px-6 py-2 bg-brand-red text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-red-600 transition-all shadow-lg shadow-brand-red/20">
-            Get Started
+            {t('nav.get_started')}
           </button>
         </div>
       </div>

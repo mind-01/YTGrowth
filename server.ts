@@ -33,43 +33,94 @@ async function getChannelIdFromUrl(url: string): Promise<string> {
   const channelIdMatch = urlStr.match(/UC[a-zA-Z0-9_-]{22}/);
   if (channelIdMatch) return channelIdMatch[0];
 
-  // 2. Handle @handle
-  if (urlStr.includes("@")) {
-    const handle = "@" + urlStr.split("@")[1].split("/")[0].split("?")[0];
-    const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=${encodeURIComponent(handle)}&key=${YOUTUBE_API_KEY}`
-    );
-    const data = await response.json() as any;
-    if (data.items && data.items.length > 0) return data.items[0].id;
+  // 2. Handle Video URL -> Get Channel ID from Video
+  if (urlStr.includes("watch?v=") || urlStr.includes("youtu.be/") || urlStr.includes("/shorts/")) {
+    let videoId = "";
+    if (urlStr.includes("watch?v=")) {
+      videoId = urlStr.split("watch?v=")[1].split("&")[0].split("/")[0];
+    } else if (urlStr.includes("youtu.be/")) {
+      videoId = urlStr.split("youtu.be/")[1].split("?")[0].split("/")[0];
+    } else if (urlStr.includes("/shorts/")) {
+      videoId = urlStr.split("/shorts/")[1].split("?")[0].split("/")[0];
+    }
+    
+    if (videoId) {
+      try {
+        const videoResponse = await fetch(
+          `https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${YOUTUBE_API_KEY}`
+        );
+        const videoData = await videoResponse.json() as any;
+        if (videoData.items && videoData.items.length > 0) {
+          return videoData.items[0].snippet.channelId;
+        }
+      } catch (e) {
+        console.error("Error fetching video info for ID:", videoId, e);
+      }
+    }
   }
 
-  // 3. Handle /c/ or /user/ or /channel/
+  // 3. Handle @handle
+  if (urlStr.includes("@")) {
+    const handle = "@" + urlStr.split("@")[1].split("/")[0].split("?")[0];
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=${encodeURIComponent(handle)}&key=${YOUTUBE_API_KEY}`
+      );
+      const data = await response.json() as any;
+      if (data.items && data.items.length > 0) return data.items[0].id;
+      
+      // Try without @ just in case
+      const cleanHandle = handle.substring(1);
+      const response2 = await fetch(
+        `https://www.googleapis.com/youtube/v3/channels?part=id&forHandle=${encodeURIComponent(cleanHandle)}&key=${YOUTUBE_API_KEY}`
+      );
+      const data2 = await response2.json() as any;
+      if (data2.items && data2.items.length > 0) return data2.items[0].id;
+    } catch (e) {
+      console.error("Error fetching channel by handle:", handle, e);
+    }
+  }
+
+  // 4. Handle /user/ (Legacy)
+  if (urlStr.includes("/user/")) {
+    const username = urlStr.split("/user/")[1].split("/")[0].split("?")[0];
+    try {
+      const response = await fetch(
+        `https://www.googleapis.com/youtube/v3/channels?part=id&forUsername=${encodeURIComponent(username)}&key=${YOUTUBE_API_KEY}`
+      );
+      const data = await response.json() as any;
+      if (data.items && data.items.length > 0) return data.items[0].id;
+    } catch (e) {
+      console.error("Error fetching channel by username:", username, e);
+    }
+  }
+
+  // 5. Handle /c/ or search fallback
   let searchQuery = "";
   if (urlStr.includes("/channel/")) {
     const id = urlStr.split("/channel/")[1].split("/")[0].split("?")[0];
     if (id.startsWith("UC")) return id;
   } else if (urlStr.includes("/c/")) {
     searchQuery = urlStr.split("/c/")[1].split("/")[0].split("?")[0];
-  } else if (urlStr.includes("/user/")) {
-    searchQuery = urlStr.split("/user/")[1].split("/")[0].split("?")[0];
   } else if (urlStr.includes("youtube.com/")) {
-    // Handle youtube.com/Name
     const parts = urlStr.split("youtube.com/")[1].split("/")[0].split("?")[0];
-    if (parts && parts !== "channel" && parts !== "c" && parts !== "user") {
+    if (parts && !["channel", "c", "user", "videos", "shorts", "streams"].includes(parts)) {
       searchQuery = parts;
     }
   } else {
-    // If it's just a string, treat it as a search query
     searchQuery = urlStr;
   }
 
-  // Fallback: Search for the channel
   if (searchQuery) {
-    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(searchQuery)}&type=channel&maxResults=1&key=${YOUTUBE_API_KEY}`;
-    const searchResponse = await fetch(searchUrl);
-    const searchData = (await searchResponse.json()) as any;
-    if (searchData.items && searchData.items.length > 0) {
-      return searchData.items[0].id.channelId;
+    try {
+      const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(searchQuery)}&type=channel&maxResults=1&key=${YOUTUBE_API_KEY}`;
+      const searchResponse = await fetch(searchUrl);
+      const searchData = (await searchResponse.json()) as any;
+      if (searchData.items && searchData.items.length > 0) {
+        return searchData.items[0].id.channelId;
+      }
+    } catch (e) {
+      console.error("Error searching for channel:", searchQuery, e);
     }
   }
 
@@ -417,7 +468,7 @@ app.get("/api/youtube/competitor-spy", async (req, res) => {
     const queryStr = q as string;
 
     // Check if it's a URL or Handle
-    if (queryStr.includes("youtube.com") || queryStr.includes("@")) {
+    if (queryStr.includes("youtube.com") || queryStr.includes("youtu.be") || queryStr.includes("@")) {
       channelId = await getChannelIdFromUrl(queryStr);
     } else {
       // Search for the most relevant channel for this keyword

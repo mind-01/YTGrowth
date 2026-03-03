@@ -984,3 +984,119 @@ export const generateGlobalReach = async (topic: string, language: string = 'Hin
   if (!response.text) throw new Error("No response from AI");
   return JSON.parse(response.text);
 };
+
+export const generateAnalyticsDashboard = async (url: string, auditData: any, language: string = 'Hinglish') => {
+  const ai = getAI();
+  
+  let languageInstruction = "";
+  if (language === 'English' || language === 'en') {
+    languageInstruction = "Write the entire analysis in 100% English.";
+  } else if (language === 'Hindi' || language === 'hi') {
+    languageInstruction = "Write the entire analysis in Pure Hindi (Devanagari script).";
+  } else {
+    languageInstruction = "Write the entire analysis in Hinglish (a mix of Hindi and English).";
+  }
+
+  const response = await ai.models.generateContent({
+    model: "gemini-3-flash-preview",
+    contents: `Act as a YouTube Data Scientist. Create a visual analytics dashboard report for the channel at "${url}".
+    
+    Context Data (Real Stats):
+    Channel Name: ${auditData.channelName}
+    Subscribers: ${auditData.subscriberCount}
+    Total Views: ${auditData.totalViews}
+    Watch Time (Est): ${Math.round(auditData.totalViews * 0.01)} hours
+    Engagement Rate: ${auditData.engagementRate}%
+    Recent Videos: ${JSON.stringify(auditData.recentVideos)}
+    
+    Tasks:
+    1. Generate realistic 'Growth Data' for the last 6 months (Views and Subscribers).
+    2. Generate 'Traffic Sources' distribution (Search, Suggested, Browse, External, Others).
+    3. Generate 'Audience Demographics' (Age groups).
+    4. Provide 'Key Insights' based on the data.
+    5. Suggest 'Actionable Next Steps'.
+    
+    LANGUAGE REQUIREMENT:
+    ${languageInstruction}
+    
+    Return a JSON object:
+    {
+      "channelInfo": { "name": "string", "subs": number, "views": number, "watchTime": number },
+      "growthData": [
+        { "month": "string", "views": number, "subs": number }
+      ],
+      "trafficSources": [
+        { "name": "string", "value": number }
+      ],
+      "demographics": [
+        { "age": "string", "percentage": number }
+      ],
+      "insights": ["string"],
+      "recommendations": ["string"]
+    }`,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          channelInfo: {
+            type: Type.OBJECT,
+            properties: {
+              name: { type: Type.STRING },
+              subs: { type: Type.NUMBER },
+              views: { type: Type.NUMBER },
+              watchTime: { type: Type.NUMBER }
+            },
+            required: ["name", "subs", "views", "watchTime"]
+          },
+          growthData: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                month: { type: Type.STRING },
+                views: { type: Type.NUMBER },
+                subs: { type: Type.NUMBER }
+              },
+              required: ["month", "views", "subs"]
+            }
+          },
+          trafficSources: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                name: { type: Type.STRING },
+                value: { type: Type.NUMBER }
+              },
+              required: ["name", "value"]
+            }
+          },
+          demographics: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                age: { type: Type.STRING },
+                percentage: { type: Type.NUMBER }
+              },
+              required: ["age", "percentage"]
+            }
+          },
+          insights: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING }
+          },
+          recommendations: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING }
+          }
+        },
+        required: ["channelInfo", "growthData", "trafficSources", "demographics", "insights", "recommendations"]
+      }
+    }
+  });
+  if (!response.text) throw new Error("No response from AI");
+  return JSON.parse(response.text);
+};
+

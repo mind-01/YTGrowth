@@ -1,31 +1,33 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Home, BarChart3, Flame, Settings } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 
 const BottomNav = () => {
   const location = useLocation();
+  const { t } = useLanguage();
   
   const navItems = [
     { 
-      label: 'Home', 
+      label: t('nav.home'), 
       icon: Home, 
       path: '/',
       active: location.pathname === '/'
     },
     { 
-      label: 'My Stats', 
+      label: t('nav.stats'), 
       icon: BarChart3, 
       path: '/tool/monetization',
       active: location.pathname === '/tool/monetization'
     },
     { 
-      label: 'Trending', 
+      label: t('nav.trending'), 
       icon: Flame, 
       path: '/tool/trending-topics',
       active: location.pathname === '/tool/trending-topics'
     },
     { 
-      label: 'Settings', 
+      label: t('nav.settings'), 
       icon: Settings, 
       path: '#',
       active: false

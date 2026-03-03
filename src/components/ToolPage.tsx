@@ -1,14 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, Copy, Check, Loader2, Sparkles, Link as LinkIcon, Clipboard, XCircle, CheckCircle2, ExternalLink, ThumbsUp, Eye, Search, Filter, TrendingUp, Users, Calendar, Globe, Languages, Smartphone, Tv, Zap, Target, Lightbulb, FileText, Image as ImageIcon, ChevronDown, ChevronUp, Download, Layout, Palette, MousePointer2, Info, Video, Upload, Monitor, Clock, Edit, AlertCircle, Tag, MessageSquare } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { TOOLS, REGIONS, LANGUAGES, CATEGORIES, NICHES, TONES } from '../constants';
 import * as gemini from '../services/geminiService';
 import ReactMarkdown from 'react-markdown';
 import he from 'he';
 import html2canvas from 'html2canvas';
+import { 
+  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, 
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer 
+} from 'recharts';
 
 export default function ToolPage() {
+  const { t } = useLanguage();
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -284,6 +290,12 @@ export default function ToolPage() {
         case 'global-reach':
           data = await gemini.generateGlobalReach(currentInput, language);
           break;
+        case 'analytics-dash':
+          const dashResponse = await fetch(`/api/youtube/channel-audit?url=${encodeURIComponent(channelUrl)}`);
+          const dashRawData = await dashResponse.json();
+          if (dashRawData.error) throw new Error(dashRawData.error);
+          data = await gemini.generateAnalyticsDashboard(channelUrl, dashRawData, language);
+          break;
         default:
           data = "This tool is under development. Please try Title Generator or Description Generator.";
       }
@@ -330,31 +342,33 @@ export default function ToolPage() {
   const isKeywordRes = tool.id === 'keyword-res';
   const isSentiment = tool.id === 'sentiment';
   const isGlobalReach = tool.id === 'global-reach';
+  const isAnalyticsDash = tool.id === 'analytics-dash';
 
   return (
     <div className="max-w-4xl mx-auto px-4 pt-24 pb-12">
       <div className="flex items-center gap-2 text-[10px] font-black text-brand-gray uppercase tracking-widest mb-8">
-        <button onClick={() => navigate(-1)} className="hover:text-brand-red transition-colors">Back</button>
+        <button onClick={() => navigate(-1)} className="hover:text-brand-red transition-colors">{t('nav.back')}</button>
         <span className="text-gray-300">/</span>
-        <Link to="/" className="hover:text-brand-red transition-colors">Dashboard</Link>
+        <Link to="/" className="hover:text-brand-red transition-colors">{t('nav.dashboard')}</Link>
         <span className="text-gray-300">/</span>
-        <span className="text-brand-dark">{tool.name}</span>
+        <span className="text-brand-dark">{t(`tool.${tool.id}.name`)}</span>
       </div>
 
       <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-sm mb-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-black text-brand-dark mb-2">{tool.name}</h1>
-          <p className="text-brand-gray font-medium">{tool.description}</p>
+          <h1 className="text-3xl font-black text-brand-dark mb-2">{t(`tool.${tool.id}.name`)}</h1>
+          <p className="text-brand-gray font-medium">{t(`tool.${tool.id}.desc`)}</p>
         </div>
 
-        {isSEOCheck || isKeywordRes || isSentiment || isGlobalReach ? (
+        {isSEOCheck || isKeywordRes || isSentiment || isGlobalReach || isAnalyticsDash ? (
           <div className="space-y-8">
             <div className="text-center">
-              <h2 className="text-4xl font-black text-brand-dark mb-4">Analyze Your Content</h2>
+              <h2 className="text-4xl font-black text-brand-dark mb-4">{t('nav.analyze_content')}</h2>
               <p className="text-brand-gray max-w-md mx-auto mb-8">
                 {isKeywordRes ? "Enter your video topic or title to find the best ranking keywords." : 
                  isSentiment ? "Video ka link yahan paste karein audience ka mood janne ke liye..." : 
                  isGlobalReach ? "Apne video ka topic likhein global audience check karne ke liye..." :
+                 isAnalyticsDash ? "Enter your channel URL to see a visual growth dashboard." :
                  "Paste a YouTube video link below to get a detailed SEO score and actionable insights."}
               </p>
               
@@ -365,16 +379,24 @@ export default function ToolPage() {
                 <input
                   type="text"
                   className="w-full pl-14 pr-32 py-5 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red transition-all text-lg font-medium shadow-sm"
-                  placeholder={isKeywordRes || isGlobalReach ? "Enter video topic..." : "Paste YouTube video link here..."}
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
+                  placeholder={isKeywordRes || isGlobalReach ? t('nav.enter_topic') : isAnalyticsDash ? t('nav.paste_channel_link') : t('nav.paste_video_link')}
+                  value={isAnalyticsDash ? channelUrl : input}
+                  onChange={(e) => isAnalyticsDash ? setChannelUrl(e.target.value) : setInput(e.target.value)}
                 />
                 <button 
-                  onClick={handlePaste}
+                  onClick={async () => {
+                    try {
+                      const text = await navigator.clipboard.readText();
+                      if (isAnalyticsDash) setChannelUrl(text);
+                      else setInput(text);
+                    } catch (err) {
+                      console.error('Failed to read clipboard contents: ', err);
+                    }
+                  }}
                   className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#E5E7EB] hover:bg-gray-300 transition-colors text-sm font-bold text-brand-dark"
                 >
                   <Clipboard className="w-4 h-4" />
-                  Paste
+                  {t('nav.paste')}
                 </button>
               </div>
 
@@ -436,11 +458,11 @@ export default function ToolPage() {
               )}
 
               <button
-                onClick={() => handleAction()}
-                disabled={loading || !input.trim()}
+                onClick={() => handleAction(isAnalyticsDash ? "ANALYTICS_DASHBOARD" : undefined)}
+                disabled={loading || (isAnalyticsDash ? !channelUrl : !input.trim())}
                 className="btn-primary w-full max-w-xl py-5 text-xl font-black uppercase tracking-widest mb-2"
               >
-                {loading ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : (isKeywordRes ? "SEARCH KEYWORDS" : (isSentiment || isGlobalReach) ? "GENERATE RESULTS" : "CHECKLIST")}
+                {loading ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : (isKeywordRes ? t('nav.search_keywords') : (isSentiment || isGlobalReach || isAnalyticsDash) ? t('nav.generate_results') : t('nav.checklist'))}
               </button>
             </div>
           </div>
@@ -2726,6 +2748,167 @@ export default function ToolPage() {
                             </div>
                           </div>
                         )}
+                      </div>
+                    ) : tool.id === 'analytics-dash' && result ? (
+                      <div className="space-y-10">
+                        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8 md:p-12 relative overflow-hidden">
+                          <div className="mb-12">
+                            <h2 className="text-xs font-black text-brand-red uppercase tracking-[0.3em] mb-2">Channel Growth</h2>
+                            <h1 className="text-3xl font-black text-brand-dark uppercase tracking-tight">
+                              Analytics Dashboard: <span className="text-brand-red">{result.channelInfo.name}</span>
+                            </h1>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
+                            <div className="bg-gray-50 rounded-3xl p-6 text-center border border-gray-100">
+                              <Users className="w-6 h-6 text-brand-red mx-auto mb-3" />
+                              <h4 className="text-[10px] font-black text-brand-gray uppercase tracking-widest mb-1">Subscribers</h4>
+                              <div className="text-xl font-black text-brand-dark">{result.channelInfo.subs.toLocaleString()}</div>
+                            </div>
+                            <div className="bg-gray-50 rounded-3xl p-6 text-center border border-gray-100">
+                              <Eye className="w-6 h-6 text-blue-500 mx-auto mb-3" />
+                              <h4 className="text-[10px] font-black text-brand-gray uppercase tracking-widest mb-1">Total Views</h4>
+                              <div className="text-xl font-black text-brand-dark">{result.channelInfo.views.toLocaleString()}</div>
+                            </div>
+                            <div className="bg-gray-50 rounded-3xl p-6 text-center border border-gray-100">
+                              <Clock className="w-6 h-6 text-amber-500 mx-auto mb-3" />
+                              <h4 className="text-[10px] font-black text-brand-gray uppercase tracking-widest mb-1">Watch Time</h4>
+                              <div className="text-xl font-black text-brand-dark">{result.channelInfo.watchTime.toLocaleString()}h</div>
+                            </div>
+                            <div className="bg-gray-50 rounded-3xl p-6 text-center border border-gray-100">
+                              <TrendingUp className="w-6 h-6 text-emerald-500 mx-auto mb-3" />
+                              <h4 className="text-[10px] font-black text-brand-gray uppercase tracking-widest mb-1">Growth Score</h4>
+                              <div className="text-xl font-black text-brand-dark">8.4/10</div>
+                            </div>
+                          </div>
+
+                          <div className="space-y-12">
+                            {/* Growth Chart */}
+                            <div className="bg-gray-50 rounded-[2rem] p-8 border border-gray-100">
+                              <h3 className="text-sm font-black text-brand-dark uppercase tracking-widest mb-8 flex items-center gap-3">
+                                <TrendingUp className="w-5 h-5 text-brand-red" />
+                                6-Month Growth Trend
+                              </h3>
+                              <div className="h-[300px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <LineChart data={result.growthData}>
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                    <XAxis 
+                                      dataKey="month" 
+                                      axisLine={false} 
+                                      tickLine={false} 
+                                      tick={{ fontSize: 10, fontWeight: 900, fill: '#6B7280' }}
+                                      dy={10}
+                                    />
+                                    <YAxis 
+                                      axisLine={false} 
+                                      tickLine={false} 
+                                      tick={{ fontSize: 10, fontWeight: 900, fill: '#6B7280' }}
+                                    />
+                                    <Tooltip 
+                                      contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontWeight: 900 }}
+                                    />
+                                    <Legend wrapperStyle={{ paddingTop: '20px', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase' }} />
+                                    <Line type="monotone" dataKey="views" stroke="#FF4444" strokeWidth={4} dot={{ r: 6, fill: '#FF4444' }} activeDot={{ r: 8 }} name="Views" />
+                                    <Line type="monotone" dataKey="subs" stroke="#3B82F6" strokeWidth={4} dot={{ r: 6, fill: '#3B82F6' }} activeDot={{ r: 8 }} name="Subscribers" />
+                                  </LineChart>
+                                </ResponsiveContainer>
+                              </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                              {/* Traffic Sources */}
+                              <div className="bg-gray-50 rounded-[2rem] p-8 border border-gray-100">
+                                <h3 className="text-sm font-black text-brand-dark uppercase tracking-widest mb-8 flex items-center gap-3">
+                                  <Globe className="w-5 h-5 text-blue-500" />
+                                  Traffic Sources
+                                </h3>
+                                <div className="h-[250px] w-full">
+                                  <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                      <Pie
+                                        data={result.trafficSources}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={80}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                      >
+                                        {result.trafficSources.map((entry: any, index: number) => (
+                                          <Cell key={`cell-${index}`} fill={['#FF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6'][index % 5]} />
+                                        ))}
+                                      </Pie>
+                                      <Tooltip />
+                                      <Legend />
+                                    </PieChart>
+                                  </ResponsiveContainer>
+                                </div>
+                              </div>
+
+                              {/* Demographics */}
+                              <div className="bg-gray-50 rounded-[2rem] p-8 border border-gray-100">
+                                <h3 className="text-sm font-black text-brand-dark uppercase tracking-widest mb-8 flex items-center gap-3">
+                                  <Users className="w-5 h-5 text-emerald-500" />
+                                  Audience Age
+                                </h3>
+                                <div className="h-[250px] w-full">
+                                  <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={result.demographics} layout="vertical">
+                                      <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#E5E7EB" />
+                                      <XAxis type="number" hide />
+                                      <YAxis 
+                                        dataKey="age" 
+                                        type="category" 
+                                        axisLine={false} 
+                                        tickLine={false} 
+                                        tick={{ fontSize: 10, fontWeight: 900, fill: '#6B7280' }}
+                                      />
+                                      <Tooltip />
+                                      <Bar dataKey="percentage" fill="#FF4444" radius={[0, 10, 10, 0]} barSize={20} />
+                                    </BarChart>
+                                  </ResponsiveContainer>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Insights & Recommendations */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                              <div className="space-y-4">
+                                <h3 className="text-xs font-black text-brand-gray uppercase tracking-widest flex items-center gap-2">
+                                  <Lightbulb className="w-4 h-4 text-amber-500" />
+                                  Key Insights
+                                </h3>
+                                <div className="space-y-3">
+                                  {result.insights.map((insight: string, idx: number) => (
+                                    <div key={idx} className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm text-sm font-bold text-brand-dark flex gap-3">
+                                      <div className="w-5 h-5 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 text-[10px] font-black">
+                                        {idx + 1}
+                                      </div>
+                                      {insight}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                              <div className="space-y-4">
+                                <h3 className="text-xs font-black text-brand-gray uppercase tracking-widest flex items-center gap-2">
+                                  <Zap className="w-4 h-4 text-brand-red" />
+                                  Next Steps
+                                </h3>
+                                <div className="space-y-3">
+                                  {result.recommendations.map((rec: string, idx: number) => (
+                                    <div key={idx} className="p-4 bg-brand-dark text-white rounded-2xl shadow-lg text-sm font-bold flex gap-3">
+                                      <div className="w-5 h-5 rounded-full bg-white/10 text-white flex items-center justify-center shrink-0 text-[10px] font-black">
+                                        {idx + 1}
+                                      </div>
+                                      {rec}
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     ) : tool.id === 'trending-topics' && Array.isArray(result) ? (
                       <div className="space-y-8">

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Search, Filter, LayoutGrid, List } from 'lucide-react';
+import { useLanguage } from '../contexts/LanguageContext';
 import { TOOLS, Tool } from '../constants';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -11,9 +12,11 @@ function cn(...inputs: ClassValue[]) {
 }
 
 export default function Dashboard() {
+  const { t } = useLanguage();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const location = useLocation();
 
   const categories = ['All', 'SEO', 'Content', 'Channel', 'Analytics'];
 
@@ -24,6 +27,20 @@ export default function Dashboard() {
     return matchesSearch && matchesCategory;
   });
 
+  React.useEffect(() => {
+    const hash = window.location.hash;
+    if (hash) {
+      const id = hash.replace('#', '');
+      const element = document.getElementById(id);
+      if (element) {
+        const timer = setTimeout(() => {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [location.hash]);
+
   return (
     <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
       {/* Hero Section */}
@@ -33,7 +50,7 @@ export default function Dashboard() {
           animate={{ opacity: 1, y: 0 }}
           className="inline-block px-4 py-1.5 mb-4 rounded-full bg-red-50 text-red-600 text-sm font-semibold tracking-wide uppercase"
         >
-          🚀 20+ Professional Creator Tools
+          {t('hero.badge')}
         </motion.div>
         <motion.h1
           initial={{ opacity: 0, y: 20 }}
@@ -41,8 +58,8 @@ export default function Dashboard() {
           transition={{ delay: 0.1 }}
           className="text-4xl sm:text-6xl font-extrabold text-brand-dark tracking-tight mb-4"
         >
-          Grow Your YouTube Channel <br />
-          <span className="text-brand-red">Faster Than Ever</span>
+          {t('hero.title')} <br />
+          <span className="text-brand-red">{t('hero.subtitle')}</span>
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
@@ -50,8 +67,7 @@ export default function Dashboard() {
           transition={{ delay: 0.2 }}
           className="text-lg text-brand-gray max-w-2xl mx-auto"
         >
-          The ultimate all-in-one suite for creators. Optimize SEO, generate viral ideas, 
-          and track your growth with professional-grade tools.
+          {t('hero.description')}
         </motion.p>
       </div>
 
@@ -61,7 +77,7 @@ export default function Dashboard() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
-            placeholder="Search for a tool..."
+            placeholder={t('search.placeholder')}
             className="input-field pl-12"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -80,7 +96,7 @@ export default function Dashboard() {
                   : "bg-white text-brand-gray hover:bg-gray-100 border border-gray-200"
               )}
             >
-              {cat}
+              {t(`cat.${cat.toLowerCase()}`)}
             </button>
           ))}
           <div className="h-8 w-px bg-gray-200 mx-2 hidden md:block" />
@@ -121,6 +137,7 @@ export default function Dashboard() {
           {filteredTools.map((tool, index) => (
             <motion.div
               key={tool.id}
+              id={tool.id}
               layout
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -144,14 +161,14 @@ export default function Dashboard() {
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
                     <h3 className="font-bold text-brand-dark group-hover:text-brand-red transition-colors">
-                      {tool.name}
+                      {t(`tool.${tool.id}.name`)}
                     </h3>
                     <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-gray-100 text-gray-500">
-                      {tool.category}
+                      {t(`cat.${tool.category.toLowerCase()}`)}
                     </span>
                   </div>
                   <p className="text-sm text-brand-gray line-clamp-2">
-                    {tool.description}
+                    {t(`tool.${tool.id}.desc`)}
                   </p>
                 </div>
               </Link>
@@ -165,8 +182,8 @@ export default function Dashboard() {
           <div className="bg-gray-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <Search className="text-gray-400 w-8 h-8" />
           </div>
-          <h3 className="text-xl font-bold text-brand-dark">No tools found</h3>
-          <p className="text-brand-gray">Try searching for something else or change the category.</p>
+          <h3 className="text-xl font-bold text-brand-dark">{t('dashboard.no_tools')}</h3>
+          <p className="text-brand-gray">{t('dashboard.no_tools_desc')}</p>
         </div>
       )}
     </div>
