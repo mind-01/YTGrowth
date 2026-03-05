@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ChevronDown, Search, LayoutDashboard, TrendingUp, LogOut, User as UserIcon, Heart } from 'lucide-react';
+import { ChevronDown, Search, TrendingUp, LogOut, User as UserIcon, Heart } from 'lucide-react';
 import { TOOLS } from '../constants';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -226,27 +226,12 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
 
-            <Link 
-              to="/" 
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-brand-gray hover:text-brand-dark hover:bg-bg-primary transition-all"
-            >
-              <LayoutDashboard className="w-4 h-4" />
-              {t('nav.dashboard')}
-            </Link>
           </div>
         </div>
 
         <div className="flex items-center gap-4">
           {user ? (
             <div className="relative flex items-center gap-3">
-              <Link 
-                to="/user-dashboard"
-                className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-brand-red text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-red-600 transition-all shadow-lg shadow-brand-red/20 active:scale-95"
-              >
-                <LayoutDashboard className="w-4 h-4" />
-                Dashboard
-              </Link>
-
               <button 
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className="flex items-center gap-2 p-1 pr-3 rounded-full bg-bg-primary border border-border-primary hover:border-brand-red/50 transition-all shadow-sm active:scale-95"
