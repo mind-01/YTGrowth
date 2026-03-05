@@ -14,6 +14,7 @@ import About from './pages/About';
 import Contact from './pages/Contact';
 import Disclaimer from './pages/Disclaimer';
 import LoginPage from './pages/LoginPage';
+import UserDashboard from './pages/UserDashboard';
 import Navbar from './components/Navbar';
 import BottomNav from './components/BottomNav';
 import Footer from './components/Footer';
@@ -43,6 +44,7 @@ export default function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/disclaimer" element={<Disclaimer />} />
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/user-dashboard" element={<UserDashboard />} />
           </Routes>
         </main>
 

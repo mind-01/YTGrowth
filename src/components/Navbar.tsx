@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ChevronDown, Search, LayoutDashboard, TrendingUp, LogOut, User as UserIcon } from 'lucide-react';
+import { ChevronDown, Search, LayoutDashboard, TrendingUp, LogOut, User as UserIcon, Heart } from 'lucide-react';
 import { TOOLS } from '../constants';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '../contexts/LanguageContext';
@@ -76,6 +76,9 @@ export default function Navbar() {
   }, [location.pathname]);
 
   const categories = ['SEO', 'Content', 'Channel', 'Analytics'] as const;
+
+  const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
+  const avatarUrl = user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=EA3323&color=fff`;
 
   const filteredTools = TOOLS.filter(tool => 
     tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -235,48 +238,112 @@ export default function Navbar() {
 
         <div className="flex items-center gap-4">
           {user ? (
-            <div className="relative">
+            <div className="relative flex items-center gap-3">
+              <Link 
+                to="/user-dashboard"
+                className="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-brand-red text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-red-600 transition-all shadow-lg shadow-brand-red/20 active:scale-95"
+              >
+                <LayoutDashboard className="w-4 h-4" />
+                Dashboard
+              </Link>
+
               <button 
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
-                className="flex items-center gap-2 p-1 pr-3 rounded-full bg-bg-primary border border-border-primary hover:border-brand-red/50 transition-all"
+                className="flex items-center gap-2 p-1 pr-3 rounded-full bg-bg-primary border border-border-primary hover:border-brand-red/50 transition-all shadow-sm active:scale-95"
               >
-                <img 
-                  src={user.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${user.user_metadata.full_name}`} 
-                  alt={user.user_metadata.full_name || 'User'} 
-                  className="w-8 h-8 rounded-full border border-border-primary"
-                  referrerPolicy="no-referrer"
-                />
-                <span className="text-sm font-bold text-brand-dark hidden sm:block">
-                  {user.user_metadata.full_name?.split(' ')[0]}
-                </span>
-                <ChevronDown className={`w-4 h-4 text-brand-gray transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
+                <div className="relative">
+                  <img 
+                    src={avatarUrl} 
+                    alt={displayName} 
+                    className="w-8 h-8 rounded-full border border-border-primary object-cover"
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=EA3323&color=fff`;
+                    }}
+                  />
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full" />
+                </div>
+                <div className="flex flex-col items-start leading-none hidden sm:flex">
+                  <span className="text-[13px] font-black text-brand-dark">
+                    {displayName.split(' ')[0]}
+                  </span>
+                  <span className="text-[9px] font-bold text-brand-gray uppercase tracking-wider">
+                    Creator
+                  </span>
+                </div>
+                <ChevronDown className={`w-4 h-4 text-brand-gray transition-transform duration-300 ${isProfileOpen ? 'rotate-180' : ''}`} />
               </button>
 
               <AnimatePresence>
                 {isProfileOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute top-full right-0 mt-2 w-48 bg-card-bg border border-border-primary rounded-2xl shadow-2xl overflow-hidden z-50"
-                  >
-                    <div className="p-4 border-b border-border-primary bg-bg-primary/30">
-                      <p className="text-xs font-bold text-brand-gray uppercase tracking-widest mb-1">Account</p>
-                      <p className="text-sm font-bold text-brand-dark truncate">{user.email}</p>
-                    </div>
-                    <div className="p-2">
-                      <button 
-                        onClick={() => {
-                          logout();
-                          setIsProfileOpen(false);
-                        }}
-                        className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-bold text-brand-gray hover:text-brand-red hover:bg-brand-red/5 transition-all"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        Sign Out
-                      </button>
-                    </div>
-                  </motion.div>
+                  <>
+                    {/* Backdrop for closing */}
+                    <div 
+                      className="fixed inset-0 z-40" 
+                      onClick={() => setIsProfileOpen(false)}
+                    />
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute top-full right-0 mt-2 w-64 bg-card-bg border border-border-primary rounded-[2rem] shadow-2xl overflow-hidden z-50"
+                    >
+                      <div className="p-6 border-b border-border-primary bg-bg-primary/30">
+                        <div className="flex items-center gap-3 mb-3">
+                          <img 
+                            src={avatarUrl} 
+                            alt={displayName} 
+                            className="w-10 h-10 rounded-full border border-border-primary"
+                            referrerPolicy="no-referrer"
+                          />
+                          <div className="min-w-0">
+                            <p className="text-sm font-black text-brand-dark truncate">{displayName}</p>
+                            <p className="text-[10px] font-bold text-brand-gray truncate">{user.email}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-red/10 text-brand-red text-[10px] font-black uppercase tracking-widest w-fit">
+                          <TrendingUp className="w-3 h-3" />
+                          Pro Creator
+                        </div>
+                      </div>
+                      <div className="p-2 space-y-1">
+                        <Link
+                          to="/user-dashboard"
+                          onClick={() => setIsProfileOpen(false)}
+                          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-brand-gray hover:text-brand-dark hover:bg-bg-primary transition-all group"
+                        >
+                          <div className="w-8 h-8 rounded-xl bg-bg-primary flex items-center justify-center group-hover:bg-brand-red/10 group-hover:text-brand-red transition-colors">
+                            <UserIcon className="w-4 h-4" />
+                          </div>
+                          <span>Account</span>
+                        </Link>
+                        <Link
+                          to="/user-dashboard"
+                          onClick={() => setIsProfileOpen(false)}
+                          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-brand-gray hover:text-brand-dark hover:bg-bg-primary transition-all group"
+                        >
+                          <div className="w-8 h-8 rounded-xl bg-bg-primary flex items-center justify-center group-hover:bg-brand-red/10 group-hover:text-brand-red transition-colors">
+                            <Heart className="w-4 h-4" />
+                          </div>
+                          <span>Favorites</span>
+                        </Link>
+                        <button 
+                          onClick={() => {
+                            logout();
+                            setIsProfileOpen(false);
+                          }}
+                          className="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold text-brand-gray hover:text-brand-red hover:bg-brand-red/5 transition-all group"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-xl bg-bg-primary flex items-center justify-center group-hover:bg-brand-red/10 group-hover:text-brand-red transition-colors">
+                              <LogOut className="w-4 h-4" />
+                            </div>
+                            <span>Sign Out</span>
+                          </div>
+                        </button>
+                      </div>
+                    </motion.div>
+                  </>
                 )}
               </AnimatePresence>
             </div>
