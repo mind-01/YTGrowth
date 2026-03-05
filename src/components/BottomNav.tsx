@@ -29,8 +29,8 @@ const BottomNav = () => {
     { 
       label: t('nav.settings'), 
       icon: Settings, 
-      path: '#',
-      active: false
+      path: '/settings',
+      active: location.pathname === '/settings'
     },
   ];
 

@@ -15,10 +15,10 @@ import Contact from './pages/Contact';
 import Disclaimer from './pages/Disclaimer';
 import LoginPage from './pages/LoginPage';
 import UserDashboard from './pages/UserDashboard';
+import SettingsPage from './pages/SettingsPage';
 import Navbar from './components/Navbar';
 import BottomNav from './components/BottomNav';
 import Footer from './components/Footer';
-import Customizer from './components/Customizer';
 import { Link } from 'react-router-dom';
 
 export default function App() {
@@ -45,11 +45,9 @@ export default function App() {
             <Route path="/disclaimer" element={<Disclaimer />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/user-dashboard" element={<UserDashboard />} />
+            <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </main>
-
-        {/* Global UI Elements */}
-        <Customizer />
 
         {/* Footer & Navigation */}
         <Footer />

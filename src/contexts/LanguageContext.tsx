@@ -108,7 +108,19 @@ const translations: Record<Language, Record<string, string>> = {
     'tool.comp-spy.desc': 'See what works for others',
     'tool.trending-topics.desc': 'What is hot right now',
     'tool.sentiment.desc': 'Analyze audience feedback',
-    'tool.global-reach.desc': 'Analyze international audience'
+    'tool.global-reach.desc': 'Analyze international audience',
+    // Settings
+    'settings.title': 'Settings',
+    'settings.language': 'Language',
+    'settings.theme': 'Theme',
+    'settings.accent': 'Accent Color',
+    'settings.account': 'Account Settings',
+    'settings.about': 'About YTGrowth',
+    'settings.contact': 'Contact Support',
+    'settings.logout': 'Sign Out',
+    'settings.light': 'Light Mode',
+    'settings.dark': 'Dark Mode',
+    'settings.profile': 'View Profile'
   },
   'हिन्दी': {
     'hero.title': 'बेस्ट AI YouTube ग्रोथ टूल्स:',
@@ -206,7 +218,19 @@ const translations: Record<Language, Record<string, string>> = {
     'tool.comp-spy.desc': 'देखें कि दूसरों के लिए क्या काम करता है',
     'tool.trending-topics.desc': 'अभी क्या हॉट है',
     'tool.sentiment.desc': 'ऑडियंस फीडबैक का विश्लेषण करें',
-    'tool.global-reach.desc': 'इंटरनेशनल ऑडियंस का विश्लेषण करें'
+    'tool.global-reach.desc': 'इंटरनेशनल ऑडियंस का विश्लेषण करें',
+    // Settings
+    'settings.title': 'सेटिंग्स',
+    'settings.language': 'भाषा (Language)',
+    'settings.theme': 'थीम (Theme)',
+    'settings.accent': 'एक्सेन्ट कलर',
+    'settings.account': 'अकाउंट सेटिंग्स',
+    'settings.about': 'YTGrowth के बारे में',
+    'settings.contact': 'सपोर्ट से संपर्क करें',
+    'settings.logout': 'साइन आउट',
+    'settings.light': 'लाइट मोड',
+    'settings.dark': 'डार्क मोड',
+    'settings.profile': 'प्रोफ़ाइल देखें'
   },
   // Placeholder translations for other languages (defaulting to English keys)
   'Español': {}, 'Français': {}, 'Deutsch': {}, 'Italiano': {}, 'Português': {}, '日本語': {}, 'Русский': {}, '한국어': {},

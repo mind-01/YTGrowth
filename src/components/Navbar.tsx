@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ChevronDown, Search, TrendingUp, LogOut, User as UserIcon, Heart } from 'lucide-react';
+import { ChevronDown, Search, TrendingUp, LogOut, User as UserIcon, Heart, Menu, LayoutGrid, Sun, Moon, Palette } from 'lucide-react';
 import { TOOLS } from '../constants';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme, COLORS } from '../contexts/ThemeContext';
 
 interface NavDropdownProps {
   label: string;
@@ -51,6 +52,7 @@ function NavDropdown({ label, isOpen, onMouseEnter, onMouseLeave, children, clas
 export default function Navbar() {
   const { t } = useLanguage();
   const { user, signInWithGoogle, logout } = useAuth();
+  const { theme, setTheme, accentColor, setAccentColor } = useTheme();
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -113,7 +115,8 @@ export default function Navbar() {
 
   return (
     <nav className="sticky top-0 z-50 bg-card-bg/90 backdrop-blur-md border-b border-border-primary shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      {/* Desktop Navigation */}
+      <div className="hidden lg:flex max-w-7xl mx-auto px-4 h-16 items-center justify-between">
         <div className="flex items-center gap-4">
           <Link to="/" className="flex items-center gap-2 group mr-4">
             <div className="w-9 h-9 bg-brand-red rounded-xl flex items-center justify-center text-white shadow-lg shadow-brand-red/30 group-hover:scale-110 transition-transform relative overflow-hidden">
@@ -126,7 +129,7 @@ export default function Navbar() {
             </span>
           </Link>
 
-          <div className="hidden lg:flex items-center gap-2">
+          <div className="flex items-center gap-2">
             {/* Category Shortcuts */}
             {['SEO', 'Content', 'Channel'].map((cat) => (
               <div 
@@ -225,7 +228,6 @@ export default function Navbar() {
                 )}
               </AnimatePresence>
             </div>
-
           </div>
         </div>
 
@@ -262,7 +264,6 @@ export default function Navbar() {
               <AnimatePresence>
                 {isProfileOpen && (
                   <>
-                    {/* Backdrop for closing */}
                     <div 
                       className="fixed inset-0 z-40" 
                       onClick={() => setIsProfileOpen(false)}
@@ -343,6 +344,171 @@ export default function Navbar() {
           )}
         </div>
       </div>
+
+      {/* Mobile Navigation Top Bar */}
+      <div className="lg:hidden flex items-center justify-between h-16 px-4">
+        <button 
+          onClick={() => setActiveMenu(activeMenu === 'all' ? null : 'all')}
+          className="p-2 text-brand-dark hover:bg-bg-primary rounded-xl transition-colors"
+        >
+          <Menu className="w-6 h-6" />
+        </button>
+
+        <Link to="/" className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-brand-red rounded-lg flex items-center justify-center text-white shadow-md">
+            <TrendingUp className="w-4 h-4" />
+          </div>
+          <span className="text-lg font-black tracking-tighter">
+            <span className="text-brand-red">YT</span>
+            <span className="text-brand-dark">Growth</span>
+          </span>
+        </Link>
+
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => setActiveMenu(activeMenu === 'settings' ? null : 'settings')}
+            className={`p-2 rounded-xl transition-colors ${activeMenu === 'settings' ? 'bg-brand-red text-white' : 'text-brand-dark hover:bg-bg-primary'}`}
+          >
+            <LayoutGrid className="w-6 h-6" />
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Settings Overlay (Theme & Color) */}
+      <AnimatePresence>
+        {activeMenu === 'settings' && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="lg:hidden absolute top-full left-0 right-0 bg-card-bg border-b border-border-primary shadow-2xl z-50 p-6 space-y-8"
+          >
+            {/* Account Info (Mobile Only) */}
+            {user && (
+              <div className="flex items-center gap-4 p-4 bg-bg-primary dark:bg-brand-dark rounded-2xl border border-border-primary">
+                <img 
+                  src={avatarUrl} 
+                  alt={displayName} 
+                  className="w-12 h-12 rounded-xl border border-border-primary object-cover"
+                />
+                <div className="flex-grow">
+                  <p className="text-sm font-black text-brand-dark dark:text-white">{displayName}</p>
+                  <Link to="/user-dashboard" onClick={() => setActiveMenu(null)} className="text-xs text-brand-red font-bold hover:underline">
+                    View Dashboard
+                  </Link>
+                </div>
+                <button 
+                  onClick={() => {
+                    logout();
+                    setActiveMenu(null);
+                  }}
+                  className="p-2 text-brand-gray hover:text-brand-red transition-colors"
+                >
+                  <LogOut className="w-5 h-5" />
+                </button>
+              </div>
+            )}
+
+            {!user && (
+              <Link 
+                to="/login" 
+                onClick={() => setActiveMenu(null)}
+                className="flex items-center justify-center gap-3 p-4 bg-brand-red text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-lg shadow-brand-red/20"
+              >
+                <UserIcon className="w-5 h-5" />
+                Sign In / Sign Up
+              </Link>
+            )}
+
+            {/* Theme Toggle */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                {theme === 'dark' ? <Moon className="w-5 h-5 text-brand-red" /> : <Sun className="w-5 h-5 text-brand-red" />}
+                <span className="text-sm font-bold text-brand-dark dark:text-white">{t('settings.theme')}</span>
+              </div>
+              <div className="flex bg-bg-primary dark:bg-brand-dark p-1 rounded-xl border border-border-primary">
+                <button
+                  onClick={() => setTheme('light')}
+                  className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+                    theme === 'light' ? 'bg-white dark:bg-brand-dark text-brand-red shadow-sm' : 'text-brand-gray'
+                  }`}
+                >
+                  {t('settings.light')}
+                </button>
+                <button
+                  onClick={() => setTheme('dark')}
+                  className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+                    theme === 'dark' ? 'bg-brand-red text-white shadow-sm' : 'text-brand-gray'
+                  }`}
+                >
+                  {t('settings.dark')}
+                </button>
+              </div>
+            </div>
+
+            {/* Accent Color */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <Palette className="w-5 h-5 text-brand-red" />
+                <span className="text-sm font-bold text-brand-dark dark:text-white">{t('settings.accent')}</span>
+              </div>
+              <div className="flex gap-3 justify-center">
+                {COLORS.map((color) => (
+                  <button
+                    key={color}
+                    onClick={() => setAccentColor(color)}
+                    className={`w-10 h-10 rounded-full border-2 transition-all ${
+                      accentColor === color ? 'border-brand-red scale-110 shadow-lg' : 'border-transparent'
+                    }`}
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mobile Mega Menu Overlay */}
+      <AnimatePresence>
+        {activeMenu === 'all' && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="lg:hidden absolute top-full left-0 right-0 bg-card-bg border-b border-border-primary shadow-2xl z-50 max-h-[80vh] overflow-y-auto"
+          >
+            <div className="p-4 border-b border-border-primary bg-bg-primary/30">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-gray" />
+                <input
+                  type="text"
+                  placeholder={t('nav.quick_search')}
+                  className="w-full !pl-12 pr-4 py-3 bg-card-bg border border-border-primary rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red transition-all"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="p-4 space-y-6">
+              {categories.map(category => {
+                const categoryTools = filteredTools.filter(t => t.category === category);
+                if (categoryTools.length === 0) return null;
+                return (
+                  <div key={category} className="space-y-3">
+                    <h3 className="text-[10px] font-black text-brand-gray uppercase tracking-widest border-b border-border-primary pb-2">
+                      {category === 'Analytics' ? t('cat.analytics_global') : t(`cat.${category.toLowerCase()}_tools`)}
+                    </h3>
+                    <div className="grid grid-cols-1 gap-2">
+                      {categoryTools.map(tool => renderToolLink(tool))}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }
