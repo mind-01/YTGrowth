@@ -1,9 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, Copy, Check, Loader2, Sparkles, Link as LinkIcon, Clipboard, XCircle, CheckCircle2, ExternalLink, ThumbsUp, Eye, Search, Filter, TrendingUp, Users, Calendar, Globe, Languages, Smartphone, Tv, Zap, Target, Lightbulb, FileText, Image as ImageIcon, ChevronDown, ChevronUp, Download, Layout, Palette, MousePointer2, Info, Video, Upload, Monitor, Clock, Edit, AlertCircle, Tag, MessageSquare } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Loader2, Sparkles, Link as LinkIcon, Clipboard, XCircle, CheckCircle2, ExternalLink, ThumbsUp, Eye, Search, Filter, TrendingUp, Users, Calendar, Globe, Languages, Smartphone, Tv, Zap, Target, Lightbulb, FileText, Image as ImageIcon, ChevronDown, ChevronUp, Download, Layout, Palette, MousePointer2, Info, Video, Upload, Monitor, Clock, Edit, AlertCircle, Tag, MessageSquare, Bookmark, BookmarkCheck } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
 import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { TOOLS, REGIONS, LANGUAGES, CATEGORIES, NICHES, TONES } from '../constants';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
+
 import * as gemini from '../services/geminiService';
 import ReactMarkdown from 'react-markdown';
 import he from 'he';
@@ -15,6 +23,7 @@ import {
 
 export default function ToolPage() {
   const { t } = useLanguage();
+  const { toggleSaveTool, isSaved } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -348,14 +357,30 @@ export default function ToolPage() {
     <div className="max-w-4xl mx-auto px-4 pt-24 pb-12">
       <div className="flex items-center gap-2 text-[10px] font-black text-brand-gray uppercase tracking-widest mb-8">
         <button onClick={() => navigate(-1)} className="hover:text-brand-red transition-colors">{t('nav.back')}</button>
-        <span className="text-gray-300">/</span>
+        <span className="text-border-primary">/</span>
         <Link to="/" className="hover:text-brand-red transition-colors">{t('nav.dashboard')}</Link>
-        <span className="text-gray-300">/</span>
+        <span className="text-border-primary">/</span>
         <span className="text-brand-dark">{t(`tool.${tool.id}.name`)}</span>
       </div>
 
-      <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-sm mb-8">
-        <div className="text-center mb-8">
+      <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm mb-8">
+        <div className="text-center mb-8 relative">
+          <button
+            onClick={() => toggleSaveTool(tool.id)}
+            className={cn(
+              "absolute top-0 right-0 p-3 rounded-2xl transition-all shadow-sm border border-border-primary",
+              isSaved(tool.id) 
+                ? "bg-brand-red text-white border-brand-red" 
+                : "bg-card-bg text-brand-gray hover:text-brand-red hover:border-brand-red"
+            )}
+            title={isSaved(tool.id) ? "Remove from saved" : "Save tool"}
+          >
+            {isSaved(tool.id) ? (
+              <BookmarkCheck className="w-6 h-6 fill-current" />
+            ) : (
+              <Bookmark className="w-6 h-6" />
+            )}
+          </button>
           <h1 className="text-3xl font-black text-brand-dark mb-2">{t(`tool.${tool.id}.name`)}</h1>
           <p className="text-brand-gray font-medium">{t(`tool.${tool.id}.desc`)}</p>
         </div>
@@ -378,7 +403,7 @@ export default function ToolPage() {
                 </div>
                 <input
                   type="text"
-                  className="w-full pl-14 pr-32 py-5 rounded-full border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red transition-all text-lg font-medium shadow-sm"
+                  className="w-full pl-14 pr-32 py-5 rounded-full border border-border-primary bg-card-bg text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red transition-all text-lg font-medium shadow-sm"
                   placeholder={isKeywordRes || isGlobalReach ? t('nav.enter_topic') : isAnalyticsDash ? t('nav.paste_channel_link') : t('nav.paste_video_link')}
                   value={isAnalyticsDash ? channelUrl : input}
                   onChange={(e) => isAnalyticsDash ? setChannelUrl(e.target.value) : setInput(e.target.value)}
@@ -393,7 +418,7 @@ export default function ToolPage() {
                       console.error('Failed to read clipboard contents: ', err);
                     }
                   }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#E5E7EB] hover:bg-gray-300 transition-colors text-sm font-bold text-brand-dark"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-bg-primary hover:bg-border-primary transition-colors text-sm font-bold text-brand-dark"
                 >
                   <Clipboard className="w-4 h-4" />
                   {t('nav.paste')}
@@ -402,7 +427,7 @@ export default function ToolPage() {
 
               {isKeywordRes && (
                 <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
-                  <div className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-2xl shadow-sm">
+                  <div className="flex items-center gap-2 px-4 py-2 bg-card-bg border border-border-primary rounded-2xl shadow-sm">
                     <Globe className="w-4 h-4 text-brand-gray" />
                     <select 
                       value={region}
@@ -414,7 +439,7 @@ export default function ToolPage() {
                       ))}
                     </select>
                   </div>
-                  <div className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-2xl shadow-sm">
+                  <div className="flex items-center gap-2 px-4 py-2 bg-card-bg border border-border-primary rounded-2xl shadow-sm">
                     <Languages className="w-4 h-4 text-brand-gray" />
                     <select 
                       value={language}
@@ -447,7 +472,7 @@ export default function ToolPage() {
                         className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
                           language === lang.id 
                           ? 'bg-brand-dark text-white shadow-lg scale-105' 
-                          : 'bg-white text-brand-gray border border-gray-200 hover:border-brand-red hover:text-brand-red'
+                          : 'bg-card-bg text-brand-gray border border-border-primary hover:border-brand-red hover:text-brand-red'
                         }`}
                       >
                         {lang.label}
@@ -490,7 +515,7 @@ export default function ToolPage() {
                   />
                   <div className={`
                     aspect-video rounded-[2.5rem] border-4 border-dashed transition-all duration-300 flex flex-col items-center justify-center p-8 text-center
-                    ${thumbnailImage ? 'border-brand-red bg-brand-red/5' : dragActive ? 'border-brand-red bg-brand-red/5' : 'border-gray-200 bg-gray-50 hover:border-brand-red/50 hover:bg-gray-100/50'}
+                    ${thumbnailImage ? 'border-brand-red bg-brand-red/5' : dragActive ? 'border-brand-red bg-brand-red/5' : 'border-border-primary bg-bg-primary hover:border-brand-red/50 hover:bg-bg-primary/80'}
                   `}>
                     {thumbnailImage ? (
                       <div className="relative w-full h-full flex items-center justify-center group/img">
@@ -516,7 +541,7 @@ export default function ToolPage() {
                       </div>
                     ) : (
                       <>
-                        <div className="w-20 h-20 rounded-3xl bg-white border border-gray-100 shadow-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                        <div className="w-20 h-20 rounded-3xl bg-card-bg border border-border-primary shadow-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
                           <Upload className="w-8 h-8 text-brand-red" />
                         </div>
                         <h3 className="text-xl font-black text-brand-dark mb-2">Drop your thumbnail here</h3>
@@ -537,7 +562,7 @@ export default function ToolPage() {
                   <select 
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm font-bold text-brand-dark focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-xl bg-bg-primary border border-border-primary text-sm font-bold text-brand-dark focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red outline-none transition-all"
                   >
                     {CATEGORIES.map(cat => (
                       <option key={cat} value={cat}>{cat}</option>
@@ -551,7 +576,7 @@ export default function ToolPage() {
                   <select 
                     value={selectedRegion}
                     onChange={(e) => setSelectedRegion(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm font-bold text-brand-dark focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red outline-none transition-all"
+                    className="w-full px-4 py-3 rounded-xl bg-bg-primary border border-border-primary text-sm font-bold text-brand-dark focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red outline-none transition-all"
                   >
                     {REGIONS.map(reg => (
                       <option key={reg.name} value={reg.name}>{reg.flag} {reg.name}</option>
@@ -572,7 +597,7 @@ export default function ToolPage() {
                     <select 
                       value={selectedNiche}
                       onChange={(e) => setSelectedNiche(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm font-bold text-brand-dark focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red outline-none transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-bg-primary border border-border-primary text-sm font-bold text-brand-dark focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red outline-none transition-all"
                     >
                       {NICHES.map(niche => (
                         <option key={niche} value={niche}>{niche}</option>
@@ -586,7 +611,7 @@ export default function ToolPage() {
                     <select 
                       value={selectedTone}
                       onChange={(e) => setSelectedTone(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-sm font-bold text-brand-dark focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red outline-none transition-all"
+                      className="w-full px-4 py-3 rounded-xl bg-bg-primary border border-border-primary text-sm font-bold text-brand-dark focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red outline-none transition-all"
                     >
                       {TONES.map(tone => (
                         <option key={tone} value={tone}>{tone}</option>
@@ -596,7 +621,7 @@ export default function ToolPage() {
                 </div>
                 
                 <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-1 flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                  <div className="flex-1 flex items-center gap-4 p-4 bg-bg-primary rounded-2xl border border-border-primary">
                     <div className="flex items-center gap-2">
                       <Languages className="w-4 h-4 text-brand-gray" />
                       <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">Output Language</span>
@@ -612,8 +637,8 @@ export default function ToolPage() {
                           onClick={() => setSelectedNameLanguage(lang.id)}
                           className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
                             selectedNameLanguage === lang.id 
-                            ? 'bg-brand-dark text-white shadow-md' 
-                            : 'bg-white text-brand-gray border border-gray-200 hover:border-brand-red hover:text-brand-red'
+                            ? 'bg-brand-red text-white shadow-md' 
+                            : 'bg-card-bg text-brand-gray border border-border-primary hover:border-brand-red hover:text-brand-red'
                           }`}
                         >
                           {lang.label}
@@ -622,7 +647,7 @@ export default function ToolPage() {
                     </div>
                   </div>
 
-                  <div className="flex-1 flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                  <div className="flex-1 flex items-center gap-4 p-4 bg-bg-primary rounded-2xl border border-border-primary">
                     <div className="flex items-center gap-2">
                       <Target className="w-4 h-4 text-brand-gray" />
                       <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">Name Length</span>
@@ -637,8 +662,8 @@ export default function ToolPage() {
                           onClick={() => setSelectedNameLength(len.id)}
                           className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
                             selectedNameLength === len.id 
-                            ? 'bg-brand-dark text-white shadow-md' 
-                            : 'bg-white text-brand-gray border border-gray-200 hover:border-brand-red hover:text-brand-red'
+                            ? 'bg-brand-red text-white shadow-md' 
+                            : 'bg-card-bg text-brand-gray border border-border-primary hover:border-brand-red hover:text-brand-red'
                           }`}
                         >
                           {len.label}
@@ -652,7 +677,7 @@ export default function ToolPage() {
 
             {(tool.id === 'monetization' || tool.id === 'audit') && (
               <div className="space-y-8">
-                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                <div className="flex items-center gap-4 p-4 bg-bg-primary rounded-2xl border border-border-primary">
                   <div className="flex items-center gap-2">
                     <Languages className="w-4 h-4 text-brand-gray" />
                     <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">Report Language</span>
@@ -671,8 +696,8 @@ export default function ToolPage() {
                         }}
                         className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
                           (tool.id === 'monetization' ? monetizationLanguage : auditLanguage) === lang.id 
-                          ? 'bg-brand-dark text-white shadow-md' 
-                          : 'bg-white text-brand-gray border border-gray-200 hover:border-brand-red hover:text-brand-red'
+                          ? 'bg-brand-red text-white shadow-md' 
+                          : 'bg-card-bg text-brand-gray border border-border-primary hover:border-brand-red hover:text-brand-red'
                         }`}
                       >
                         {lang.label}
@@ -691,7 +716,7 @@ export default function ToolPage() {
                       value={channelUrl}
                       onChange={(e) => setChannelUrl(e.target.value)}
                       placeholder={tool.id === 'audit' ? "Analyze karne ke liye YouTube Channel ka link yahan paste karein..." : "Paste YouTube Channel Link here to track..."}
-                      className="w-full pl-12 pr-4 py-4 rounded-2xl bg-gray-50 border border-gray-200 text-lg font-black text-brand-dark focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red outline-none transition-all"
+                      className="w-full pl-12 pr-4 py-4 rounded-2xl bg-bg-primary border border-border-primary text-lg font-black text-brand-dark focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -725,8 +750,8 @@ export default function ToolPage() {
                       onClick={() => setSpyLanguage(lang.id)}
                       className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
                         spyLanguage === lang.id 
-                        ? 'bg-brand-dark text-white shadow-md' 
-                        : 'bg-white text-brand-gray border border-gray-200 hover:border-brand-red hover:text-brand-red'
+                        ? 'bg-brand-red text-white shadow-md' 
+                        : 'bg-card-bg text-brand-gray border border-border-primary hover:border-brand-red hover:text-brand-red'
                       }`}
                     >
                       {lang.label}
@@ -751,8 +776,8 @@ export default function ToolPage() {
                           onClick={() => setTrendTimeFrame(tf)}
                           className={`flex-1 px-2 py-2 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${
                             trendTimeFrame === tf 
-                            ? 'bg-brand-dark text-white shadow-md' 
-                            : 'bg-white text-brand-gray border border-gray-100 hover:border-brand-red'
+                            ? 'bg-brand-red text-white shadow-md' 
+                            : 'bg-card-bg text-brand-gray border border-border-primary hover:border-brand-red'
                           }`}
                         >
                           {tf}
@@ -773,8 +798,8 @@ export default function ToolPage() {
                           onClick={() => setTrendLocation(loc)}
                           className={`flex-1 px-2 py-2 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${
                             trendLocation === loc 
-                            ? 'bg-brand-dark text-white shadow-md' 
-                            : 'bg-white text-brand-gray border border-gray-100 hover:border-brand-red'
+                            ? 'bg-brand-red text-white shadow-md' 
+                            : 'bg-card-bg text-brand-gray border border-border-primary hover:border-brand-red'
                           }`}
                         >
                           {loc}
@@ -796,7 +821,7 @@ export default function ToolPage() {
                           className={`flex-1 px-2 py-2 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${
                             trendLanguage === lang 
                             ? 'bg-brand-dark text-white shadow-md' 
-                            : 'bg-white text-brand-gray border border-gray-100 hover:border-brand-red'
+                            : 'bg-card-bg text-brand-gray border border-border-primary hover:border-brand-red'
                           }`}
                         >
                           {lang === 'English' ? '🇺🇸 EN' : lang === 'Hindi' ? '🇮🇳 HI' : '🌍 HG'}
@@ -849,7 +874,7 @@ export default function ToolPage() {
             )}
 
             {tool.id === 'script-gen' && (
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+              <div className="flex items-center gap-4 p-4 bg-bg-primary rounded-2xl border border-border-primary">
                 <div className="flex items-center gap-2">
                   <Languages className="w-4 h-4 text-brand-gray" />
                   <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">Output Language</span>
@@ -861,8 +886,8 @@ export default function ToolPage() {
                       onClick={() => setBlueprintLanguage(lang)}
                       className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
                         blueprintLanguage === lang 
-                        ? 'bg-brand-dark text-white shadow-md' 
-                        : 'bg-white text-brand-gray border border-gray-200 hover:border-brand-red hover:text-brand-red'
+                        ? 'bg-brand-red text-white shadow-md' 
+                        : 'bg-card-bg text-brand-gray border border-border-primary hover:border-brand-red hover:text-brand-red'
                       }`}
                     >
                       {lang === 'English' ? '🇬🇧 English' : lang === 'Hindi' ? '🇮🇳 Hindi' : '🌍 Hinglish'}
@@ -873,7 +898,7 @@ export default function ToolPage() {
             )}
 
             {tool.id === 'shorts-ideas' && (
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+              <div className="flex items-center gap-4 p-4 bg-bg-primary rounded-2xl border border-border-primary">
                 <div className="flex items-center gap-2">
                   <Languages className="w-4 h-4 text-brand-gray" />
                   <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">Output Language</span>
@@ -885,8 +910,8 @@ export default function ToolPage() {
                       onClick={() => setShortsLanguage(lang)}
                       className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
                         shortsLanguage === lang 
-                        ? 'bg-brand-dark text-white shadow-md' 
-                        : 'bg-white text-brand-gray border border-gray-200 hover:border-brand-red hover:text-brand-red'
+                        ? 'bg-brand-red text-white shadow-md' 
+                        : 'bg-card-bg text-brand-gray border border-border-primary hover:border-brand-red hover:text-brand-red'
                       }`}
                     >
                       {lang === 'English' ? '🇺🇸 English' : lang === 'Hindi' ? '🇮🇳 Hindi' : '🌍 Hinglish'}
@@ -910,8 +935,8 @@ export default function ToolPage() {
                         onClick={() => setHookLanguage(lang)}
                         className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
                           hookLanguage === lang 
-                          ? 'bg-brand-dark text-white shadow-md' 
-                          : 'bg-white text-brand-gray border border-gray-200 hover:border-brand-red hover:text-brand-red'
+                          ? 'bg-brand-red text-white shadow-md' 
+                          : 'bg-card-bg text-brand-gray border border-border-primary hover:border-brand-red hover:text-brand-red'
                         }`}
                       >
                         {lang === 'English' ? '🇺🇸 English' : lang === 'Hindi' ? '🇮🇳 Hindi' : '🌍 Hinglish'}
@@ -936,8 +961,8 @@ export default function ToolPage() {
                       disabled={loading || !input.trim()}
                       className={`flex flex-col items-center justify-center p-4 rounded-2xl border transition-all group disabled:opacity-50 ${
                         hookLength === l.id 
-                        ? 'bg-brand-dark border-brand-dark text-white shadow-xl scale-[1.02]' 
-                        : 'bg-white border-gray-100 text-brand-dark hover:border-brand-red hover:shadow-lg'
+                        ? 'bg-brand-red border-brand-red text-white shadow-xl scale-[1.02]' 
+                        : 'bg-card-bg border-border-primary text-brand-dark hover:border-brand-red hover:shadow-lg'
                       }`}
                     >
                       <span className="text-[10px] font-black uppercase tracking-wider mb-1">{l.label}</span>
@@ -997,7 +1022,7 @@ export default function ToolPage() {
               key="result"
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="border-t border-gray-100 pt-8 mt-8"
+              className="border-t border-border-primary pt-8 mt-8"
             >
               <AnimatePresence>
                 {toast && (
@@ -1023,7 +1048,7 @@ export default function ToolPage() {
                   </div>
                   <div className="space-y-4">
                     {result.map((item: any, idx: number) => (
-                      <div key={idx} className="flex flex-col md:flex-row gap-6 p-6 rounded-[2.5rem] bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+                      <div key={idx} className="flex flex-col md:flex-row gap-6 p-6 rounded-[2.5rem] bg-card-bg border border-border-primary shadow-sm hover:shadow-md transition-all group">
                         <div className="w-12 h-12 rounded-2xl bg-brand-dark text-white flex items-center justify-center shrink-0 font-black text-lg group-hover:bg-brand-red transition-colors shadow-lg">
                           {idx + 1}
                         </div>
@@ -1046,13 +1071,13 @@ export default function ToolPage() {
                                 setCopiedId(`name-${idx}`);
                                 setTimeout(() => setCopiedId(null), 2000);
                               }}
-                              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-50 border border-gray-200 text-[10px] font-black text-brand-dark hover:bg-brand-red hover:text-white hover:border-brand-red transition-all shadow-sm"
+                              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-bg-primary border border-border-primary text-[10px] font-black text-brand-dark hover:bg-brand-red hover:text-white hover:border-brand-red transition-all shadow-sm"
                             >
                               {copiedId === `name-${idx}` ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
                               {copiedId === `name-${idx}` ? 'COPIED' : 'COPY NAME'}
                             </button>
                           </div>
-                          <div className="p-4 rounded-2xl bg-gray-50/50 border border-gray-100">
+                          <div className="p-4 rounded-2xl bg-bg-primary/50 border border-border-primary">
                             <p className="text-[9px] font-black text-brand-gray uppercase tracking-widest mb-1">Brand Strategy / Why</p>
                             <p className="text-sm text-brand-dark font-bold leading-relaxed">{item.meaning}</p>
                           </div>
@@ -1064,10 +1089,10 @@ export default function ToolPage() {
               ) : tool.id === 'monetization' && result ? (
                 <div className="space-y-8">
                   {/* Channel Header */}
-                  <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-sm flex flex-col md:flex-row items-center gap-8 relative">
+                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm flex flex-col md:flex-row items-center gap-8 relative">
                     <button 
                       onClick={() => copyToClipboard(`Channel: ${result.channelName}\nSubs: ${result.subscriberCount}\nWatch Time: ${manualWatchTime || result.watchTime}h\nMonetized: ${(result.subscriberCount >= 1000 && Number(manualWatchTime || result.watchTime) >= 4000) ? 'Yes' : 'No'}`)}
-                      className="absolute top-6 right-6 flex items-center gap-2 px-4 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs font-black text-brand-dark hover:text-brand-red transition-all shadow-sm"
+                      className="absolute top-6 right-6 flex items-center gap-2 px-4 py-2 rounded-xl bg-bg-primary border border-border-primary text-xs font-black text-brand-dark hover:text-brand-red transition-all shadow-sm"
                     >
                       {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Clipboard className="w-4 h-4" />}
                       {copied ? 'COPIED' : 'COPY STATS'}
@@ -1124,7 +1149,7 @@ export default function ToolPage() {
                   {/* Progress Dashboard - Centered */}
                   <div className="flex flex-col md:flex-row justify-center items-center gap-8">
                     {/* Watch Time Progress */}
-                    <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-sm text-center w-full max-w-sm">
+                    <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm text-center w-full max-w-sm">
                       <h3 className="text-sm font-black text-brand-gray uppercase tracking-widest mb-6">Watch Time Progress</h3>
                       <div className="relative w-48 h-48 mx-auto mb-6">
                         <svg className="w-full h-full -rotate-90">
@@ -1135,7 +1160,7 @@ export default function ToolPage() {
                             fill="none"
                             stroke="currentColor"
                             strokeWidth="12"
-                            className="text-gray-100"
+                            className="text-border-primary"
                           />
                           <motion.circle
                             cx="96"
@@ -1164,7 +1189,7 @@ export default function ToolPage() {
                     </div>
 
                     {/* Subscribers Progress */}
-                    <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-sm text-center w-full max-w-sm">
+                    <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm text-center w-full max-w-sm">
                       <h3 className="text-sm font-black text-brand-gray uppercase tracking-widest mb-6">Subscribers Progress</h3>
                       <div className="relative w-48 h-48 mx-auto mb-6">
                         <svg className="w-full h-full -rotate-90">
@@ -1175,7 +1200,7 @@ export default function ToolPage() {
                             fill="none"
                             stroke="currentColor"
                             strokeWidth="12"
-                            className="text-gray-100"
+                            className="text-border-primary"
                           />
                           <motion.circle
                             cx="96"
@@ -1206,8 +1231,8 @@ export default function ToolPage() {
 
                   {/* AI Growth Tips */}
                   {result.roadmap && result.roadmap.length > 0 && (
-                    <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
-                      <div className="flex items-center justify-between px-8 py-6 border-b border-gray-50 bg-gray-50/50">
+                    <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm overflow-hidden">
+                      <div className="flex items-center justify-between px-8 py-6 border-b border-border-primary bg-bg-primary">
                         <div>
                           <h2 className="text-xl font-black text-brand-dark uppercase tracking-widest">AI Growth Tips</h2>
                           <p className="text-xs text-brand-gray font-bold mt-1">Strategic advice based on your current stats</p>
@@ -1247,7 +1272,7 @@ export default function ToolPage() {
                       }
                     ].map((card, idx) => (
                       <div key={idx} className={`${card.bg} p-6 rounded-[2rem] border border-white shadow-sm flex flex-col items-center text-center`}>
-                        <div className={`w-12 h-12 rounded-2xl bg-white flex items-center justify-center mb-4 shadow-sm ${card.color}`}>
+                        <div className={`w-12 h-12 rounded-2xl bg-card-bg flex items-center justify-center mb-4 shadow-sm ${card.color}`}>
                           <card.icon className="w-6 h-6" />
                         </div>
                         <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest mb-1">{card.label}</span>
@@ -1257,9 +1282,9 @@ export default function ToolPage() {
                   </div>
 
                   {/* Detailed Findings Document */}
-                  <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
+                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm overflow-hidden">
                     <div className="p-8 md:p-12 space-y-12">
-                      <div className="flex items-center justify-between border-b border-gray-100 pb-8">
+                      <div className="flex items-center justify-between border-b border-border-primary pb-8">
                         <div>
                           <h2 className="text-2xl font-black text-brand-dark uppercase tracking-widest">
                             {auditLanguage === 'Hindi' ? 'चैनल ऑडिट रिपोर्ट' : auditLanguage === 'Hinglish' ? 'Channel Audit Report' : 'Channel Audit Report'}
@@ -1333,7 +1358,7 @@ export default function ToolPage() {
                             </h4>
                             <div className="space-y-4 mt-4">
                               {result.findings.actionPlan.map((step: string, idx: number) => (
-                                <div key={idx} className="flex items-center gap-4 p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                                <div key={idx} className="flex items-center gap-4 p-4 rounded-2xl bg-bg-primary border border-border-primary">
                                   <div className="w-2 h-2 rounded-full bg-brand-red" />
                                   <p className="text-brand-dark font-bold">{step}</p>
                                 </div>
@@ -1346,8 +1371,8 @@ export default function ToolPage() {
                   </div>
                 </div>
               ) : tool.id === 'best-time' ? (
-                <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
-                  <div className="flex items-center justify-between px-8 py-4 border-b border-gray-50 bg-gray-50/50">
+                <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm overflow-hidden">
+                  <div className="flex items-center justify-between px-8 py-4 border-b border-border-primary bg-bg-primary">
                     <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">Strategic Schedule Advisor</span>
                     <div className="flex items-center gap-2">
                       <button 
@@ -1357,17 +1382,17 @@ export default function ToolPage() {
                           copyToClipboard(`GOLDEN SLOT: ${result.goldenSlot}\n\nWEEKLY HEATMAP:\n${heatmapText}\n\nRECOMMENDATIONS:\n${tipsText}`);
                           setToast('Recommendations Copied!');
                         }}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-[10px] font-black text-brand-dark hover:text-brand-red transition-all shadow-sm"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-card-bg border border-border-primary text-[10px] font-black text-brand-dark hover:text-brand-red transition-all shadow-sm"
                       >
                         {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
                         {copied ? 'COPIED' : 'COPY RECOMMENDATIONS'}
                       </button>
                     </div>
                   </div>
-                  <div ref={resultRef} className="p-8 text-[#333333] leading-[1.6] bg-white">
+                  <div ref={resultRef} className="p-8 text-brand-dark leading-[1.6] bg-card-bg">
                     <div className="space-y-12">
                       {/* Golden Slot Highlight */}
-                      <div className="bg-brand-red/5 border border-brand-red/20 rounded-[2rem] p-8 flex items-center justify-between shadow-sm">
+                      <div className="bg-brand-red/10 border border-brand-red/20 rounded-[2rem] p-8 flex items-center justify-between shadow-sm">
                         <div>
                           <h3 className="text-[10px] font-black text-brand-red uppercase tracking-[0.3em] mb-2">Golden Slot Today</h3>
                           <p className="text-4xl font-black text-brand-dark tracking-tighter">{result.goldenSlot}</p>
@@ -1384,25 +1409,25 @@ export default function ToolPage() {
                           <div className="w-2 h-2 bg-brand-red rounded-full animate-pulse" />
                           Weekly Audience Heatmap
                         </h3>
-                        <div className="overflow-x-auto rounded-3xl border border-gray-100 shadow-sm">
-                          <table className="w-full text-left border-collapse bg-white">
+                        <div className="overflow-x-auto rounded-3xl border border-border-primary shadow-sm">
+                          <table className="w-full text-left border-collapse bg-card-bg">
                             <thead>
-                              <tr className="bg-gray-50/50">
-                                <th className="py-4 px-6 text-[10px] font-black text-brand-gray uppercase tracking-widest border-b border-gray-100">Day</th>
-                                <th className="py-4 px-6 text-[10px] font-black text-brand-gray uppercase tracking-widest border-b border-gray-100">Morning (6-12)</th>
-                                <th className="py-4 px-6 text-[10px] font-black text-brand-gray uppercase tracking-widest border-b border-gray-100">Afternoon (12-6)</th>
-                                <th className="py-4 px-6 text-[10px] font-black text-brand-gray uppercase tracking-widest border-b border-gray-100">Evening (6-12)</th>
+                              <tr className="bg-bg-primary">
+                                <th className="py-4 px-6 text-[10px] font-black text-brand-gray uppercase tracking-widest border-b border-border-primary">Day</th>
+                                <th className="py-4 px-6 text-[10px] font-black text-brand-gray uppercase tracking-widest border-b border-border-primary">Morning (6-12)</th>
+                                <th className="py-4 px-6 text-[10px] font-black text-brand-gray uppercase tracking-widest border-b border-border-primary">Afternoon (12-6)</th>
+                                <th className="py-4 px-6 text-[10px] font-black text-brand-gray uppercase tracking-widest border-b border-border-primary">Evening (6-12)</th>
                               </tr>
                             </thead>
                             <tbody>
                               {(result.heatmap || []).map((row: any, i: number) => (
-                                <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                                <tr key={i} className="border-b border-border-primary hover:bg-bg-primary transition-colors">
                                   <td className="py-4 px-6 text-xs font-black text-brand-dark">{row.day}</td>
                                   <td className="py-4 px-6">
                                     <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${
                                       row.morning === 'Peak' ? 'bg-emerald-100 text-emerald-700' : 
                                       row.morning === 'Medium' ? 'bg-amber-100 text-amber-700' : 
-                                      'bg-gray-100 text-gray-500'
+                                      'bg-bg-primary text-brand-gray'
                                     }`}>
                                       {row.morning}
                                     </span>
@@ -1411,7 +1436,7 @@ export default function ToolPage() {
                                     <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${
                                       row.afternoon === 'Peak' ? 'bg-emerald-100 text-emerald-700' : 
                                       row.afternoon === 'Medium' ? 'bg-amber-100 text-amber-700' : 
-                                      'bg-gray-100 text-gray-500'
+                                      'bg-bg-primary text-brand-gray'
                                     }`}>
                                       {row.afternoon}
                                     </span>
@@ -1420,7 +1445,7 @@ export default function ToolPage() {
                                     <span className={`px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest ${
                                       row.evening === 'Peak' ? 'bg-emerald-100 text-emerald-700' : 
                                       row.evening === 'Medium' ? 'bg-amber-100 text-amber-700' : 
-                                      'bg-gray-100 text-gray-500'
+                                      'bg-bg-primary text-brand-gray'
                                     }`}>
                                       {row.evening}
                                     </span>
@@ -1440,7 +1465,7 @@ export default function ToolPage() {
                         </h3>
                         <div className="space-y-4">
                           {(result.aiTips || []).map((tip: string, idx: number) => (
-                            <div key={idx} className="flex gap-6 p-6 rounded-[2rem] bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all group">
+                            <div key={idx} className="flex gap-6 p-6 rounded-[2rem] bg-card-bg border border-border-primary shadow-sm hover:shadow-md transition-all group">
                               <div className="w-10 h-10 rounded-xl bg-brand-dark text-white flex items-center justify-center shrink-0 font-black text-sm group-hover:bg-brand-red transition-colors">
                                 {idx + 1}
                               </div>
@@ -1456,20 +1481,20 @@ export default function ToolPage() {
                   </div>
                 </div>
               ) : typeof result === 'string' ? (
-                <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
-                  <div className="flex items-center justify-between px-8 py-4 border-b border-gray-50 bg-gray-50/50">
+                <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm overflow-hidden">
+                  <div className="flex items-center justify-between px-8 py-4 border-b border-border-primary bg-bg-primary">
                     <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">Generated Document</span>
                     <div className="flex items-center gap-2">
                       <button 
                         onClick={() => copyToClipboard(result)}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-[10px] font-black text-brand-dark hover:text-brand-red transition-all shadow-sm"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-card-bg border border-border-primary text-[10px] font-black text-brand-dark hover:text-brand-red transition-all shadow-sm"
                       >
                         {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
                         {copied ? 'COPIED' : 'COPY SCRIPT'}
                       </button>
                     </div>
                   </div>
-                  <div ref={resultRef} className="p-8 text-[#333333] leading-[1.6] bg-white">
+                  <div ref={resultRef} className="p-8 text-brand-dark leading-[1.6] bg-card-bg">
                     <ReactMarkdown
                       components={{
                         h1: ({ children }) => <h1 className="text-2xl font-black text-[#0F0F0F] mb-6 mt-2">{children}</h1>,
@@ -1489,7 +1514,7 @@ export default function ToolPage() {
               ) : (isGlobalReach && result?.globalDemand !== undefined) ? (
                 <div className="space-y-8">
                   {/* Global Demand Score */}
-                  <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-sm text-center">
+                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm text-center">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-sm font-black text-brand-dark uppercase tracking-widest">Global Potential</h3>
                       <button 
@@ -1497,7 +1522,7 @@ export default function ToolPage() {
                           const strategy = `GLOBAL EXPANSION STRATEGY\n\nGLOBAL DEMAND: ${result.globalDemand}%\n\n1. TOP COUNTRIES:\n${result.topCountries.map((c: any) => `${c.flag} ${c.name}: ${c.reason}`).join('\n')}\n\n2. SUBTITLE ADVICE:\n${result.subtitleAdvice.map((s: any) => `${s.language}: ${s.reason}`).join('\n')}\n\n3. BEST UPLOAD TIMES:\n${result.bestTimeZones.map((t: any) => `${t.zone} (${t.time}): ${t.reason}`).join('\n')}\n\nSUMMARY:\n${result.strategySummary}`;
                           copyToClipboard(strategy);
                         }}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-[10px] font-black text-brand-dark hover:text-brand-red transition-all shadow-sm"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-card-bg border border-border-primary text-[10px] font-black text-brand-dark hover:text-brand-red transition-all shadow-sm"
                       >
                         {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Clipboard className="w-3 h-3" />}
                         {copied ? 'COPIED' : 'COPY GLOBAL STRATEGY'}
@@ -1507,7 +1532,7 @@ export default function ToolPage() {
                     <div className="relative w-48 h-48 mx-auto mb-6">
                       <svg className="w-full h-full" viewBox="0 0 100 100">
                         <circle
-                          className="text-gray-100 stroke-current"
+                          className="text-border-primary stroke-current"
                           strokeWidth="10"
                           fill="transparent"
                           r="40"
@@ -1538,8 +1563,8 @@ export default function ToolPage() {
                   </div>
 
                   {/* Strategic Roadmap */}
-                  <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
-                    <div className="px-8 py-4 border-b border-gray-50 bg-gray-50/50">
+                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm overflow-hidden">
+                    <div className="px-8 py-4 border-b border-border-primary bg-bg-primary">
                       <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">Global Expansion Roadmap</span>
                     </div>
                     <div className="p-8 space-y-8">
@@ -1555,7 +1580,7 @@ export default function ToolPage() {
                           </h4>
                           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             {result.topCountries.map((country: any, idx: number) => (
-                              <div key={idx} className="p-4 rounded-2xl bg-gray-50 border border-gray-100 hover:border-brand-red/30 transition-colors">
+                              <div key={idx} className="p-4 rounded-2xl bg-bg-primary border border-border-primary hover:border-brand-red/30 transition-colors">
                                 <div className="text-2xl mb-2">{country.flag}</div>
                                 <div className="font-black text-brand-dark text-xs uppercase mb-1">{country.name}</div>
                                 <p className="text-[10px] text-brand-gray leading-tight">{country.reason}</p>
@@ -1577,7 +1602,7 @@ export default function ToolPage() {
                           </h4>
                           <div className="space-y-3">
                             {result.subtitleAdvice.map((advice: any, idx: number) => (
-                              <div key={idx} className="flex items-start gap-3 p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                              <div key={idx} className="flex items-start gap-3 p-4 rounded-2xl bg-bg-primary border border-border-primary">
                                 <div className="w-2 h-2 rounded-full bg-brand-red mt-1.5 shrink-0" />
                                 <div>
                                   <div className="font-black text-brand-dark text-xs uppercase mb-0.5">{advice.language}</div>
@@ -1601,7 +1626,7 @@ export default function ToolPage() {
                           </h4>
                           <div className="space-y-3">
                             {result.bestTimeZones.map((tz: any, idx: number) => (
-                              <div key={idx} className="p-4 rounded-2xl bg-gray-50 border border-gray-100">
+                              <div key={idx} className="p-4 rounded-2xl bg-bg-primary border border-border-primary">
                                 <div className="flex items-center justify-between mb-2">
                                   <div className="font-black text-brand-dark text-xs uppercase">{tz.zone}</div>
                                   <div className="px-2 py-1 rounded-lg bg-brand-red/10 text-brand-red text-[10px] font-black">{tz.time}</div>
@@ -1618,7 +1643,7 @@ export default function ToolPage() {
               ) : (isSentiment && result?.sentiment) ? (
                 <div className="space-y-8">
                   {/* Sentiment Overview (Mood Meter) */}
-                  <div className="bg-white rounded-[2.5rem] border border-gray-100 p-8 shadow-sm text-center">
+                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm text-center">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-sm font-black text-brand-dark uppercase tracking-widest">Mood Meter</h3>
                       <button 
@@ -1626,14 +1651,14 @@ export default function ToolPage() {
                           const summary = `SENTIMENT SUMMARY\n\nMOOD METER:\n😊 Positive: ${result.sentiment.positive}%\n😐 Neutral: ${result.sentiment.neutral}%\n😡 Negative: ${result.sentiment.negative}%\n\nANALYSIS:\n${result.analysis.map((a: any, i: number) => `${i+1}. [${a.title}]: ${a.content}`).join('\n')}`;
                           copyToClipboard(summary);
                         }}
-                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white border border-gray-200 text-[10px] font-black text-brand-dark hover:text-brand-red transition-all shadow-sm"
+                        className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-card-bg border border-border-primary text-[10px] font-black text-brand-dark hover:text-brand-red transition-all shadow-sm"
                       >
                         {copied ? <Check className="w-3 h-3 text-emerald-500" /> : <Clipboard className="w-3 h-3" />}
                         {copied ? 'COPIED' : 'COPY SENTIMENT SUMMARY'}
                       </button>
                     </div>
 
-                    <div className="flex h-12 w-full rounded-2xl overflow-hidden mb-8 shadow-inner border border-gray-100">
+                    <div className="flex h-12 w-full rounded-2xl overflow-hidden mb-8 shadow-inner border border-border-primary">
                       <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: `${result.sentiment.positive}%` }}
@@ -1680,14 +1705,14 @@ export default function ToolPage() {
                   </div>
 
                   {/* AI Analysis Report */}
-                  <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden">
-                    <div className="px-8 py-4 border-b border-gray-50 bg-gray-50/50">
+                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm overflow-hidden">
+                    <div className="px-8 py-4 border-b border-border-primary bg-bg-primary">
                       <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">AI Analysis Report</span>
                     </div>
                     <div className="p-8 space-y-6">
                       {result.analysis.map((item: any, idx: number) => (
                         <div key={idx} className="flex gap-6 group">
-                          <div className="w-12 h-12 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0 text-xl font-black text-brand-red group-hover:bg-brand-red group-hover:text-white transition-all">
+                          <div className="w-12 h-12 rounded-2xl bg-bg-primary border border-border-primary flex items-center justify-center shrink-0 text-xl font-black text-brand-red group-hover:bg-brand-red group-hover:text-white transition-all">
                             {idx + 1}
                           </div>
                           <div className="flex-1 pt-1">
@@ -1707,7 +1732,7 @@ export default function ToolPage() {
               ) : (isSEOCheck && result?.videoInfo) ? (
                 <div className="space-y-8">
                   {/* Video Info Header */}
-                  <div className="flex items-center gap-4 p-4 rounded-3xl border border-gray-100 bg-white shadow-sm">
+                  <div className="flex items-center gap-4 p-4 rounded-3xl border border-border-primary bg-card-bg shadow-sm">
                     <img 
                       src={result.videoInfo.thumbnail} 
                       alt="Thumbnail" 
@@ -1723,9 +1748,9 @@ export default function ToolPage() {
                   </div>
 
                   {/* Score Card */}
-                  <div className="text-center p-8 rounded-[2.5rem] bg-white border border-gray-100 shadow-sm">
+                  <div className="text-center p-8 rounded-[2.5rem] bg-card-bg border border-border-primary shadow-sm">
                     <h2 className="text-2xl font-black text-brand-dark mb-4">Video SEO Check</h2>
-                    <div className="w-full h-3 bg-gray-100 rounded-full mb-4 overflow-hidden">
+                    <div className="w-full h-3 bg-bg-primary rounded-full mb-4 overflow-hidden">
                       <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: `${(result.score / 10) * 100}%` }}
@@ -1768,7 +1793,7 @@ export default function ToolPage() {
                 <div className="space-y-8">
                   {/* Summary Stats & KD Score */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm text-center">
+                    <div className="bg-card-bg rounded-3xl border border-border-primary p-6 shadow-sm text-center">
                       <div className="inline-flex p-3 rounded-2xl bg-brand-red/10 text-brand-red mb-4">
                         <TrendingUp className="w-6 h-6" />
                       </div>
@@ -1785,7 +1810,7 @@ export default function ToolPage() {
                       </p>
                     </div>
 
-                    <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm text-center">
+                    <div className="bg-card-bg rounded-3xl border border-border-primary p-6 shadow-sm text-center">
                       <div className="inline-flex p-3 rounded-2xl bg-blue-500/10 text-blue-500 mb-4">
                         <Users className="w-6 h-6" />
                       </div>
@@ -1796,7 +1821,7 @@ export default function ToolPage() {
                       <p className="text-[10px] font-bold text-brand-gray mt-2 uppercase">Market Size</p>
                     </div>
 
-                    <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm text-center relative overflow-hidden">
+                    <div className="bg-card-bg rounded-3xl border border-border-primary p-6 shadow-sm text-center relative overflow-hidden">
                       <div className="absolute top-4 right-4">
                         <span className="px-2 py-1 bg-brand-red text-white text-[10px] font-black uppercase rounded-md">
                           {result.category}
@@ -1814,13 +1839,13 @@ export default function ToolPage() {
                   </div>
 
                   {/* Metrics Table */}
-                  <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
+                  <div className="bg-card-bg rounded-3xl border border-border-primary p-6 shadow-sm">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-lg font-black text-brand-dark uppercase tracking-widest">Keyword Metrics Table</h3>
                       <button 
                         onClick={() => setShowLowCompOnly(!showLowCompOnly)}
                         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                          showLowCompOnly ? 'bg-brand-red text-white' : 'bg-gray-100 text-brand-gray hover:bg-gray-200'
+                          showLowCompOnly ? 'bg-brand-red text-white' : 'bg-bg-primary text-brand-gray hover:bg-bg-secondary'
                         }`}
                       >
                         <Filter className="w-4 h-4" />
@@ -1830,7 +1855,7 @@ export default function ToolPage() {
                     <div className="overflow-x-auto">
                       <table className="w-full text-left">
                         <thead>
-                          <tr className="text-xs font-bold text-brand-gray uppercase tracking-wider border-b border-gray-50">
+                          <tr className="text-xs font-bold text-brand-gray uppercase tracking-wider border-b border-border-primary">
                             <th className="pb-3">Video Title</th>
                             <th className="pb-3">Channel</th>
                             <th className="pb-3">Views</th>
@@ -1838,10 +1863,10 @@ export default function ToolPage() {
                             <th className="pb-3">Opportunity Status</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-50">
+                        <tbody className="divide-y divide-border-primary">
                           {result.results?.filter((v: any) => !showLowCompOnly || v.subscriberCount < 100000)
                             .map((v: any, idx: number) => (
-                            <tr key={idx} className="text-sm group hover:bg-gray-50/50 transition-colors">
+                            <tr key={idx} className="text-sm group hover:bg-bg-primary transition-colors">
                               <td className="py-4 pr-4">
                                 <div className="flex items-center gap-3">
                                   <img src={v.thumbnail} className="w-16 h-10 object-cover rounded-lg shadow-sm" alt="" />
@@ -1861,7 +1886,7 @@ export default function ToolPage() {
                                     Low Comp
                                   </span>
                                 ) : (
-                                  <span className="px-2 py-1 bg-gray-50 text-gray-400 text-[10px] font-black uppercase rounded-md">
+                                  <span className="px-2 py-1 bg-bg-primary text-gray-400 text-[10px] font-black uppercase rounded-md">
                                     Competitive
                                   </span>
                                 )}
@@ -1876,11 +1901,11 @@ export default function ToolPage() {
                   {/* AI Enhanced Sections */}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Optimized Titles */}
-                    <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
+                    <div className="bg-card-bg rounded-3xl border border-border-primary p-6 shadow-sm">
                       <h3 className="text-lg font-black text-brand-dark uppercase tracking-widest mb-4">Viral Title Suggestions</h3>
                       <div className="space-y-3">
                         {result.optimizedTitles?.map((title: string, idx: number) => (
-                          <div key={idx} className="flex items-center justify-between p-4 rounded-2xl bg-red-50/50 border border-red-100 group">
+                          <div key={idx} className="flex items-center justify-between p-4 rounded-2xl bg-brand-red/10 border border-brand-red/20 group">
                             <span className="font-black text-brand-dark text-sm leading-tight">{title}</span>
                             <button onClick={() => copyToClipboard(title)} className="p-2 text-brand-gray hover:text-brand-red transition-colors opacity-0 group-hover:opacity-100">
                               <Copy className="w-4 h-4" />
@@ -1891,11 +1916,11 @@ export default function ToolPage() {
                     </div>
 
                     {/* Sweet Spot Keywords */}
-                    <div className="bg-white rounded-3xl border border-gray-100 p-6 shadow-sm">
+                    <div className="bg-card-bg rounded-3xl border border-border-primary p-6 shadow-sm">
                       <h3 className="text-lg font-black text-brand-dark uppercase tracking-widest mb-4">"Sweet Spot" Keywords</h3>
                       <div className="space-y-3">
                         {result.sweetSpotKeywords?.map((kw: string, idx: number) => (
-                          <div key={idx} className="flex items-center justify-between p-4 rounded-2xl bg-emerald-50/50 border border-emerald-100 group">
+                          <div key={idx} className="flex items-center justify-between p-4 rounded-2xl bg-emerald-50/10 border border-emerald-500/20 group">
                             <span className="font-bold text-emerald-900">{kw}</span>
                             <button onClick={() => copyToClipboard(kw)} className="p-2 text-emerald-600 hover:text-emerald-800 transition-colors opacity-0 group-hover:opacity-100">
                               <Copy className="w-4 h-4" />
@@ -1947,7 +1972,7 @@ export default function ToolPage() {
                         {result.map((idea: any, idx: number) => (
                           <div 
                             key={idx} 
-                            className="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden transition-all hover:shadow-md"
+                            className="bg-card-bg rounded-3xl border border-border-primary shadow-sm overflow-hidden transition-all hover:shadow-md"
                           >
                             <div 
                               className="p-6 cursor-pointer"
@@ -1970,7 +1995,7 @@ export default function ToolPage() {
                                       {idea.difficulty}
                                     </span>
                                     <span className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${
-                                      idea.potential === 'Viral Potential' ? 'bg-brand-red/10 text-brand-red' : 'bg-gray-100 text-brand-gray'
+                                      idea.potential === 'Viral Potential' ? 'bg-brand-red/10 text-brand-red' : 'bg-bg-primary text-brand-gray'
                                     }`}>
                                       {idea.potential === 'Viral Potential' ? <Sparkles className="w-3 h-3" /> : <Search className="w-3 h-3" />}
                                       {idea.potential}
@@ -1995,7 +2020,7 @@ export default function ToolPage() {
                                   initial={{ height: 0, opacity: 0 }}
                                   animate={{ height: 'auto', opacity: 1 }}
                                   exit={{ height: 0, opacity: 0 }}
-                                  className="border-t border-gray-50 bg-gray-50/30"
+                                  className="border-t border-border-primary bg-bg-primary/30"
                                 >
                                   <div className="p-6 space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -2005,7 +2030,7 @@ export default function ToolPage() {
                                             <Sparkles className="w-4 h-4 text-brand-red" />
                                             Suggested Hook
                                           </h4>
-                                          <p className="text-sm text-brand-gray bg-white p-4 rounded-2xl border border-gray-100 italic">
+                                          <p className="text-sm text-brand-gray bg-bg-primary p-4 rounded-2xl border border-border-primary italic">
                                             "{idea.hook}"
                                           </p>
                                         </div>
@@ -2035,14 +2060,14 @@ export default function ToolPage() {
                                       </div>
                                     </div>
 
-                                    <div className="pt-6 border-t border-gray-100 flex flex-wrap gap-3">
+                                    <div className="pt-6 border-t border-border-primary flex flex-wrap gap-3">
                                       <button 
                                         disabled={loadingAction !== null}
                                         onClick={() => {
                                           setLoadingAction(`keyword-${idx}`);
                                           setTimeout(() => navigate(`/tool/keyword-res?q=${encodeURIComponent(idea.title)}`), 500);
                                         }}
-                                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-gray-200 text-xs font-bold text-brand-dark hover:border-brand-red hover:text-brand-red transition-all shadow-sm disabled:opacity-50"
+                                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card-bg border border-border-primary text-xs font-bold text-brand-dark hover:border-brand-red hover:text-brand-red transition-all shadow-sm disabled:opacity-50"
                                       >
                                         {loadingAction === `keyword-${idx}` ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                                         Analyze Keyword
@@ -2058,7 +2083,7 @@ export default function ToolPage() {
                                           }));
                                           setTimeout(() => navigate(`/tool/script-gen`), 500);
                                         }}
-                                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-gray-200 text-xs font-bold text-brand-dark hover:border-brand-red hover:text-brand-red transition-all shadow-sm disabled:opacity-50"
+                                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card-bg border border-border-primary text-xs font-bold text-brand-dark hover:border-brand-red hover:text-brand-red transition-all shadow-sm disabled:opacity-50"
                                       >
                                         {loadingAction === `script-${idx}` ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />}
                                         Create Script
@@ -2069,7 +2094,7 @@ export default function ToolPage() {
                                           setLoadingAction(`thumb-${idx}`);
                                           setTimeout(() => navigate(`/tool/thumb-maker?q=${encodeURIComponent(`Thumbnail ideas for: ${idea.title} targeting ${idea.targetAudience}`)}`), 500);
                                         }}
-                                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-gray-200 text-xs font-bold text-brand-dark hover:border-brand-red hover:text-brand-red transition-all shadow-sm disabled:opacity-50"
+                                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card-bg border border-border-primary text-xs font-bold text-brand-dark hover:border-brand-red hover:text-brand-red transition-all shadow-sm disabled:opacity-50"
                                       >
                                         {loadingAction === `thumb-${idx}` ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImageIcon className="w-4 h-4" />}
                                         Get Thumbnail Ideas
@@ -2085,9 +2110,9 @@ export default function ToolPage() {
                     ) : tool.id === 'thumb-maker' && Array.isArray(result) ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                         {result.map((concept: any, idx: number) => (
-                          <div key={idx} className="bg-white rounded-[2.5rem] border border-gray-100 overflow-hidden shadow-sm hover:shadow-xl transition-all group">
+                          <div key={idx} className="bg-card-bg rounded-[2.5rem] border border-border-primary overflow-hidden shadow-sm hover:shadow-xl transition-all group">
                             {/* Storyboard Header/Sketch Placeholder */}
-                            <div className="aspect-video bg-gray-50 flex items-center justify-center border-b border-gray-100 relative overflow-hidden">
+                            <div className="aspect-video bg-bg-primary flex items-center justify-center border-b border-border-primary relative overflow-hidden">
                               <div className="absolute inset-0 opacity-10 pointer-events-none">
                                 <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(#000 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
                               </div>
@@ -2155,7 +2180,7 @@ export default function ToolPage() {
                               </div>
 
                               {/* Color Palette */}
-                              <div className="mb-8 p-4 bg-gray-50 rounded-2xl">
+                              <div className="mb-8 p-4 bg-bg-primary rounded-2xl">
                                 <h4 className="text-[10px] font-black text-brand-gray uppercase tracking-widest mb-3 flex items-center gap-2">
                                   <Palette className="w-3 h-3" /> Color Palette
                                 </h4>
@@ -2163,7 +2188,7 @@ export default function ToolPage() {
                                   {concept.colors?.map((color: string, cIdx: number) => (
                                     <div key={cIdx} className="flex items-center gap-2">
                                       <div 
-                                        className="w-6 h-6 rounded-full border border-white shadow-sm" 
+                                        className="w-6 h-6 rounded-full border border-border-primary shadow-sm" 
                                         style={{ backgroundColor: color.includes('#') ? color : color.toLowerCase() }} 
                                       />
                                       <span className="text-[10px] font-bold text-brand-gray uppercase">{color}</span>
@@ -2180,7 +2205,7 @@ export default function ToolPage() {
                                       const brief = `Concept: ${concept.conceptTitle}\nLayout: ${concept.layoutType}\nBackground: ${concept.background}\nSubject: ${concept.subject}\nText: ${concept.textOverlay}\nColors: ${concept.colors.join(', ')}`;
                                       copyToClipboard(brief);
                                     }}
-                                    className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-white border border-gray-200 text-[10px] font-black text-brand-dark hover:border-brand-red hover:text-brand-red transition-all shadow-sm"
+                                    className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-card-bg border border-border-primary text-[10px] font-black text-brand-dark hover:border-brand-red hover:text-brand-red transition-all shadow-sm"
                                   >
                                     <Download className="w-3.5 h-3.5" />
                                     BRIEF
@@ -2192,7 +2217,7 @@ export default function ToolPage() {
                                       setCopiedId(`brief-${idx}`);
                                       setTimeout(() => setCopiedId(null), 2000);
                                     }}
-                                    className="flex items-center justify-center p-3 rounded-xl bg-white border border-gray-200 text-brand-dark hover:text-brand-red transition-all shadow-sm"
+                                    className="flex items-center justify-center p-3 rounded-xl bg-card-bg border border-border-primary text-brand-dark hover:text-brand-red transition-all shadow-sm"
                                     title="Copy Brief Data Only"
                                   >
                                     {copiedId === `brief-${idx}` ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
@@ -2212,12 +2237,12 @@ export default function ToolPage() {
                       </div>
                     ) : tool.id === 'shorts-ideas' && Array.isArray(result) ? (
                       <div className="space-y-4">
-                        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-6 md:p-10 font-sans">
+                        <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm p-6 md:p-10 font-sans">
                           <div className="space-y-4">
                             {result.map((idea: any, idx: number) => (
                               <div 
                                 key={idx} 
-                                className="group relative bg-gray-50/50 hover:bg-white rounded-3xl border border-transparent hover:border-gray-100 transition-all duration-500 p-6"
+                                className="group relative bg-bg-primary/50 hover:bg-card-bg rounded-3xl border border-transparent hover:border-border-primary transition-all duration-500 p-6"
                               >
                                 <div className="flex items-start justify-between gap-4">
                                   <div className="flex-1">
@@ -2246,7 +2271,7 @@ export default function ToolPage() {
 
                                 {/* Hover Reveal Content */}
                                 <div className="max-h-0 overflow-hidden group-hover:max-h-[500px] transition-all duration-700 ease-in-out">
-                                  <div className="pt-6 mt-6 border-t border-gray-100 space-y-6">
+                                  <div className="pt-6 mt-6 border-t border-border-primary space-y-6">
                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                       <div className="space-y-2">
                                         <h4 className="text-[10px] font-black text-brand-red uppercase tracking-widest flex items-center gap-2">
@@ -2277,7 +2302,7 @@ export default function ToolPage() {
                                     </div>
 
                                     <div className="flex gap-2 pt-2">
-                                      <span className="px-2.5 py-1 bg-gray-100 text-brand-gray text-[9px] font-black uppercase rounded-lg tracking-wider">
+                                      <span className="px-2.5 py-1 bg-bg-primary text-brand-gray text-[9px] font-black uppercase rounded-lg tracking-wider">
                                         {idea.styleTag}
                                       </span>
                                       <span className="px-2.5 py-1 bg-brand-red/10 text-brand-red text-[9px] font-black uppercase rounded-lg tracking-wider">
@@ -2297,7 +2322,7 @@ export default function ToolPage() {
                           {result.map((hook: string, idx: number) => (
                             <div 
                               key={idx} 
-                              className="group relative bg-white rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 p-8 flex flex-col"
+                              className="group relative bg-card-bg rounded-[2rem] border border-border-primary shadow-sm hover:shadow-xl transition-all duration-300 p-8 flex flex-col"
                             >
                               <div className="flex items-start justify-between gap-4 mb-6">
                                 <div className="flex items-center gap-3">
@@ -2314,7 +2339,7 @@ export default function ToolPage() {
                                     copyToClipboard(hook);
                                     setToast(`Copied Hook #${idx + 1}!`);
                                   }}
-                                  className="opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-xl bg-gray-50 text-brand-dark hover:text-brand-red hover:bg-brand-red/5"
+                                  className="opacity-0 group-hover:opacity-100 transition-opacity p-2 rounded-xl bg-bg-primary text-brand-dark hover:text-brand-red hover:bg-brand-red/5"
                                   title="Copy Hook"
                                 >
                                   <Clipboard className="w-4 h-4" />
@@ -2329,7 +2354,7 @@ export default function ToolPage() {
 
                               <div className="mt-6 pt-6 border-t border-gray-50 flex items-center justify-between">
                                 <div className="flex gap-2">
-                                  <span className="px-2.5 py-1 bg-gray-50 text-brand-gray text-[9px] font-black uppercase rounded-lg tracking-wider">
+                                  <span className="px-2.5 py-1 bg-bg-primary text-brand-gray text-[9px] font-black uppercase rounded-lg tracking-wider">
                                     {hookLength} Lines
                                   </span>
                                   <span className="px-2.5 py-1 bg-brand-red/5 text-brand-red text-[9px] font-black uppercase rounded-lg tracking-wider">
@@ -2353,7 +2378,7 @@ export default function ToolPage() {
                     ) : tool.id === 'thumb-score' && result ? (
                       <div className="space-y-10">
                         {/* Header with Copy Button */}
-                        <div className="flex items-center justify-between bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm">
+                        <div className="flex items-center justify-between bg-card-bg p-6 rounded-[2rem] border border-border-primary shadow-sm">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-2xl bg-brand-red/10 flex items-center justify-center">
                               <Zap className="w-5 h-5 text-brand-red" />
@@ -2425,7 +2450,7 @@ export default function ToolPage() {
                           </div>
 
                           {/* Key Metrics Card */}
-                          <div className="lg:col-span-2 bg-white rounded-[3rem] p-10 border border-gray-100 shadow-xl space-y-10">
+                          <div className="lg:col-span-2 bg-card-bg rounded-[3rem] p-10 border border-border-primary shadow-xl space-y-10">
                             {[
                               { label: 'CTR Predictability', value: result.ctrPredictability || 0, icon: Zap, color: 'text-brand-red', bg: 'bg-brand-red' },
                               { label: 'Visual Contrast', value: result.visualContrast || 0, icon: Palette, color: 'text-blue-500', bg: 'bg-blue-500' },
@@ -2445,7 +2470,7 @@ export default function ToolPage() {
                                     {metric.value}%
                                   </span>
                                 </div>
-                                <div className="w-full h-4 bg-gray-100 rounded-full overflow-hidden p-1 shadow-inner">
+                                <div className="w-full h-4 bg-bg-primary rounded-full overflow-hidden p-1 shadow-inner">
                                   <motion.div 
                                     initial={{ width: 0 }}
                                     animate={{ width: `${metric.value}%` }}
@@ -2461,14 +2486,14 @@ export default function ToolPage() {
                         </div>
 
                         {/* AI Advice Section */}
-                        <div className="bg-white rounded-[3rem] p-10 border border-gray-100 shadow-xl">
+                        <div className="bg-card-bg rounded-[3rem] p-10 border border-border-primary shadow-xl">
                           <h3 className="text-xs font-black text-brand-dark uppercase tracking-[0.4em] mb-10 flex items-center gap-4">
                             <div className="w-2 h-2 bg-brand-red rounded-full animate-pulse" />
                             AI Optimization Advice
                           </h3>
                           <div className="space-y-6">
                             {(result.aiTips || []).map((tip: string, idx: number) => (
-                              <div key={idx} className="flex gap-6 group p-6 rounded-[2rem] hover:bg-gray-50 transition-all border border-transparent hover:border-gray-100">
+                              <div key={idx} className="flex gap-6 group p-6 rounded-[2rem] hover:bg-bg-primary transition-all border border-transparent hover:border-border-primary">
                                 <div className="w-12 h-12 rounded-2xl bg-brand-dark text-white flex items-center justify-center shrink-0 font-black text-lg shadow-lg group-hover:bg-brand-red transition-colors">
                                   {idx + 1}
                                 </div>
@@ -2503,22 +2528,22 @@ export default function ToolPage() {
                             </div>
                           </div>
 
-                          <div className="bg-gray-50 rounded-[3rem] p-10 space-y-8 border border-gray-100 shadow-xl">
+                          <div className="bg-bg-primary rounded-[3rem] p-10 space-y-8 border border-border-primary shadow-xl">
                             <h3 className="text-xs font-black text-brand-dark uppercase tracking-[0.4em] flex items-center gap-3 opacity-60">
                               <Smartphone className="w-4 h-4" /> Small Mobile View
                             </h3>
                             <div className="flex justify-center">
-                              <div className="w-[200px] aspect-[9/19] bg-white rounded-[2.5rem] border-[6px] border-brand-dark overflow-hidden shadow-2xl relative">
+                              <div className="w-[200px] aspect-[9/19] bg-card-bg rounded-[2.5rem] border-[6px] border-brand-dark overflow-hidden shadow-2xl relative">
                                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-brand-dark rounded-b-2xl z-20" />
                                 <div className="p-2 space-y-4 mt-6">
-                                  <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                                  <div className="aspect-video rounded-lg overflow-hidden bg-bg-primary border border-border-primary">
                                     {thumbnailImage && <img src={thumbnailImage} className="w-full h-full object-cover" referrerPolicy="no-referrer" />}
                                   </div>
                                   <div className="space-y-2">
-                                    <div className="h-2 bg-gray-200 rounded w-full" />
-                                    <div className="h-2 bg-gray-200 rounded w-2/3" />
+                                    <div className="h-2 bg-bg-primary rounded w-full" />
+                                    <div className="h-2 bg-bg-primary rounded w-2/3" />
                                   </div>
-                                  <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                                  <div className="aspect-video rounded-lg overflow-hidden bg-bg-primary border border-border-primary">
                                     {thumbnailImage && <img src={thumbnailImage} className="w-full h-full object-cover" referrerPolicy="no-referrer" />}
                                   </div>
                                 </div>
@@ -2557,7 +2582,7 @@ export default function ToolPage() {
                                       <p className="text-brand-gray text-[10px] font-bold">{res.error}</p>
                                     </div>
                                   ) : (
-                                    <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8 relative overflow-hidden h-full">
+                                    <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm p-8 relative overflow-hidden h-full">
                                       <div className="mb-8">
                                         <h2 className="text-[10px] font-black text-brand-red uppercase tracking-[0.3em] mb-1">Competitor {idx + 1}</h2>
                                         <h1 className="text-xl font-black text-brand-dark uppercase tracking-tight truncate">
@@ -2581,7 +2606,7 @@ export default function ToolPage() {
                                                   copyToClipboard(insight.value);
                                                   setToast(`${insight.label} Copied!`);
                                                 }}
-                                                className="opacity-0 group-hover/item:opacity-100 p-1.5 hover:bg-gray-100 rounded-lg transition-all"
+                                                className="opacity-0 group-hover/item:opacity-100 p-1.5 hover:bg-bg-primary rounded-lg transition-all"
                                               >
                                                 <Copy className="w-3 h-3 text-brand-gray" />
                                               </button>
@@ -2590,13 +2615,13 @@ export default function ToolPage() {
                                           </div>
                                         ))}
                                       </div>
-                                      <div className="grid grid-cols-2 gap-4 pt-6 border-t border-gray-100">
+                                      <div className="grid grid-cols-2 gap-4 pt-6 border-t border-border-primary">
                                         <div 
                                           onClick={() => setActiveMetricInfo({
                                             title: "Avg Views Analysis",
                                             desc: `Aapke competitor ke pichle 10 videos ka average views ${res.avgViews.toLocaleString()} hai. Ye data batata hai ki unki audience kitni loyal hai.`
                                           })}
-                                          className="bg-gray-50 rounded-2xl p-4 text-center cursor-pointer hover:bg-blue-50 transition-colors group/card"
+                                          className="bg-bg-primary rounded-2xl p-4 text-center cursor-pointer hover:bg-blue-50 transition-colors group/card"
                                         >
                                           <div className="flex items-center justify-center gap-1 mb-1">
                                             <Eye className="w-3 h-3 text-blue-500" />
@@ -2612,7 +2637,7 @@ export default function ToolPage() {
                                             title: "Viral Potential",
                                             desc: `Is channel ka Viral Potential ${res.viralPotential}% hai. Ye score subscriber count aur views ke ratio se calculate kiya gaya hai. Jitna zyada score, utni zyada viral hone ki umeed!`
                                           })}
-                                          className="bg-gray-50 rounded-2xl p-4 text-center cursor-pointer hover:bg-brand-red/5 transition-colors group/card"
+                                          className="bg-bg-primary rounded-2xl p-4 text-center cursor-pointer hover:bg-brand-red/5 transition-colors group/card"
                                         >
                                           <div className="flex items-center justify-center gap-1 mb-1">
                                             <Zap className="w-3 h-3 text-brand-red" />
@@ -2631,7 +2656,7 @@ export default function ToolPage() {
                             </div>
                           </div>
                         ) : (
-                          <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8 md:p-12 relative overflow-hidden">
+                          <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm p-8 md:p-12 relative overflow-hidden">
                             {/* Top Right Copy Button */}
                             <div className="absolute top-8 right-8">
                               <button 
@@ -2667,7 +2692,7 @@ export default function ToolPage() {
                                     { label: 'Thumbnail Style', value: result.thumbnailStyle, icon: ImageIcon, color: 'text-emerald-500', bg: 'bg-emerald-500/10' }
                                   ].map((insight, idx) => (
                                     <div key={idx} className="flex gap-6 group">
-                                      <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center shrink-0 font-black text-brand-dark shadow-sm group-hover:bg-brand-dark group-hover:text-white transition-all">
+                                      <div className="w-12 h-12 rounded-2xl bg-bg-primary flex items-center justify-center shrink-0 font-black text-brand-dark shadow-sm group-hover:bg-brand-dark group-hover:text-white transition-all">
                                         {idx + 1}
                                       </div>
                                       <div className="pt-1 flex-1">
@@ -2681,7 +2706,7 @@ export default function ToolPage() {
                                               copyToClipboard(insight.value);
                                               setToast(`${insight.label} Copied!`);
                                             }}
-                                            className="opacity-0 group-hover:opacity-100 p-2 hover:bg-gray-100 rounded-xl transition-all"
+                                            className="opacity-0 group-hover:opacity-100 p-2 hover:bg-bg-primary rounded-xl transition-all"
                                           >
                                             <Copy className="w-4 h-4 text-brand-gray" />
                                           </button>
@@ -2693,13 +2718,13 @@ export default function ToolPage() {
                                 </div>
                               </div>
 
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-10 border-t border-gray-100">
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-10 border-t border-border-primary">
                                 <div 
                                   onClick={() => setActiveMetricInfo({
                                     title: "Avg Views Analysis",
                                     desc: `Aapke competitor ke pichle 10 videos ka average views ${result.avgViews.toLocaleString()} hai. Ye data batata hai ki unki audience kitni loyal hai aur content kitna engage kar raha hai.`
                                   })}
-                                  className="bg-gray-50 rounded-3xl p-6 text-center border border-transparent hover:border-gray-200 transition-all cursor-pointer group/card"
+                                  className="bg-bg-primary rounded-3xl p-6 text-center border border-transparent hover:border-border-primary transition-all cursor-pointer group/card"
                                 >
                                   <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center mx-auto mb-4">
                                     <Eye className="w-5 h-5" />
@@ -2719,7 +2744,7 @@ export default function ToolPage() {
                                     title: "Viral Potential",
                                     desc: `Is channel ka Viral Potential ${result.viralPotential}% hai. Ye score subscriber count aur views ke ratio se calculate kiya gaya hai. Jitna zyada score, utni zyada viral hone ki umeed!`
                                   })}
-                                  className="bg-gray-50 rounded-3xl p-6 text-center border border-transparent hover:border-gray-200 transition-all cursor-pointer group/card"
+                                  className="bg-bg-primary rounded-3xl p-6 text-center border border-transparent hover:border-border-primary transition-all cursor-pointer group/card"
                                 >
                                   <div className="w-10 h-10 rounded-xl bg-brand-red/10 text-brand-red flex items-center justify-center mx-auto mb-4">
                                     <Zap className="w-5 h-5" />
@@ -2734,7 +2759,7 @@ export default function ToolPage() {
                                   </div>
                                 </div>
 
-                                <div className="bg-gray-50 rounded-3xl p-6 text-center border border-transparent hover:border-gray-200 transition-all">
+                                <div className="bg-bg-primary rounded-3xl p-6 text-center border border-transparent hover:border-border-primary transition-all">
                                   <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mx-auto mb-4">
                                     <Calendar className="w-5 h-5" />
                                   </div>
@@ -2751,7 +2776,7 @@ export default function ToolPage() {
                       </div>
                     ) : tool.id === 'analytics-dash' && result ? (
                       <div className="space-y-10">
-                        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8 md:p-12 relative overflow-hidden">
+                        <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm p-8 md:p-12 relative overflow-hidden">
                           <div className="mb-12">
                             <h2 className="text-xs font-black text-brand-red uppercase tracking-[0.3em] mb-2">Channel Growth</h2>
                             <h1 className="text-3xl font-black text-brand-dark uppercase tracking-tight">
@@ -2760,22 +2785,22 @@ export default function ToolPage() {
                           </div>
 
                           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-12">
-                            <div className="bg-gray-50 rounded-3xl p-6 text-center border border-gray-100">
+                            <div className="bg-bg-primary rounded-3xl p-6 text-center border border-border-primary">
                               <Users className="w-6 h-6 text-brand-red mx-auto mb-3" />
                               <h4 className="text-[10px] font-black text-brand-gray uppercase tracking-widest mb-1">Subscribers</h4>
                               <div className="text-xl font-black text-brand-dark">{result.channelInfo.subs.toLocaleString()}</div>
                             </div>
-                            <div className="bg-gray-50 rounded-3xl p-6 text-center border border-gray-100">
+                            <div className="bg-bg-primary rounded-3xl p-6 text-center border border-border-primary">
                               <Eye className="w-6 h-6 text-blue-500 mx-auto mb-3" />
                               <h4 className="text-[10px] font-black text-brand-gray uppercase tracking-widest mb-1">Total Views</h4>
                               <div className="text-xl font-black text-brand-dark">{result.channelInfo.views.toLocaleString()}</div>
                             </div>
-                            <div className="bg-gray-50 rounded-3xl p-6 text-center border border-gray-100">
+                            <div className="bg-bg-primary rounded-3xl p-6 text-center border border-border-primary">
                               <Clock className="w-6 h-6 text-amber-500 mx-auto mb-3" />
                               <h4 className="text-[10px] font-black text-brand-gray uppercase tracking-widest mb-1">Watch Time</h4>
                               <div className="text-xl font-black text-brand-dark">{result.channelInfo.watchTime.toLocaleString()}h</div>
                             </div>
-                            <div className="bg-gray-50 rounded-3xl p-6 text-center border border-gray-100">
+                            <div className="bg-bg-primary rounded-3xl p-6 text-center border border-border-primary">
                               <TrendingUp className="w-6 h-6 text-emerald-500 mx-auto mb-3" />
                               <h4 className="text-[10px] font-black text-brand-gray uppercase tracking-widest mb-1">Growth Score</h4>
                               <div className="text-xl font-black text-brand-dark">8.4/10</div>
@@ -2784,7 +2809,7 @@ export default function ToolPage() {
 
                           <div className="space-y-12">
                             {/* Growth Chart */}
-                            <div className="bg-gray-50 rounded-[2rem] p-8 border border-gray-100">
+                            <div className="bg-bg-primary rounded-[2rem] p-8 border border-border-primary">
                               <h3 className="text-sm font-black text-brand-dark uppercase tracking-widest mb-8 flex items-center gap-3">
                                 <TrendingUp className="w-5 h-5 text-brand-red" />
                                 6-Month Growth Trend
@@ -2792,7 +2817,7 @@ export default function ToolPage() {
                               <div className="h-[300px] w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                   <LineChart data={result.growthData}>
-                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
+                                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border-color)" />
                                     <XAxis 
                                       dataKey="month" 
                                       axisLine={false} 
@@ -2818,7 +2843,7 @@ export default function ToolPage() {
 
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                               {/* Traffic Sources */}
-                              <div className="bg-gray-50 rounded-[2rem] p-8 border border-gray-100">
+                              <div className="bg-bg-primary rounded-[2rem] p-8 border border-border-primary">
                                 <h3 className="text-sm font-black text-brand-dark uppercase tracking-widest mb-8 flex items-center gap-3">
                                   <Globe className="w-5 h-5 text-blue-500" />
                                   Traffic Sources
@@ -2839,7 +2864,9 @@ export default function ToolPage() {
                                           <Cell key={`cell-${index}`} fill={['#FF4444', '#3B82F6', '#10B981', '#F59E0B', '#8B5CF6'][index % 5]} />
                                         ))}
                                       </Pie>
-                                      <Tooltip />
+                                      <Tooltip 
+                                        contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', fontWeight: 900, backgroundColor: 'var(--card-bg)', color: 'var(--text-primary)' }}
+                                      />
                                       <Legend />
                                     </PieChart>
                                   </ResponsiveContainer>
@@ -2847,7 +2874,7 @@ export default function ToolPage() {
                               </div>
 
                               {/* Demographics */}
-                              <div className="bg-gray-50 rounded-[2rem] p-8 border border-gray-100">
+                              <div className="bg-bg-primary rounded-[2rem] p-8 border border-border-primary">
                                 <h3 className="text-sm font-black text-brand-dark uppercase tracking-widest mb-8 flex items-center gap-3">
                                   <Users className="w-5 h-5 text-emerald-500" />
                                   Audience Age
@@ -2881,8 +2908,8 @@ export default function ToolPage() {
                                 </h3>
                                 <div className="space-y-3">
                                   {result.insights.map((insight: string, idx: number) => (
-                                    <div key={idx} className="p-4 bg-white rounded-2xl border border-gray-100 shadow-sm text-sm font-bold text-brand-dark flex gap-3">
-                                      <div className="w-5 h-5 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 text-[10px] font-black">
+                                    <div key={idx} className="p-4 bg-card-bg rounded-2xl border border-border-primary shadow-sm text-sm font-bold text-brand-dark flex gap-3">
+                                      <div className="w-5 h-5 rounded-full bg-amber-50/10 text-amber-600 flex items-center justify-center shrink-0 text-[10px] font-black">
                                         {idx + 1}
                                       </div>
                                       {insight}
@@ -2912,7 +2939,7 @@ export default function ToolPage() {
                       </div>
                     ) : tool.id === 'trending-topics' && Array.isArray(result) ? (
                       <div className="space-y-8">
-                        <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm p-8 md:p-12 relative overflow-hidden">
+                        <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm p-8 md:p-12 relative overflow-hidden">
                           {/* Top Right Copy Button */}
                           <div className="absolute top-8 right-8">
                             <button 
@@ -2939,7 +2966,7 @@ export default function ToolPage() {
 
                           <div className="space-y-6">
                             {result.map((topic: any, idx: number) => (
-                              <div key={idx} className="group p-6 rounded-[2rem] bg-gray-50 border border-transparent hover:border-brand-red/20 hover:bg-white hover:shadow-xl transition-all">
+                              <div key={idx} className="group p-6 rounded-[2rem] bg-bg-primary border border-transparent hover:border-brand-red/20 hover:bg-card-bg hover:shadow-xl transition-all">
                                 <div className="flex flex-col md:flex-row gap-6">
                                   <div className="w-12 h-12 rounded-2xl bg-brand-dark text-white flex items-center justify-center shrink-0 font-black text-lg shadow-lg group-hover:bg-brand-red transition-colors">
                                     {idx + 1}
@@ -2952,9 +2979,9 @@ export default function ToolPage() {
                                       </div>
                                       <div className="flex items-center gap-2">
                                         <div className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5 ${
-                                          topic.searchVolume === 'High' ? 'bg-emerald-100 text-emerald-600' :
-                                          topic.searchVolume === 'Medium' ? 'bg-amber-100 text-amber-600' :
-                                          'bg-blue-100 text-blue-600'
+                                          topic.searchVolume === 'High' ? 'bg-emerald-500/10 text-emerald-600' :
+                                          topic.searchVolume === 'Medium' ? 'bg-amber-500/10 text-amber-600' :
+                                          'bg-blue-500/10 text-blue-600'
                                         }`}>
                                           <Search className="w-3 h-3" />
                                           {topic.searchVolume} Volume
@@ -2992,7 +3019,7 @@ export default function ToolPage() {
                     ) : Array.isArray(result) ? (
                       <div className="space-y-4">
                         {result.map((item: any, idx: number) => (
-                          <div key={idx} className="p-4 rounded-xl bg-gray-50 border border-gray-100 group relative">
+                          <div key={idx} className="p-4 rounded-xl bg-bg-primary border border-border-primary group relative">
                             <div className="flex items-center justify-between">
                               <div className="flex-1">
                                 {typeof item === 'string' ? (
@@ -3016,7 +3043,7 @@ export default function ToolPage() {
                       </div>
                     ) : typeof result === 'string' && result.startsWith('Error:') ? (
                       <div className="p-8 bg-red-50 border border-red-100 rounded-[2rem] text-center">
-                        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
+                        <div className="w-16 h-16 bg-card-bg rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-sm">
                           <AlertCircle className="w-8 h-8 text-brand-red" />
                         </div>
                         <h3 className="text-lg font-black text-brand-dark uppercase tracking-widest mb-2">Analysis Failed</h3>
@@ -3051,7 +3078,7 @@ export default function ToolPage() {
             onClick={() => setActiveMetricInfo(null)}
           >
             <div 
-              className="bg-white rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl border border-gray-100"
+              className="bg-card-bg rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl border border-border-primary"
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">

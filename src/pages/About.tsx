@@ -34,13 +34,13 @@ const About = () => {
               "Public data analysis",
               "Performance tracking tools"
             ].map((item) => (
-              <li key={item} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100 text-sm font-medium text-gray-700">
+              <li key={item} className="flex items-center gap-3 p-3 bg-bg-primary rounded-xl border border-border-primary text-sm font-medium text-brand-gray">
                 <div className="w-2 h-2 rounded-full bg-brand-red" />
                 {item}
               </li>
             ))}
           </ul>
-          <p className="text-sm text-gray-500 italic">We utilize authorized API services to fetch publicly available data and present it in a user-friendly format.</p>
+          <p className="text-sm text-brand-gray italic">We utilize authorized API services to fetch publicly available data and present it in a user-friendly format.</p>
         </div>
       )
     },
@@ -63,7 +63,7 @@ const About = () => {
       content: (
         <div className="space-y-4">
           <p>YTGrowth is an independent analytics platform. We are <strong>not affiliated with, endorsed by, sponsored by, or officially connected to YouTube or Google</strong>.</p>
-          <p className="text-sm text-gray-500">All trademarks and platform names belong to their respective owners. We maintain full transparency in our operations and data sourcing.</p>
+          <p className="text-sm text-brand-gray">All trademarks and platform names belong to their respective owners. We maintain full transparency in our operations and data sourcing.</p>
         </div>
       )
     },
@@ -85,7 +85,7 @@ const About = () => {
                 </div>
                 <div>
                   <span className="font-bold text-brand-dark block text-sm">{item.label}</span>
-                  <span className="text-sm text-gray-600">{item.text}</span>
+                  <span className="text-sm text-brand-gray">{item.text}</span>
                 </div>
               </li>
             ))}
@@ -99,7 +99,7 @@ const About = () => {
       content: (
         <div className="space-y-4">
           <p>We continuously improve YTGrowth by enhancing AI models, adding advanced analytics features, and improving performance and usability.</p>
-          <p className="text-sm italic text-gray-500">Future updates may include optional account features, advertising integrations, and expanded growth tools.</p>
+          <p className="text-sm italic text-brand-gray">Future updates may include optional account features, advertising integrations, and expanded growth tools.</p>
         </div>
       )
     },
@@ -107,7 +107,7 @@ const About = () => {
       title: "Contact Us",
       icon: Mail,
       content: (
-        <div className="p-6 bg-gray-50 rounded-2xl border border-gray-100">
+        <div className="p-6 bg-bg-primary rounded-2xl border border-border-primary">
           <p className="mb-4">If you have questions, suggestions, or partnership inquiries, please contact us at:</p>
           <a href="mailto:support@ytgrowth.com" className="inline-flex items-center gap-2 text-brand-red hover:underline font-black text-xl">
             <Mail className="w-6 h-6" />
@@ -119,7 +119,7 @@ const About = () => {
   ];
 
   return (
-    <div className="bg-white min-h-screen pt-24 pb-20">
+    <div className="bg-bg-primary min-h-screen pt-24 pb-20">
       {/* SEO Optimized Hero Section */}
       <header className="max-w-7xl mx-auto px-6 lg:px-8 text-center mb-20">
         <motion.div
@@ -135,10 +135,10 @@ const About = () => {
             Empowering Creators with <br className="hidden md:block" />
             <span className="text-brand-red">AI-Powered Insights</span>
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-medium">
+          <p className="text-xl text-brand-gray max-w-3xl mx-auto leading-relaxed font-medium">
             YTGrowth is an AI-powered YouTube analytics and growth insights platform designed to help creators understand their channel performance through smart data analysis and real-time metrics.
           </p>
-          <div className="mt-8 flex items-center justify-center gap-4 text-sm text-gray-400 font-bold uppercase tracking-widest">
+          <div className="mt-8 flex items-center justify-center gap-4 text-sm text-brand-gray font-bold uppercase tracking-widest">
             <span>Last Updated: March 3, 2026</span>
           </div>
         </motion.div>
@@ -176,7 +176,7 @@ const About = () => {
               <div className="flex flex-col md:flex-row gap-8 md:gap-16">
                 <div className="md:w-1/3">
                   <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center border border-gray-100 group-hover:bg-brand-red group-hover:text-white transition-all duration-300">
+                    <div className="w-12 h-12 rounded-2xl bg-bg-primary flex items-center justify-center border border-border-primary group-hover:bg-brand-red group-hover:text-white transition-all duration-300">
                       <section.icon className="w-6 h-6" />
                     </div>
                     <h2 className="text-2xl font-black text-brand-dark tracking-tight">
@@ -185,13 +185,13 @@ const About = () => {
                   </div>
                 </div>
                 <div className="md:w-2/3">
-                  <div className="text-lg text-gray-600 leading-relaxed">
+                  <div className="text-lg text-brand-gray leading-relaxed">
                     {section.content}
                   </div>
                 </div>
               </div>
               {index !== sections.length - 1 && (
-                <div className="h-px bg-gray-100 w-full mt-24" />
+                <div className="h-px bg-border-primary w-full mt-24" />
               )}
             </motion.section>
           ))}

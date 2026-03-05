@@ -4,7 +4,7 @@ import { ChevronDown, HelpCircle, ShieldCheck, Zap, BarChart3, Lock } from 'luci
 
 const FAQItem = ({ question, answer, isOpen, onClick }: { question: string, answer: string, isOpen: boolean, onClick: () => void }) => {
   return (
-    <div className="border-b border-gray-100 last:border-0">
+    <div className="border-b border-border-primary last:border-0">
       <button
         onClick={onClick}
         className="w-full py-6 flex items-center justify-between text-left group transition-all"
@@ -12,7 +12,7 @@ const FAQItem = ({ question, answer, isOpen, onClick }: { question: string, answ
         <span className={`text-lg font-bold transition-colors duration-200 ${isOpen ? 'text-brand-red' : 'text-brand-dark group-hover:text-brand-red'}`}>
           {question}
         </span>
-        <div className={`p-2 rounded-full transition-all duration-300 ${isOpen ? 'bg-red-50 rotate-180' : 'bg-gray-50'}`}>
+        <div className={`p-2 rounded-full transition-all duration-300 ${isOpen ? 'bg-red-500/10 rotate-180' : 'bg-bg-primary'}`}>
           <ChevronDown className={`w-5 h-5 transition-colors ${isOpen ? 'text-brand-red' : 'text-gray-400'}`} />
         </div>
       </button>
@@ -25,7 +25,7 @@ const FAQItem = ({ question, answer, isOpen, onClick }: { question: string, answ
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <p className="pb-6 text-gray-600 leading-relaxed max-w-3xl">
+            <p className="pb-6 text-brand-gray leading-relaxed max-w-3xl">
               {answer}
             </p>
           </motion.div>
@@ -66,7 +66,7 @@ const FAQ = () => {
   ];
 
   return (
-    <div className="bg-white min-h-screen pt-24 pb-20">
+    <div className="bg-bg-primary min-h-screen pt-24 pb-20">
       {/* SEO Meta Tags (Conceptual) */}
       <header className="max-w-7xl mx-auto px-6 lg:px-8 text-center mb-20">
         <motion.div
@@ -74,7 +74,7 @@ const FAQ = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-50 text-brand-red text-xs font-black uppercase tracking-widest mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-red/10 text-brand-red text-xs font-black uppercase tracking-widest mb-6">
             <HelpCircle className="w-4 h-4" />
             Support Center
           </div>
@@ -82,7 +82,7 @@ const FAQ = () => {
             Our support team answers the following <br className="hidden md:block" />
             questions <span className="text-brand-red">nearly every day</span>
           </h1>
-          <p className="text-xl text-gray-500 max-w-2xl mx-auto">
+          <p className="text-xl text-brand-gray max-w-2xl mx-auto">
             We thought they could be useful for you too. Find everything you need to know about YTGrowth and how to scale your channel.
           </p>
         </motion.div>
@@ -90,7 +90,7 @@ const FAQ = () => {
 
       <main className="max-w-4xl mx-auto px-6 lg:px-8">
         {/* FAQ Accordion */}
-        <div className="bg-white rounded-3xl border border-gray-100 p-8 md:p-12 shadow-sm mb-20">
+        <div className="bg-card-bg rounded-3xl border border-border-primary p-8 md:p-12 shadow-sm mb-20">
           {faqs.map((faq, index) => (
             <FAQItem
               key={index}
@@ -103,26 +103,26 @@ const FAQ = () => {
         </div>
 
         {/* SEO Content Section */}
-        <article className="prose prose-lg prose-red max-w-none text-gray-700 mt-32">
+        <article className="prose prose-lg prose-red max-w-none text-brand-gray mt-32">
           <h2 className="text-3xl font-black text-brand-dark mb-8">Why Creators Trust YTGrowth for YouTube SEO</h2>
           <p>
             In the competitive world of video content, having a reliable partner for <strong>YouTube optimization</strong> is crucial. YTGrowth provides a transparent, safe, and highly effective suite of tools designed to help you rank higher on Google and YouTube search results. Our FAQ covers the most common concerns, but our commitment to your growth goes much deeper.
           </p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 my-12 not-prose">
-            <div className="p-6 rounded-2xl bg-gray-50 border border-gray-100">
-              <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center mb-4 shadow-sm">
+            <div className="p-6 rounded-2xl bg-bg-primary border border-border-primary">
+              <div className="w-10 h-10 rounded-xl bg-card-bg flex items-center justify-center mb-4 shadow-sm">
                 <ShieldCheck className="w-6 h-6 text-brand-red" />
               </div>
               <h3 className="font-bold text-brand-dark mb-2">Data Privacy First</h3>
-              <p className="text-sm text-gray-600">We never ask for your password. Our tools work with public data to keep your account 100% secure.</p>
+              <p className="text-sm text-brand-gray">We never ask for your password. Our tools work with public data to keep your account 100% secure.</p>
             </div>
-            <div className="p-6 rounded-2xl bg-gray-50 border border-gray-100">
-              <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center mb-4 shadow-sm">
+            <div className="p-6 rounded-2xl bg-bg-primary border border-border-primary">
+              <div className="w-10 h-10 rounded-xl bg-card-bg flex items-center justify-center mb-4 shadow-sm">
                 <Zap className="w-6 h-6 text-brand-red" />
               </div>
               <h3 className="font-bold text-brand-dark mb-2">Real-Time Insights</h3>
-              <p className="text-sm text-gray-600">Get instant feedback on your SEO, titles, and tags. No waiting, just growing.</p>
+              <p className="text-sm text-brand-gray">Get instant feedback on your SEO, titles, and tags. No waiting, just growing.</p>
             </div>
           </div>
 
@@ -146,7 +146,7 @@ const FAQ = () => {
           <p className="text-white/80 mb-10 max-w-xl mx-auto relative z-10">
             Our support team is here to help you 24/7. Reach out to us and we'll get back to you as soon as possible.
           </p>
-          <button className="px-8 py-4 bg-white text-brand-red font-black rounded-xl hover:bg-gray-100 transition-all transform hover:scale-105 relative z-10">
+          <button className="px-8 py-4 bg-card-bg text-brand-red font-black rounded-xl hover:bg-bg-primary transition-all transform hover:scale-105 relative z-10">
             Contact Support
           </button>
         </div>

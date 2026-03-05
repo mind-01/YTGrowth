@@ -50,7 +50,7 @@ const Contact = () => {
   ];
 
   return (
-    <div className="bg-white min-h-screen pt-24 pb-20">
+    <div className="bg-bg-primary min-h-screen pt-24 pb-20">
       {/* Hero Section */}
       <header className="max-w-7xl mx-auto px-6 lg:px-8 text-center mb-20">
         <motion.div
@@ -60,7 +60,7 @@ const Contact = () => {
         >
           <Link 
             to="/" 
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-brand-red font-bold text-sm mb-8 transition-colors uppercase tracking-widest"
+            className="inline-flex items-center gap-2 text-brand-gray hover:text-brand-red font-bold text-sm mb-8 transition-colors uppercase tracking-widest"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Home
@@ -68,10 +68,10 @@ const Contact = () => {
           <h1 className="text-5xl md:text-7xl font-black text-brand-dark mb-8 tracking-tighter leading-none">
             Get in <span className="text-brand-red">Touch</span>
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-medium">
+          <p className="text-xl text-brand-gray max-w-3xl mx-auto leading-relaxed font-medium">
             We value transparency, communication, and user trust. If you have any questions, feedback, or business inquiries, please feel free to contact us.
           </p>
-          <div className="mt-8 flex items-center justify-center gap-4 text-sm text-gray-400 font-bold uppercase tracking-widest">
+          <div className="mt-8 flex items-center justify-center gap-4 text-sm text-brand-gray font-bold uppercase tracking-widest">
             <span>Last Updated: March 3, 2026</span>
           </div>
         </motion.div>
@@ -87,18 +87,18 @@ const Contact = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="bg-white border border-gray-100 rounded-[2.5rem] p-8 md:p-12 hover:shadow-xl hover:shadow-gray-100 transition-all duration-500 group"
+              className="bg-card-bg border border-border-primary rounded-[2.5rem] p-8 md:p-12 hover:shadow-xl hover:shadow-brand-red/5 transition-all duration-500 group"
             >
               <div className={`w-14 h-14 ${section.color} rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500`}>
                 <section.icon className="w-7 h-7" />
               </div>
               <h2 className="text-2xl font-black text-brand-dark mb-4 tracking-tight">{section.title}</h2>
-              <p className="text-gray-600 mb-6 leading-relaxed">{section.description}</p>
+              <p className="text-brand-gray mb-6 leading-relaxed">{section.description}</p>
               
               {section.details && (
                 <ul className="space-y-3 mb-8">
                   {section.details.map((detail) => (
-                    <li key={detail} className="flex items-center gap-3 text-sm font-medium text-gray-500">
+                    <li key={detail} className="flex items-center gap-3 text-sm font-medium text-brand-gray">
                       <div className="w-1.5 h-1.5 rounded-full bg-brand-red" />
                       {detail}
                     </li>
@@ -133,7 +133,7 @@ const Contact = () => {
                 </div>
                 <h2 className="text-2xl font-black tracking-tight">Response Time</h2>
               </div>
-              <p className="text-xl text-gray-300 leading-relaxed mb-8">
+              <p className="text-xl text-brand-gray leading-relaxed mb-8">
                 We aim to respond to all inquiries within <span className="text-white font-bold">24–72 business hours</span>. Response times may vary depending on request volume.
               </p>
               <div className="flex flex-wrap gap-4">
@@ -151,9 +151,9 @@ const Contact = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
-            className="bg-gray-50 rounded-[3rem] p-10 md:p-16 text-center border border-gray-100"
+            className="bg-bg-primary rounded-[3rem] p-10 md:p-16 text-center border border-border-primary"
           >
-            <div className="w-20 h-20 bg-white rounded-full shadow-lg flex items-center justify-center mx-auto mb-8">
+            <div className="w-20 h-20 bg-card-bg rounded-full shadow-lg flex items-center justify-center mx-auto mb-8">
               <Send className="w-8 h-8 text-brand-red" />
             </div>
             <p className="text-lg font-bold text-brand-dark mb-4">Thank you for being part of our growing community.</p>

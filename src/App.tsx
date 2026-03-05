@@ -13,15 +13,17 @@ import Cookies from './pages/Cookies';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Disclaimer from './pages/Disclaimer';
+import LoginPage from './pages/LoginPage';
 import Navbar from './components/Navbar';
 import BottomNav from './components/BottomNav';
 import Footer from './components/Footer';
+import Customizer from './components/Customizer';
 import { Link } from 'react-router-dom';
 
 export default function App() {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col bg-[#F9FAFB]">
+      <div className="min-h-screen flex flex-col bg-bg-primary">
         <Navbar />
         
         {/* Main Content */}
@@ -40,8 +42,12 @@ export default function App() {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/disclaimer" element={<Disclaimer />} />
+            <Route path="/login" element={<LoginPage />} />
           </Routes>
         </main>
+
+        {/* Global UI Elements */}
+        <Customizer />
 
         {/* Footer & Navigation */}
         <Footer />

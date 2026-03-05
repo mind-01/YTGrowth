@@ -107,7 +107,7 @@ const Privacy = () => {
   ];
 
   return (
-    <div className="bg-white min-h-screen pt-24 pb-20">
+    <div className="bg-bg-primary min-h-screen pt-24 pb-20">
       {/* Header */}
       <header className="max-w-7xl mx-auto px-6 lg:px-8 text-center mb-16">
         <motion.div
@@ -118,10 +118,10 @@ const Privacy = () => {
           <h1 className="text-4xl md:text-5xl font-black text-brand-dark mb-4 tracking-tight">
             Privacy <span className="text-brand-red">Policy</span>
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-brand-gray max-w-2xl mx-auto">
             Welcome to our website. Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect information when you use our tools and services.
           </p>
-          <div className="mt-4 text-sm text-gray-400 font-medium">
+          <div className="mt-4 text-sm text-brand-gray font-medium">
             Last Updated: March 3, 2026
           </div>
         </motion.div>
@@ -140,13 +140,13 @@ const Privacy = () => {
               className="group"
             >
               <div className="flex items-center gap-4 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center group-hover:bg-brand-red/10 transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-bg-primary flex items-center justify-center group-hover:bg-brand-red/10 transition-colors">
                   <section.icon className="w-5 h-5 text-brand-dark group-hover:text-brand-red transition-colors" />
                 </div>
                 <h2 className="text-2xl font-bold text-brand-dark">{section.title}</h2>
               </div>
               <div className="pl-14">
-                <div className="text-gray-600 leading-relaxed text-lg">
+                <div className="text-brand-gray leading-relaxed text-lg">
                   {section.content}
                 </div>
               </div>
@@ -154,8 +154,8 @@ const Privacy = () => {
           ))}
         </div>
 
-        <div className="mt-20 pt-10 border-t border-gray-100 text-center">
-          <p className="text-gray-500 italic">
+        <div className="mt-20 pt-10 border-t border-border-primary text-center">
+          <p className="text-brand-gray italic">
             By using this website, you agree to this Privacy Policy.
           </p>
         </div>

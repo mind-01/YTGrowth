@@ -23,19 +23,19 @@ const Cookies = () => {
         <div className="space-y-4">
           <p>Cookies are small text files stored on your device when you visit a website. They help websites function properly, improve user experience, and provide certain technical capabilities.</p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+            <div className="p-4 bg-bg-primary rounded-xl border border-border-primary">
               <h3 className="font-bold text-brand-dark mb-2 flex items-center gap-2">
                 <RefreshCw className="w-4 h-4 text-brand-red" />
                 Session Cookies
               </h3>
-              <p className="text-sm text-gray-600">These are temporary and expire as soon as you close your web browser.</p>
+              <p className="text-sm text-brand-gray">These are temporary and expire as soon as you close your web browser.</p>
             </div>
-            <div className="p-4 bg-gray-50 rounded-xl border border-gray-100">
+            <div className="p-4 bg-bg-primary rounded-xl border border-border-primary">
               <h3 className="font-bold text-brand-dark mb-2 flex items-center gap-2">
                 <Lock className="w-4 h-4 text-brand-red" />
                 Persistent Cookies
               </h3>
-              <p className="text-sm text-gray-600">These remain on your device for a set period or until you manually delete them.</p>
+              <p className="text-sm text-brand-gray">These remain on your device for a set period or until you manually delete them.</p>
             </div>
           </div>
         </div>
@@ -98,7 +98,7 @@ const Cookies = () => {
       content: (
         <div className="space-y-4">
           <p>You have full control over your cookie preferences. Most modern web browsers allow you to manage cookies directly through their settings menus.</p>
-          <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+          <div className="bg-bg-primary p-6 rounded-2xl border border-border-primary">
             <h3 className="font-bold text-brand-dark mb-4">Common Browser Controls:</h3>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
@@ -109,7 +109,7 @@ const Cookies = () => {
                 "Clear cookies on exit",
                 "Block all cookies"
               ].map((control) => (
-                <li key={control} className="flex items-center gap-2 text-sm text-gray-600">
+                <li key={control} className="flex items-center gap-2 text-sm text-brand-gray">
                   <div className="w-1.5 h-1.5 rounded-full bg-brand-red" />
                   {control}
                 </li>
@@ -148,7 +148,7 @@ const Cookies = () => {
   ];
 
   return (
-    <div className="bg-white min-h-screen pt-24 pb-20">
+    <div className="bg-bg-primary min-h-screen pt-24 pb-20">
       {/* SEO Optimized Header */}
       <header className="max-w-7xl mx-auto px-6 lg:px-8 text-center mb-16">
         <motion.div
@@ -163,10 +163,10 @@ const Cookies = () => {
           <h1 className="text-4xl md:text-5xl font-black text-brand-dark mb-4 tracking-tight">
             Cookie <span className="text-brand-red">Policy</span>
           </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg text-brand-gray max-w-3xl mx-auto leading-relaxed">
             This Cookie Policy explains how YTGrowth uses cookies and similar tracking technologies to provide a secure and efficient experience for our users. By continuing to use our platform, you agree to the practices described below.
           </p>
-          <div className="mt-6 flex items-center justify-center gap-4 text-sm text-gray-400 font-medium">
+          <div className="mt-6 flex items-center justify-center gap-4 text-sm text-brand-gray font-medium">
             <span>Last Updated: March 3, 2026</span>
             <span className="w-1 h-1 rounded-full bg-gray-300" />
             <span>Version 1.2</span>
@@ -187,7 +187,7 @@ const Cookies = () => {
               className="relative"
             >
               <div className="flex items-start gap-6">
-                <div className="hidden sm:flex w-12 h-12 rounded-2xl bg-gray-50 items-center justify-center shrink-0 border border-gray-100 group">
+                <div className="hidden sm:flex w-12 h-12 rounded-2xl bg-bg-primary items-center justify-center shrink-0 border border-border-primary group">
                   <section.icon className="w-6 h-6 text-brand-dark group-hover:text-brand-red transition-colors" />
                 </div>
                 <div className="flex-grow">
@@ -197,7 +197,7 @@ const Cookies = () => {
                       {section.title}
                     </h2>
                   </div>
-                  <div className="text-gray-600 leading-relaxed text-lg">
+                  <div className="text-brand-gray leading-relaxed text-lg">
                     {section.content}
                   </div>
                 </div>
@@ -211,9 +211,9 @@ const Cookies = () => {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="mt-24 p-8 rounded-3xl bg-gray-50 border border-gray-100 text-center"
+          className="mt-24 p-8 rounded-3xl bg-bg-primary border border-border-primary text-center"
         >
-          <p className="text-gray-600 italic leading-relaxed">
+          <p className="text-brand-gray italic leading-relaxed">
             "By using YTGrowth, you acknowledge that you have read and understood this Cookie Policy. We are committed to protecting your privacy while providing the best YouTube growth tools in the industry."
           </p>
         </motion.div>

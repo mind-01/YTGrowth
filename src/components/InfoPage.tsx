@@ -65,9 +65,9 @@ export default function InfoPage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white rounded-[2.5rem] border border-gray-100 p-8 md:p-16 shadow-sm"
+        className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 md:p-16 shadow-sm"
       >
-        <div className="w-16 h-16 bg-red-50 rounded-2xl flex items-center justify-center text-brand-red mb-8">
+        <div className="w-16 h-16 bg-brand-red/10 rounded-2xl flex items-center justify-center text-brand-red mb-8">
           <Icon className="w-8 h-8" />
         </div>
         
@@ -80,7 +80,7 @@ export default function InfoPage() {
             {page.body}
           </p>
           
-          <div className="h-px bg-gray-100 w-full my-12" />
+          <div className="h-px bg-border-primary w-full my-12" />
           
           <div className="space-y-6">
             <h2 className="text-xl font-bold text-brand-dark">Detailed Content Coming Soon</h2>

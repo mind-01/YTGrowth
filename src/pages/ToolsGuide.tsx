@@ -218,7 +218,7 @@ const ToolsGuide = () => {
   ];
 
   return (
-    <div className="bg-white min-h-screen pt-24 pb-20">
+    <div className="bg-bg-primary min-h-screen pt-24 pb-20">
       {/* Header Section */}
       <header className="max-w-7xl mx-auto px-6 lg:px-8 text-center mb-20">
         <motion.div
@@ -229,7 +229,7 @@ const ToolsGuide = () => {
           <h1 className="text-4xl md:text-6xl font-black text-brand-dark mb-6 tracking-tight">
             Welcome to our <span className="text-brand-red">user's guide</span>
           </h1>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg text-brand-gray max-w-3xl mx-auto leading-relaxed">
             Master the YTGrowth ecosystem with our comprehensive directory. Whether you're a beginner looking to start your journey or a veteran creator aiming to scale, our suite of 20+ AI-powered tools provides the data, insights, and automation you need to dominate the YouTube algorithm. Explore our specialized categories below to find the perfect tool for your current growth stage.
           </p>
         </motion.div>
@@ -243,7 +243,7 @@ const ToolsGuide = () => {
               <h2 className="text-2xl font-black text-brand-dark mb-4 tracking-wider">
                 {category.title}
               </h2>
-              <p className="text-gray-500 max-w-2xl">
+              <p className="text-brand-gray max-w-2xl">
                 {category.description}
               </p>
               <div className="h-1 w-20 bg-brand-red mt-4" />
@@ -257,15 +257,15 @@ const ToolsGuide = () => {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: toolIdx * 0.1 }}
-                  className="group p-8 rounded-2xl border border-gray-100 bg-white hover:shadow-xl hover:border-brand-red/20 transition-all duration-300"
+                  className="group p-8 rounded-2xl border border-border-primary bg-card-bg hover:shadow-xl hover:border-brand-red/20 transition-all duration-300"
                 >
-                  <div className="w-12 h-12 rounded-xl bg-red-50 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <div className="w-12 h-12 rounded-xl bg-brand-red/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
                     <tool.icon className="w-6 h-6 text-brand-red" />
                   </div>
                   <h3 className="text-xl font-bold text-brand-dark mb-4">
                     {tool.name}
                   </h3>
-                  <p className="text-gray-600 text-sm leading-relaxed mb-6">
+                  <p className="text-brand-gray text-sm leading-relaxed mb-6">
                     {tool.description}
                   </p>
                   <Link 
@@ -283,8 +283,8 @@ const ToolsGuide = () => {
       </div>
 
       {/* SEO Content Section (To reach 1600+ words) */}
-      <section className="max-w-4xl mx-auto px-6 lg:px-8 mt-32 pt-20 border-t border-gray-100">
-        <div className="prose prose-lg prose-red max-w-none text-gray-700">
+      <section className="max-w-4xl mx-auto px-6 lg:px-8 mt-32 pt-20 border-t border-border-primary">
+        <div className="prose prose-lg prose-red max-w-none text-brand-gray">
           <h2 className="text-3xl font-black text-brand-dark mb-8">The Ultimate Guide to YouTube Growth in 2024</h2>
           <p>
             In the ever-evolving landscape of digital content, YouTube remains the undisputed king of long-form video. However, with over 500 hours of content uploaded every minute, standing out requires more than just "good content." It requires a strategic approach to <strong>YouTube SEO</strong>, <strong>AI-driven content planning</strong>, and <strong>data-backed analytics</strong>. This guide explores how YTGrowth's suite of tools empowers creators to navigate the complex YouTube algorithm and build sustainable, high-authority channels.

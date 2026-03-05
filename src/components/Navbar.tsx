@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ChevronDown, Search, LayoutDashboard, Sparkles } from 'lucide-react';
+import { ChevronDown, Search, LayoutDashboard, TrendingUp, LogOut, User as UserIcon } from 'lucide-react';
 import { TOOLS } from '../constants';
 import { motion, AnimatePresence } from 'motion/react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
 
 interface NavDropdownProps {
   label: string;
@@ -23,7 +24,7 @@ function NavDropdown({ label, isOpen, onMouseEnter, onMouseLeave, children, clas
     >
       <button
         className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-          isOpen ? 'bg-brand-red text-white' : 'bg-gray-50 text-brand-gray hover:bg-gray-100'
+          isOpen ? 'bg-brand-red text-white' : 'bg-bg-primary text-brand-gray hover:bg-border-primary'
         }`}
       >
         <span>{label}</span>
@@ -36,7 +37,7 @@ function NavDropdown({ label, isOpen, onMouseEnter, onMouseLeave, children, clas
             initial={{ opacity: 0, y: 10, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 10, scale: 0.98 }}
-            className="absolute top-full left-0 mt-0 bg-white rounded-b-[2rem] border border-gray-100 shadow-2xl overflow-hidden"
+            className="absolute top-full left-0 mt-0 bg-card-bg rounded-b-[2rem] border border-border-primary shadow-2xl overflow-hidden"
             style={{ minWidth: '200px' }}
           >
             {children}
@@ -49,7 +50,9 @@ function NavDropdown({ label, isOpen, onMouseEnter, onMouseLeave, children, clas
 
 export default function Navbar() {
   const { t } = useLanguage();
+  const { user, signInWithGoogle, logout } = useAuth();
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const location = useLocation();
@@ -86,13 +89,13 @@ export default function Navbar() {
       className={`flex items-start gap-3 p-3 rounded-2xl transition-all group ${
         currentToolId === tool.id 
           ? 'bg-brand-red/5 text-brand-red' 
-          : 'hover:bg-red-50/50 text-brand-dark'
+          : 'hover:bg-brand-red/5 text-brand-dark'
       }`}
     >
       <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
         currentToolId === tool.id 
           ? 'bg-brand-red text-white' 
-          : 'bg-gray-100 group-hover:bg-brand-red/10 group-hover:text-brand-red text-brand-gray'
+          : 'bg-bg-primary group-hover:bg-brand-red/10 group-hover:text-brand-red text-brand-gray'
       }`}>
         <tool.icon className="w-4 h-4" />
       </div>
@@ -106,14 +109,18 @@ export default function Navbar() {
   );
 
   return (
-    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
+    <nav className="sticky top-0 z-50 bg-card-bg/90 backdrop-blur-md border-b border-border-primary shadow-sm">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <div className="flex items-center gap-4">
           <Link to="/" className="flex items-center gap-2 group mr-4">
-            <div className="w-8 h-8 bg-brand-red rounded-lg flex items-center justify-center text-white shadow-lg shadow-brand-red/20 group-hover:scale-110 transition-transform">
-              <Sparkles className="w-5 h-5" />
+            <div className="w-9 h-9 bg-brand-red rounded-xl flex items-center justify-center text-white shadow-lg shadow-brand-red/30 group-hover:scale-110 transition-transform relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+              <TrendingUp className="w-5 h-5 relative z-10" />
             </div>
-            <span className="text-xl font-black text-brand-dark tracking-tighter">YTGrowth</span>
+            <span className="text-xl font-black tracking-tighter">
+              <span className="text-brand-red">YT</span>
+              <span className="text-brand-dark">Growth</span>
+            </span>
           </Link>
 
           <div className="hidden lg:flex items-center gap-2">
@@ -127,7 +134,7 @@ export default function Navbar() {
               >
                 <button
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-                    activeMenu === cat.toLowerCase() ? 'bg-brand-red text-white' : 'bg-white text-brand-gray hover:bg-gray-50'
+                    activeMenu === cat.toLowerCase() ? 'bg-brand-red text-white' : 'bg-card-bg text-brand-gray hover:bg-bg-primary'
                   }`}
                 >
                   <span>{t(`cat.${cat.toLowerCase()}`)}</span>
@@ -140,7 +147,7 @@ export default function Navbar() {
                       initial={{ opacity: 0, y: 10, scale: 0.98 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                      className="absolute top-full left-0 mt-0 w-[280px] bg-white rounded-b-2xl border border-gray-100 shadow-2xl overflow-hidden p-4"
+                      className="absolute top-full left-0 mt-0 w-[280px] bg-card-bg rounded-b-2xl border border-border-primary shadow-2xl overflow-hidden p-4"
                     >
                       <div className="space-y-1">
                         {TOOLS.filter(t => t.category === cat).map(tool => renderToolLink(tool))}
@@ -159,7 +166,7 @@ export default function Navbar() {
             >
               <button
                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-                  activeMenu === 'all' ? 'bg-brand-red text-white' : 'bg-gray-50 text-brand-gray hover:bg-gray-100'
+                  activeMenu === 'all' ? 'bg-brand-red text-white' : 'bg-bg-primary text-brand-gray hover:bg-border-primary'
                 }`}
               >
                 <span>{t('nav.all_tools')}</span>
@@ -172,15 +179,15 @@ export default function Navbar() {
                     initial={{ opacity: 0, y: 10, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                    className="absolute top-full left-1/2 -translate-x-1/2 mt-0 w-[90vw] max-w-[1000px] bg-white rounded-b-[2.5rem] border border-gray-100 shadow-2xl overflow-hidden z-50"
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-0 w-[90vw] max-w-[1000px] bg-card-bg rounded-b-[2.5rem] border border-border-primary shadow-2xl overflow-hidden z-50"
                   >
-                    <div className="p-6 border-b border-gray-50 bg-gray-50/30">
+                    <div className="p-6 border-b border-border-primary bg-bg-primary/30">
                       <div className="relative max-w-md mx-auto">
-                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-gray" />
+                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-gray" />
                         <input
                           type="text"
                           placeholder={t('nav.quick_search')}
-                          className="w-full pl-10 pr-4 py-3 bg-white border border-gray-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red transition-all shadow-sm"
+                          className="w-full !pl-14 pr-4 py-3 bg-card-bg border border-border-primary rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red transition-all shadow-sm"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
                           autoFocus
@@ -195,7 +202,7 @@ export default function Navbar() {
 
                         return (
                           <div key={category} className="space-y-5">
-                            <h3 className="text-[11px] font-black text-brand-gray uppercase tracking-[0.25em] border-b border-gray-100 pb-3">
+                            <h3 className="text-[11px] font-black text-brand-gray uppercase tracking-[0.25em] border-b border-border-primary pb-3">
                               {category === 'Analytics' ? t('cat.analytics_global') : t(`cat.${category.toLowerCase()}_tools`)}
                             </h3>
                             <div className="space-y-2">
@@ -207,7 +214,7 @@ export default function Navbar() {
                     </div>
                     
                     <div className="p-5 bg-brand-dark text-center">
-                      <p className="text-[11px] font-bold text-white/50 uppercase tracking-[0.3em]">
+                      <p className="text-[11px] font-bold text-bg-primary/50 uppercase tracking-[0.3em]">
                         {t('nav.ultimate_suite')}
                       </p>
                     </div>
@@ -218,7 +225,7 @@ export default function Navbar() {
 
             <Link 
               to="/" 
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-brand-gray hover:text-brand-dark hover:bg-gray-50 transition-all"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-brand-gray hover:text-brand-dark hover:bg-bg-primary transition-all"
             >
               <LayoutDashboard className="w-4 h-4" />
               {t('nav.dashboard')}
@@ -227,9 +234,61 @@ export default function Navbar() {
         </div>
 
         <div className="flex items-center gap-4">
-          <button className="px-6 py-2 bg-brand-red text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-red-600 transition-all shadow-lg shadow-brand-red/20">
-            {t('nav.get_started')}
-          </button>
+          {user ? (
+            <div className="relative">
+              <button 
+                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                className="flex items-center gap-2 p-1 pr-3 rounded-full bg-bg-primary border border-border-primary hover:border-brand-red/50 transition-all"
+              >
+                <img 
+                  src={user.user_metadata.avatar_url || `https://ui-avatars.com/api/?name=${user.user_metadata.full_name}`} 
+                  alt={user.user_metadata.full_name || 'User'} 
+                  className="w-8 h-8 rounded-full border border-border-primary"
+                  referrerPolicy="no-referrer"
+                />
+                <span className="text-sm font-bold text-brand-dark hidden sm:block">
+                  {user.user_metadata.full_name?.split(' ')[0]}
+                </span>
+                <ChevronDown className={`w-4 h-4 text-brand-gray transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              <AnimatePresence>
+                {isProfileOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute top-full right-0 mt-2 w-48 bg-card-bg border border-border-primary rounded-2xl shadow-2xl overflow-hidden z-50"
+                  >
+                    <div className="p-4 border-b border-border-primary bg-bg-primary/30">
+                      <p className="text-xs font-bold text-brand-gray uppercase tracking-widest mb-1">Account</p>
+                      <p className="text-sm font-bold text-brand-dark truncate">{user.email}</p>
+                    </div>
+                    <div className="p-2">
+                      <button 
+                        onClick={() => {
+                          logout();
+                          setIsProfileOpen(false);
+                        }}
+                        className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-bold text-brand-gray hover:text-brand-red hover:bg-brand-red/5 transition-all"
+                      >
+                        <LogOut className="w-4 h-4" />
+                        Sign Out
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          ) : (
+            <Link 
+              to="/login"
+              className="px-6 py-2 bg-brand-red text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-red-600 transition-all shadow-lg shadow-brand-red/20 flex items-center gap-2"
+            >
+              <UserIcon className="w-4 h-4" />
+              Login
+            </Link>
+          )}
         </div>
       </div>
     </nav>

@@ -50,9 +50,9 @@ const FeatureCard = ({ icon: Icon, title, description, delay, id }: {
   >
     <Link 
       to={id ? `/#${id}` : '/'}
-      className="block h-full bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group relative overflow-hidden"
+      className="block h-full bg-card-bg p-6 rounded-3xl border border-border-primary shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group relative overflow-hidden"
     >
-      <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center mb-4 group-hover:bg-brand-red/10 transition-colors">
+      <div className="w-12 h-12 rounded-2xl bg-bg-primary flex items-center justify-center mb-4 group-hover:bg-brand-red/10 transition-colors">
         <Icon className="w-6 h-6 text-brand-dark group-hover:text-brand-red transition-colors" />
       </div>
       <h3 className="text-lg font-bold text-brand-dark mb-2 tracking-tight">
@@ -68,7 +68,7 @@ const FeatureCard = ({ icon: Icon, title, description, delay, id }: {
 const FAQItem = ({ question, answer }: { question: string, answer: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className="border-b border-gray-100 last:border-0">
+    <div className="border-b border-border-primary last:border-0">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full py-6 flex items-center justify-between text-left group"
@@ -321,7 +321,7 @@ export default function Features() {
   }, [language]);
 
   return (
-    <div className="bg-white min-h-screen">
+    <div className="bg-bg-primary min-h-screen">
       {/* 1. Hero Section */}
       <section className="relative pt-32 pb-20 lg:pt-48 lg:pb-32 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
@@ -351,7 +351,7 @@ export default function Features() {
                 </Link>
                 <Link
                   to="/pricing"
-                  className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-brand-dark border-2 border-gray-100 rounded-2xl text-lg font-black uppercase tracking-widest hover:bg-gray-50 transition-all"
+                  className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-card-bg text-brand-dark border-2 border-border-primary rounded-2xl text-lg font-black uppercase tracking-widest hover:bg-bg-primary transition-all"
                 >
                   {cur.hero.pricing}
                 </Link>
@@ -365,14 +365,14 @@ export default function Features() {
               className="relative hidden lg:block"
             >
               <div className="absolute inset-0 bg-brand-red/10 blur-[120px] rounded-full -z-10" />
-              <div className="bg-white p-4 rounded-[3rem] shadow-2xl border border-gray-100 relative overflow-hidden">
+              <div className="bg-card-bg p-4 rounded-[3rem] shadow-2xl border border-border-primary relative overflow-hidden">
                 <img 
                   src="https://picsum.photos/seed/ytgrowth/800/600" 
                   alt="YT Growth Dashboard Illustration" 
                   className="rounded-[2.5rem] w-full h-auto"
                   referrerPolicy="no-referrer"
                 />
-                <div className="absolute bottom-8 left-8 right-8 bg-white/80 backdrop-blur-md p-6 rounded-2xl border border-white/20 shadow-lg">
+                <div className="absolute bottom-8 left-8 right-8 bg-card-bg/80 backdrop-blur-md p-6 rounded-2xl border border-white/20 shadow-lg">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-10 h-10 rounded-full bg-brand-red flex items-center justify-center">
                       <TrendingUp className="w-5 h-5 text-white" />
@@ -398,7 +398,7 @@ export default function Features() {
       </section>
 
       {/* 2. Value Proposition Section */}
-      <section className="py-24 bg-gray-50">
+      <section className="py-24 bg-bg-primary">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-black text-brand-dark mb-4 tracking-tight">{cur.trust.title}</h2>
@@ -406,7 +406,7 @@ export default function Features() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {cur.trust.cards.map((card, i) => (
-              <div key={i} className="bg-white p-10 rounded-[2.5rem] shadow-sm border border-gray-100">
+              <div key={i} className="bg-card-bg p-10 rounded-[2.5rem] shadow-sm border border-border-primary">
                 <div className={`w-14 h-14 rounded-2xl ${i === 0 ? 'bg-blue-500' : 'bg-emerald-500'} flex items-center justify-center mb-6`}>
                   <card.icon className="w-7 h-7 text-white" />
                 </div>
@@ -433,8 +433,8 @@ export default function Features() {
                   const icons = [Target, Zap, Users, BarChart3, Globe, ShieldCheck];
                   const Icon = icons[i % icons.length];
                   return (
-                    <div key={i} className="flex items-center gap-3 p-4 rounded-2xl bg-gray-50 border border-gray-100">
-                      <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm">
+                    <div key={i} className="flex items-center gap-3 p-4 rounded-2xl bg-bg-primary border border-border-primary">
+                      <div className="w-10 h-10 rounded-xl bg-card-bg flex items-center justify-center shadow-sm">
                         <Icon className="w-5 h-5 text-brand-red" />
                       </div>
                       <span className="text-sm font-bold text-brand-dark">{item}</span>
@@ -448,7 +448,7 @@ export default function Features() {
               <img 
                 src="https://picsum.photos/seed/success/800/800" 
                 alt="Success Illustration" 
-                className="rounded-[3rem] shadow-2xl border border-gray-100"
+                className="rounded-[3rem] shadow-2xl border border-border-primary"
                 referrerPolicy="no-referrer"
               />
             </div>
@@ -457,13 +457,13 @@ export default function Features() {
       </section>
 
       {/* 6. FAQ Section */}
-      <section className="py-24 bg-gray-50">
+      <section className="py-24 bg-bg-primary">
         <div className="max-w-4xl mx-auto px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-black text-brand-dark mb-4 tracking-tight">{cur.faq.title}</h2>
             <p className="text-lg text-brand-gray font-medium">{cur.faq.description}</p>
           </div>
-          <div className="bg-white rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-gray-100">
+          <div className="bg-card-bg rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-border-primary">
             {cur.faq.items.map((item, i) => (
               <FAQItem key={i} question={item.q} answer={item.a} />
             ))}
@@ -472,7 +472,7 @@ export default function Features() {
       </section>
 
       {/* 7. SEO Footer Content & Final CTA */}
-      <section className="py-32 bg-white">
+      <section className="py-32 bg-bg-primary">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 40 }}

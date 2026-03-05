@@ -1,17 +1,40 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
+:root {
+  --brand-color: #FF0000;
+  --bg-primary: #F9F9F9;
+  --text-primary: #0F0F0F;
+  --card-bg: #FFFFFF;
+  --border-color: #E5E7EB;
+  --text-secondary: #606060;
+}
+
+.dark, [data-theme='dark'] {
+  --bg-primary: #0F0F0F;
+  --text-primary: #F9F9F9;
+  --card-bg: #1A1A1A;
+  --border-color: #2D2D2D;
+  --text-secondary: #A0A0A0;
+}
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   
-  --color-brand-red: #FF0000;
-  --color-brand-dark: #0F0F0F;
-  --color-brand-gray: #606060;
+  --color-brand-red: var(--brand-color);
+  --color-brand-dark: var(--text-primary);
+  --color-brand-gray: var(--text-secondary);
+  --color-bg-primary: var(--bg-primary);
+  --color-card-bg: var(--card-bg);
+  --color-border-primary: var(--border-color);
 }
 
 @layer base {
+  html {
+    @apply bg-bg-primary text-brand-dark;
+  }
   body {
-    @apply bg-[#F9F9F9] text-brand-dark font-sans;
+    @apply bg-bg-primary text-brand-dark font-sans transition-colors duration-300;
   }
 }
 
@@ -32,7 +55,7 @@
 }
 
 .input-field {
-  @apply w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red transition-all;
+  @apply w-full px-4 py-3 rounded-xl border border-border-primary bg-card-bg text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red transition-all placeholder:text-brand-gray;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -44,5 +67,5 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  @apply bg-gray-200 rounded-full hover:bg-gray-300 transition-colors;
+  @apply bg-border-primary rounded-full hover:bg-brand-gray/30 transition-colors;
 }

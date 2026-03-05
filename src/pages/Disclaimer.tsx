@@ -53,7 +53,7 @@ const Disclaimer = () => {
   ];
 
   return (
-    <div className="bg-white min-h-screen pt-24 pb-20">
+    <div className="bg-bg-primary min-h-screen pt-24 pb-20">
       {/* SEO Header Section */}
       <header className="max-w-7xl mx-auto px-6 lg:px-8 text-center mb-20">
         <motion.div
@@ -63,7 +63,7 @@ const Disclaimer = () => {
         >
           <Link 
             to="/" 
-            className="inline-flex items-center gap-2 text-gray-400 hover:text-brand-red font-bold text-sm mb-8 transition-colors uppercase tracking-widest"
+            className="inline-flex items-center gap-2 text-brand-gray hover:text-brand-red font-bold text-sm mb-8 transition-colors uppercase tracking-widest"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Home
@@ -71,10 +71,10 @@ const Disclaimer = () => {
           <h1 className="text-5xl md:text-7xl font-black text-brand-dark mb-8 tracking-tighter leading-none">
             Legal <span className="text-brand-red">Disclaimer</span>
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed font-medium">
+          <p className="text-xl text-brand-gray max-w-3xl mx-auto leading-relaxed font-medium">
             The information provided by YTGrowth on this website is for general informational and analytical purposes only. By using this platform, you acknowledge and agree to the terms outlined below.
           </p>
-          <div className="mt-8 flex items-center justify-center gap-4 text-sm text-gray-400 font-bold uppercase tracking-widest">
+          <div className="mt-8 flex items-center justify-center gap-4 text-sm text-brand-gray font-bold uppercase tracking-widest">
             <span>Last Updated: March 3, 2026</span>
           </div>
         </motion.div>
@@ -93,20 +93,20 @@ const Disclaimer = () => {
               className="group"
             >
               <div className="flex items-start gap-6">
-                <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center flex-shrink-0 group-hover:bg-brand-red/10 transition-colors duration-500">
-                  <section.icon className="w-6 h-6 text-gray-400 group-hover:text-brand-red transition-colors duration-500" />
+                <div className="w-12 h-12 rounded-2xl bg-bg-primary flex items-center justify-center flex-shrink-0 group-hover:bg-brand-red/10 transition-colors duration-500">
+                  <section.icon className="w-6 h-6 text-brand-gray group-hover:text-brand-red transition-colors duration-500" />
                 </div>
                 <div>
                   <h2 className="text-2xl font-black text-brand-dark mb-4 tracking-tight">
                     {section.title}
                   </h2>
-                  <p className="text-lg text-gray-600 leading-relaxed">
+                  <p className="text-lg text-brand-gray leading-relaxed">
                     {section.content}
                   </p>
                 </div>
               </div>
               {index !== sections.length - 1 && (
-                <div className="mt-12 h-px bg-gray-100 w-full" />
+                <div className="mt-12 h-px bg-border-primary w-full" />
               )}
             </motion.section>
           ))}
