@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, Copy, Check, Loader2, Sparkles, Link as LinkIcon, Clipboard, XCircle, CheckCircle2, ExternalLink, ThumbsUp, Eye, Search, Filter, TrendingUp, Users, Calendar, Globe, Languages, Smartphone, Tv, Zap, Target, Lightbulb, FileText, Image as ImageIcon, ChevronDown, ChevronUp, Download, Layout, Palette, MousePointer2, Info, Video, Upload, Monitor, Clock, Edit, AlertCircle, Tag, MessageSquare, Bookmark, BookmarkCheck } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Loader2, Sparkles, Link as LinkIcon, Clipboard, XCircle, CheckCircle2, ExternalLink, ThumbsUp, Eye, Search, Filter, TrendingUp, Users, Calendar, Globe, Languages, Smartphone, Tv, Zap, Target, Lightbulb, FileText, Image as ImageIcon, Type as TypeIcon, ChevronDown, ChevronUp, Download, Layout, Palette, MousePointer2, Info, Video, Upload, Monitor, Clock, Edit, AlertCircle, Tag, MessageSquare, Bookmark, BookmarkCheck } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
@@ -65,6 +65,7 @@ export default function ToolPage() {
   const [trendTimeFrame, setTrendTimeFrame] = useState('Today');
   const [trendLocation, setTrendLocation] = useState('India');
   const [trendLanguage, setTrendLanguage] = useState('Hinglish');
+  const [plannerType, setPlannerType] = useState('Weekly');
 
   const handleFile = (file: File) => {
     if (file && file.type.startsWith('image/')) {
@@ -305,6 +306,18 @@ export default function ToolPage() {
           if (dashRawData.error) throw new Error(dashRawData.error);
           data = await gemini.generateAnalyticsDashboard(channelUrl, dashRawData, language);
           break;
+        case 'content-planner':
+          data = await gemini.generateContentPlanner(currentInput, plannerType);
+          break;
+        case 'title-analyzer':
+          data = await gemini.analyzeTitleScore(currentInput);
+          break;
+        case 'viral-hooks':
+          data = await gemini.generateViralHooks(currentInput);
+          break;
+        case 'thumb-text':
+          data = await gemini.generateThumbnailText(currentInput);
+          break;
         default:
           data = "This tool is under development. Please try Title Generator or Description Generator.";
       }
@@ -332,10 +345,16 @@ export default function ToolPage() {
     }
   };
 
-  const copyToClipboard = (text: string) => {
+  const copyToClipboard = (text: string, id?: string) => {
     navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (id) {
+      setCopiedId(id);
+      setTimeout(() => setCopiedId(null), 2000);
+    } else {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+    setToast('Copied to clipboard!');
   };
 
   const handlePaste = async () => {
@@ -352,6 +371,10 @@ export default function ToolPage() {
   const isSentiment = tool.id === 'sentiment';
   const isGlobalReach = tool.id === 'global-reach';
   const isAnalyticsDash = tool.id === 'analytics-dash';
+  const isPlanner = tool.id === 'content-planner';
+  const isTitleAnalyzer = tool.id === 'title-analyzer';
+  const isViralHooks = tool.id === 'viral-hooks';
+  const isThumbText = tool.id === 'thumb-text';
 
   return (
     <div className="max-w-4xl mx-auto px-4 pt-24 pb-12">
@@ -845,6 +868,10 @@ export default function ToolPage() {
                     tool.id === 'name-ideas' ? "Apne niche ke hisaab se keywords likhein (e.g., Cooking, Fitness)..." :
                     tool.id === 'comp-spy' ? "Competitor ka channel link ya topic yahan dalein (2-3 links separate with comma or newline)..." :
                     tool.id === 'trending-topics' ? "Enter your niche (e.g. Tech, Gaming, Cooking)..." :
+                    tool.id === 'content-planner' ? "Enter your niche (e.g. Tech, Gaming, Cooking)..." :
+                    tool.id === 'title-analyzer' ? "Enter your video title to analyze..." :
+                    tool.id === 'viral-hooks' ? "Enter your video topic or keywords..." :
+                    tool.id === 'thumb-text' ? "Enter your video topic or keywords..." :
                     "Enter your video topic or keywords here..."
                   }
                   value={input}
@@ -871,6 +898,30 @@ export default function ToolPage() {
                   </>
                 )}
               </button>
+            )}
+
+            {tool.id === 'content-planner' && (
+              <div className="flex items-center gap-4 p-4 bg-bg-primary rounded-2xl border border-border-primary">
+                <div className="flex items-center gap-2">
+                  <Calendar className="w-4 h-4 text-brand-gray" />
+                  <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">Plan Type</span>
+                </div>
+                <div className="flex gap-2">
+                  {['Weekly', 'Monthly'].map((type) => (
+                    <button
+                      key={type}
+                      onClick={() => setPlannerType(type)}
+                      className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
+                        plannerType === type 
+                        ? 'bg-brand-red text-white shadow-md' 
+                        : 'bg-card-bg text-brand-gray border border-border-primary hover:border-brand-red hover:text-brand-red'
+                      }`}
+                    >
+                      {type}
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
 
             {tool.id === 'script-gen' && (
@@ -1010,6 +1061,10 @@ export default function ToolPage() {
               <p className="text-brand-gray font-black uppercase tracking-widest text-xs">
                 {tool.id === 'script-gen' ? `Writing your professional script in ${blueprintLanguage}...` : 
                  tool.id === 'shorts-ideas' ? `Generating viral shorts in ${shortsLanguage}...` :
+                 isPlanner ? "Creating your content plan..." :
+                 isTitleAnalyzer ? "Analyzing title strength..." :
+                 isViralHooks ? "Generating viral hooks..." :
+                 isThumbText ? "Creating thumbnail text..." :
                  isKeywordRes ? "Researching keywords..." : 
                  isSEOCheck ? "Analyzing video SEO..." : "Generating your results..."}
               </p>
@@ -1046,9 +1101,9 @@ export default function ToolPage() {
                       Brand Architect Results
                     </h3>
                   </div>
-                  <div className="space-y-4">
+                  <div className="space-y-4 step-container">
                     {result.map((item: any, idx: number) => (
-                      <div key={idx} className="flex flex-col md:flex-row gap-6 p-6 rounded-[2.5rem] bg-card-bg border border-border-primary shadow-sm hover:shadow-md transition-all group">
+                      <div key={idx} className="flex flex-col md:flex-row gap-6 p-6 rounded-[2.5rem] bg-card-bg border border-border-primary shadow-sm hover:shadow-md transition-all group step-box">
                         <div className="w-12 h-12 rounded-2xl bg-brand-dark text-white flex items-center justify-center shrink-0 font-black text-lg group-hover:bg-brand-red transition-colors shadow-lg">
                           {idx + 1}
                         </div>
@@ -1147,7 +1202,7 @@ export default function ToolPage() {
                   </div>
 
                   {/* Progress Dashboard - Centered */}
-                  <div className="flex flex-col md:flex-row justify-center items-center gap-8">
+                  <div className="flex flex-col md:flex-row justify-center items-center gap-8 flex-row-mobile">
                     {/* Watch Time Progress */}
                     <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm text-center w-full max-w-sm">
                       <h3 className="text-sm font-black text-brand-gray uppercase tracking-widest mb-6">Watch Time Progress</h3>
@@ -1329,8 +1384,8 @@ export default function ToolPage() {
                         </button>
                       </div>
 
-                      <div className="space-y-12">
-                        <div className="flex gap-6">
+                      <div className="space-y-12 step-container">
+                        <div className="flex gap-6 step-box">
                           <div className="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0 font-black text-lg">1</div>
                           <div className="space-y-2">
                             <h4 className="text-sm font-black text-brand-gray uppercase tracking-widest">
@@ -1392,7 +1447,7 @@ export default function ToolPage() {
                   <div ref={resultRef} className="p-8 text-brand-dark leading-[1.6] bg-card-bg">
                     <div className="space-y-12">
                       {/* Golden Slot Highlight */}
-                      <div className="bg-brand-red/10 border border-brand-red/20 rounded-[2rem] p-8 flex items-center justify-between shadow-sm">
+                      <div className="bg-brand-red/10 border border-brand-red/20 rounded-[2rem] p-8 flex items-center justify-between shadow-sm flex-row-mobile">
                         <div>
                           <h3 className="text-[10px] font-black text-brand-red uppercase tracking-[0.3em] mb-2">Golden Slot Today</h3>
                           <p className="text-4xl font-black text-brand-dark tracking-tighter">{result.goldenSlot}</p>
@@ -1727,6 +1782,115 @@ export default function ToolPage() {
                         </div>
                       ))}
                     </div>
+                  </div>
+                </div>
+              ) : (isPlanner && result?.items) ? (
+                <div className="space-y-6 step-container">
+                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm text-center">
+                    <h3 className="text-xl font-black text-brand-dark uppercase tracking-widest mb-2">{result.planType} Content Plan</h3>
+                    <p className="text-brand-gray text-sm">Your AI-generated content schedule for {input}</p>
+                  </div>
+                  <div className="grid grid-cols-1 gap-4">
+                    {result.items.map((item: any, idx: number) => (
+                      <div key={idx} className="p-6 rounded-[2rem] bg-card-bg border border-border-primary hover:border-brand-red transition-all group step-box">
+                        <div className="flex items-center gap-4 mb-3">
+                          <div className="w-10 h-10 rounded-xl bg-brand-red/10 text-brand-red flex items-center justify-center font-black text-xs">
+                            {item.day}
+                          </div>
+                          <h4 className="font-black text-brand-dark uppercase tracking-widest text-sm group-hover:text-brand-red transition-colors">{item.title}</h4>
+                        </div>
+                        <p className="text-brand-gray text-xs leading-relaxed pl-14">{item.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (isTitleAnalyzer && result?.score !== undefined) ? (
+                <div className="space-y-8">
+                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-10 shadow-sm text-center">
+                    <div className="inline-flex items-center justify-center w-32 h-32 rounded-full border-8 border-brand-red/10 mb-6 relative">
+                      <span className="text-4xl font-black text-brand-dark">{result.score}</span>
+                      <span className="absolute -bottom-2 bg-brand-red text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">Title Score</span>
+                    </div>
+                    <h3 className="text-lg font-black text-brand-dark uppercase tracking-widest mb-2">"{input}"</h3>
+                    <p className="text-brand-gray text-sm">AI analysis of your video title strength</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 grid-cols-mobile-1">
+                    {[
+                      { label: 'Keywords', value: result.analysis.keywords, icon: Search },
+                      { label: 'Emotion', value: result.analysis.emotion, icon: Sparkles },
+                      { label: 'Curiosity', value: result.analysis.curiosity, icon: Eye },
+                      { label: 'Length', value: result.analysis.length, icon: TypeIcon }
+                    ].map((metric, idx) => (
+                      <div key={idx} className="p-6 rounded-[2rem] bg-card-bg border border-border-primary text-center">
+                        <metric.icon className="w-5 h-5 text-brand-red mx-auto mb-3" />
+                        <div className="text-xl font-black text-brand-dark mb-1">{metric.value}%</div>
+                        <div className="text-[10px] font-black text-brand-gray uppercase tracking-widest">{metric.label}</div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm overflow-hidden">
+                    <div className="px-8 py-4 border-b border-border-primary bg-bg-primary">
+                      <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">AI Suggestions for Improvement</span>
+                    </div>
+                    <div className="p-8 space-y-4 step-container">
+                      {result.suggestions.map((suggestion: string, idx: number) => (
+                        <div key={idx} className="flex items-start gap-4 p-4 rounded-2xl bg-bg-primary border border-border-primary group hover:border-brand-red transition-all step-box">
+                          <div className="w-8 h-8 rounded-xl bg-brand-red text-white flex items-center justify-center shrink-0 font-black text-xs shadow-lg shadow-brand-red/20">
+                            {idx + 1}
+                          </div>
+                          <p className="text-brand-dark text-sm font-bold pt-1.5">{suggestion}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (isViralHooks && Array.isArray(result)) ? (
+                <div className="space-y-6 step-container">
+                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm text-center">
+                    <h3 className="text-xl font-black text-brand-dark uppercase tracking-widest mb-2">Viral Hooks</h3>
+                    <p className="text-brand-gray text-sm">5 high-retention opening hooks for {input}</p>
+                  </div>
+                  <div className="grid grid-cols-1 gap-4">
+                    {result.map((item: any, idx: number) => (
+                      <div key={idx} className="p-6 rounded-[2rem] bg-card-bg border border-border-primary hover:border-brand-red transition-all group relative overflow-hidden step-box">
+                        <div className="absolute top-0 right-0 p-4">
+                          <button 
+                            onClick={() => copyToClipboard(item.hook, `hook-${idx}`)}
+                            className="p-2 rounded-xl bg-bg-primary border border-border-primary text-brand-gray hover:text-brand-red transition-all"
+                          >
+                            {copiedId === `hook-${idx}` ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-3 mb-4">
+                          <span className="px-3 py-1 rounded-full bg-brand-red/10 text-brand-red text-[10px] font-black uppercase tracking-widest">
+                            {item.style} Style
+                          </span>
+                        </div>
+                        <p className="text-brand-dark font-bold text-lg leading-relaxed pr-12">"{item.hook}"</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : (isThumbText && Array.isArray(result)) ? (
+                <div className="space-y-6 step-container">
+                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm text-center">
+                    <h3 className="text-xl font-black text-brand-dark uppercase tracking-widest mb-2">Thumbnail Text Ideas</h3>
+                    <p className="text-brand-gray text-sm">Short, punchy text for maximum CTR</p>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {result.map((text: string, idx: number) => (
+                      <div key={idx} className="p-6 rounded-[2rem] bg-card-bg border border-border-primary hover:border-brand-red transition-all group flex items-center justify-between step-box">
+                        <span className="text-xl font-black text-brand-dark uppercase tracking-tighter italic group-hover:text-brand-red transition-colors">"{text}"</span>
+                        <button 
+                          onClick={() => copyToClipboard(text, `text-${idx}`)}
+                          className="p-2 rounded-xl bg-bg-primary border border-border-primary text-brand-gray hover:text-brand-red transition-all"
+                        >
+                          {copiedId === `text-${idx}` ? <Check className="w-4 h-4 text-emerald-500" /> : <Copy className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </div>
               ) : (isSEOCheck && result?.videoInfo) ? (
@@ -2108,9 +2272,9 @@ export default function ToolPage() {
                         ))}
                       </div>
                     ) : tool.id === 'thumb-maker' && Array.isArray(result) ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 step-container">
                         {result.map((concept: any, idx: number) => (
-                          <div key={idx} className="bg-card-bg rounded-[2.5rem] border border-border-primary overflow-hidden shadow-sm hover:shadow-xl transition-all group">
+                          <div key={idx} className="bg-card-bg rounded-[2.5rem] border border-border-primary overflow-hidden shadow-sm hover:shadow-xl transition-all group step-box">
                             {/* Storyboard Header/Sketch Placeholder */}
                             <div className="aspect-video bg-bg-primary flex items-center justify-center border-b border-border-primary relative overflow-hidden">
                               <div className="absolute inset-0 opacity-10 pointer-events-none">
@@ -2238,11 +2402,11 @@ export default function ToolPage() {
                     ) : tool.id === 'shorts-ideas' && Array.isArray(result) ? (
                       <div className="space-y-4">
                         <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm p-6 md:p-10 font-sans">
-                          <div className="space-y-4">
+                          <div className="space-y-4 step-container">
                             {result.map((idea: any, idx: number) => (
                               <div 
                                 key={idx} 
-                                className="group relative bg-bg-primary/50 hover:bg-card-bg rounded-3xl border border-transparent hover:border-border-primary transition-all duration-500 p-6"
+                                className="group relative bg-bg-primary/50 hover:bg-card-bg rounded-3xl border border-transparent hover:border-border-primary transition-all duration-500 p-6 step-box"
                               >
                                 <div className="flex items-start justify-between gap-4">
                                   <div className="flex-1">
@@ -2317,12 +2481,12 @@ export default function ToolPage() {
                         </div>
                       </div>
                     ) : tool.id === 'hook-gen' && Array.isArray(result) ? (
-                      <div className="space-y-6">
+                      <div className="space-y-6 step-container">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {result.map((hook: string, idx: number) => (
                             <div 
                               key={idx} 
-                              className="group relative bg-card-bg rounded-[2rem] border border-border-primary shadow-sm hover:shadow-xl transition-all duration-300 p-8 flex flex-col"
+                              className="group relative bg-card-bg rounded-[2rem] border border-border-primary shadow-sm hover:shadow-xl transition-all duration-300 p-8 flex flex-col step-box"
                             >
                               <div className="flex items-start justify-between gap-4 mb-6">
                                 <div className="flex items-center gap-3">
@@ -3056,8 +3220,25 @@ export default function ToolPage() {
                         </button>
                       </div>
                     ) : (
-                      <div className="markdown-body">
-                        <ReactMarkdown>{result}</ReactMarkdown>
+                      <div className="space-y-4">
+                        <div className="markdown-body result-box">
+                          {typeof result === 'string' && (tool.id === 'tag-gen' || tool.id === 'hash-gen') ? (
+                            <div className="tag-grid">
+                              {result.split(/[,\s]+/).filter(Boolean).map((tag: string, i: number) => (
+                                <span key={i} className="tag-item">{tag.startsWith('#') ? tag : `#${tag}`}</span>
+                              ))}
+                            </div>
+                          ) : (
+                            <ReactMarkdown>{result}</ReactMarkdown>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => copyToClipboard(result)}
+                          className="w-full flex md:hidden items-center justify-center gap-2 py-4 rounded-2xl bg-brand-red text-white font-black uppercase tracking-widest shadow-lg shadow-brand-red/20"
+                        >
+                          <Copy className="w-5 h-5" />
+                          Copy Result
+                        </button>
                       </div>
                     )}
                   </div>

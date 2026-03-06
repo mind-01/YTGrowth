@@ -69,3 +69,119 @@
 .custom-scrollbar::-webkit-scrollbar-thumb {
   @apply bg-border-primary rounded-full hover:bg-brand-gray/30 transition-colors;
 }
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+  :root {
+    --container-padding: 16px;
+    --section-spacing: 24px;
+    --card-spacing: 16px;
+  }
+
+  .max-w-4xl {
+    padding-left: var(--container-padding) !important;
+    padding-right: var(--container-padding) !important;
+  }
+
+  h1, .text-3xl {
+    font-size: 20px !important;
+    line-height: 1.2 !important;
+  }
+
+  h2, .text-2xl {
+    font-size: 18px !important;
+  }
+
+  h3, .text-xl {
+    font-size: 16px !important;
+  }
+
+  .text-lg {
+    font-size: 15px !important;
+  }
+
+  p, .text-sm, .text-brand-gray {
+    font-size: 14px !important;
+  }
+
+  .text-xs, .text-[10px], .text-[9px] {
+    font-size: 12px !important;
+  }
+
+  .input-field, input[type="text"], textarea {
+    width: 100% !important;
+    min-height: 44px !important;
+    padding: 12px 16px !important;
+    font-size: 16px !important; /* Prevents iOS zoom */
+  }
+
+  .btn-primary, .btn-secondary, button {
+    min-height: 44px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  /* Stacked layouts */
+  .flex-row-mobile {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .grid-cols-mobile-1 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Tag wrapping */
+  .tag-grid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .tag-item {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    background: var(--bg-primary) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    white-space: nowrap !important;
+  }
+
+  /* Spacing */
+  .mobile-space-y {
+    margin-top: var(--section-spacing) !important;
+  }
+
+  .p-8, .p-10, .p-12 {
+    padding: var(--container-padding) !important;
+  }
+
+  .rounded-[2.5rem] {
+    border-radius: 1.5rem !important;
+  }
+
+  /* Result boxes */
+  .result-box {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    overflow-x: auto !important;
+    max-height: 400px !important;
+    padding: 12px !important;
+    border-radius: 12px !important;
+    background: var(--bg-primary) !important;
+  }
+
+  /* Steps stacking */
+  .step-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+
+  .step-box {
+    padding: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+}

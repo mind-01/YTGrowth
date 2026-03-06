@@ -18,7 +18,10 @@ import {
   MessageSquare,
   Globe,
   ShieldCheck,
-  Eye
+  Eye,
+  Calendar,
+  Target,
+  Flame
 } from 'lucide-react';
 
 export interface Tool {
@@ -38,14 +41,18 @@ export const TOOLS: Tool[] = [
   { id: 'hash-gen', name: 'Hashtag Generator', description: 'Generate trending hashtags', icon: Hash, category: 'SEO', path: '/tool/hash-gen' },
   { id: 'seo-check', name: 'SEO Checklist', description: 'Complete video optimization audit', icon: CheckSquare, category: 'SEO', path: '/tool/seo-check' },
   { id: 'keyword-res', name: 'Keyword Research', description: 'Find low competition keywords', icon: Search, category: 'SEO', path: '/tool/keyword-res' },
+  { id: 'title-analyzer', name: 'Title Score Analyzer', description: 'Evaluate your title strength', icon: Target, category: 'SEO', path: '/tool/title-analyzer' },
   
   // Content Tools
   { id: 'video-ideas', name: 'Video Idea Generator', description: 'Never run out of content ideas', icon: Lightbulb, category: 'Content', path: '/tool/video-ideas' },
   { id: 'shorts-ideas', name: 'Shorts Idea Generator', description: 'Viral ideas for YouTube Shorts', icon: Zap, category: 'Content', path: '/tool/shorts-ideas' },
   { id: 'hook-gen', name: 'Script Hook Generator', description: 'Grab attention in first 5 seconds', icon: Zap, category: 'Content', path: '/tool/hook-gen' },
+  { id: 'viral-hooks', name: 'Viral Hook Generator', description: 'Generate high-CTR video hooks', icon: Flame, category: 'Content', path: '/tool/viral-hooks' },
   { id: 'script-gen', name: 'Video Idea Blueprint', description: 'AI-powered video script outlines', icon: FileText, category: 'Content', path: '/tool/script-gen' },
   { id: 'thumb-maker', name: 'Thumbnail AI Ideas', description: 'AI concepts for thumbnails', icon: ImageIcon, category: 'Content', path: '/tool/thumb-maker' },
   { id: 'thumb-score', name: 'Thumbnail Score', description: 'Predict your thumbnail CTR', icon: BarChart3, category: 'Content', path: '/tool/thumb-score' },
+  { id: 'thumb-text', name: 'Thumbnail Text Generator', description: 'High-CTR text for thumbnails', icon: TypeIcon, category: 'Content', path: '/tool/thumb-text' },
+  { id: 'content-planner', name: 'Content Planner', description: 'Plan your video schedule', icon: Calendar, category: 'Content', path: '/tool/content-planner' },
 
   // Channel Tools
   { id: 'best-time', name: 'Best Time to Post', description: 'When to upload for max reach', icon: Clock, category: 'Channel', path: '/tool/best-time' },

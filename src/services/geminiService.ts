@@ -1100,3 +1100,136 @@ export const generateAnalyticsDashboard = async (url: string, auditData: any, la
   return JSON.parse(response.text);
 };
 
+export const generateContentPlanner = async (niche: string, type: string) => {
+  const ai = getAI();
+  const response = await ai.models.generateContent({
+    model: "gemini-flash-latest",
+    contents: `Generate a ${type} YouTube content plan for the niche: "${niche}". 
+    Provide a list of planned videos with titles and brief descriptions for each day/week.
+    Return a JSON object:
+    {
+      "planType": "${type}",
+      "items": [
+        { "day": "Day 1 / Week 1", "title": "Video Title", "description": "Short description" },
+        ...
+      ]
+    }`,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          planType: { type: Type.STRING },
+          items: {
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                day: { type: Type.STRING },
+                title: { type: Type.STRING },
+                description: { type: Type.STRING }
+              },
+              required: ["day", "title", "description"]
+            }
+          }
+        },
+        required: ["planType", "items"]
+      }
+    }
+  });
+  if (!response.text) throw new Error("No response from AI");
+  return JSON.parse(response.text);
+};
+
+export const analyzeTitleScore = async (title: string) => {
+  const ai = getAI();
+  const response = await ai.models.generateContent({
+    model: "gemini-flash-latest",
+    contents: `Evaluate the strength of this YouTube title: "${title}".
+    Analyze based on: Keyword presence, Emotional words, Curiosity factor, Length optimization, and Click potential.
+    Return a JSON object:
+    {
+      "score": number (0-100),
+      "analysis": {
+        "keywords": number (0-100),
+        "emotion": number (0-100),
+        "curiosity": number (0-100),
+        "length": number (0-100)
+      },
+      "suggestions": ["Suggestion 1", "Suggestion 2", "Suggestion 3"]
+    }`,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          score: { type: Type.NUMBER },
+          analysis: {
+            type: Type.OBJECT,
+            properties: {
+              keywords: { type: Type.NUMBER },
+              emotion: { type: Type.NUMBER },
+              curiosity: { type: Type.NUMBER },
+              length: { type: Type.NUMBER }
+            },
+            required: ["keywords", "emotion", "curiosity", "length"]
+          },
+          suggestions: { type: Type.ARRAY, items: { type: Type.STRING } }
+        },
+        required: ["score", "analysis", "suggestions"]
+      }
+    }
+  });
+  if (!response.text) throw new Error("No response from AI");
+  return JSON.parse(response.text);
+};
+
+export const generateViralHooks = async (topic: string) => {
+  const ai = getAI();
+  const response = await ai.models.generateContent({
+    model: "gemini-flash-latest",
+    contents: `Generate 5 powerful viral hooks for the first 5 seconds of a video about: "${topic}".
+    Generate multiple styles (e.g., Mistake-based, Secret-based, Trick-based).
+    Return a JSON array of objects:
+    [
+      { "style": "Mistake", "hook": "90% of creators are making this mistake..." },
+      ...
+    ]`,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.ARRAY,
+        items: {
+          type: Type.OBJECT,
+          properties: {
+            style: { type: Type.STRING },
+            hook: { type: Type.STRING }
+          },
+          required: ["style", "hook"]
+        }
+      }
+    }
+  });
+  if (!response.text) throw new Error("No response from AI");
+  return JSON.parse(response.text);
+};
+
+export const generateThumbnailText = async (topic: string) => {
+  const ai = getAI();
+  const response = await ai.models.generateContent({
+    model: "gemini-flash-latest",
+    contents: `Generate 10 short, high-CTR thumbnail text ideas for the topic: "${topic}".
+    Limit text to 2-4 words for maximum readability.
+    Return a JSON array of strings.`,
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.ARRAY,
+        items: { type: Type.STRING }
+      }
+    }
+  });
+  if (!response.text) throw new Error("No response from AI");
+  return JSON.parse(response.text);
+};
+
