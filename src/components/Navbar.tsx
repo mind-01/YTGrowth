@@ -54,6 +54,7 @@ export default function Navbar() {
   const { user, signInWithGoogle, logout } = useAuth();
   const { theme, setTheme, accentColor, setAccentColor } = useTheme();
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -121,7 +122,18 @@ export default function Navbar() {
           <Link to="/" className="flex items-center gap-2 group mr-4">
             <div className="w-9 h-9 bg-brand-red rounded-xl flex items-center justify-center text-white shadow-lg shadow-brand-red/30 group-hover:scale-110 transition-transform relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <TrendingUp className="w-5 h-5 relative z-10" />
+              <svg 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg" 
+                className="w-6 h-6 relative z-10"
+              >
+                <rect x="3" y="14" width="3" height="7" rx="1" fill="white" />
+                <rect x="8" y="10" width="3" height="11" rx="1" fill="white" />
+                <rect x="13" y="6" width="3" height="15" rx="1" fill="white" />
+                <rect x="18" y="2" width="3" height="19" rx="1" fill="white" />
+                <path d="M9 8L16 12L9 16V8Z" fill="black" />
+              </svg>
             </div>
             <span className="text-xl font-black tracking-tighter">
               <span className="text-brand-red">YT</span>
@@ -356,7 +368,18 @@ export default function Navbar() {
 
         <Link to="/" className="flex items-center gap-2">
           <div className="w-8 h-8 bg-brand-red rounded-lg flex items-center justify-center text-white shadow-md">
-            <TrendingUp className="w-4 h-4" />
+            <svg 
+              viewBox="0 0 24 24" 
+              fill="none" 
+              xmlns="http://www.w3.org/2000/svg" 
+              className="w-5 h-5"
+            >
+              <rect x="3" y="14" width="3" height="7" rx="1" fill="white" />
+              <rect x="8" y="10" width="3" height="11" rx="1" fill="white" />
+              <rect x="13" y="6" width="3" height="15" rx="1" fill="white" />
+              <rect x="18" y="2" width="3" height="19" rx="1" fill="white" />
+              <path d="M9 8L16 12L9 16V8Z" fill="black" />
+            </svg>
           </div>
           <span className="text-lg font-black tracking-tighter">
             <span className="text-brand-red">YT</span>
@@ -387,12 +410,12 @@ export default function Navbar() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {theme === 'dark' ? <Moon className="w-5 h-5 text-brand-red" /> : <Sun className="w-5 h-5 text-brand-red" />}
-                <span className="text-sm font-bold text-brand-dark dark:text-white">{t('settings.theme')}</span>
+                <span className="text-sm font-bold text-brand-dark">{t('settings.theme')}</span>
               </div>
-              <div className="flex bg-bg-primary dark:bg-brand-dark p-1 rounded-xl border border-border-primary">
+              <div className="flex bg-bg-primary dark:bg-brand-dark p-0.5 rounded-lg border border-border-primary/50">
                 <button
                   onClick={() => setTheme('light')}
-                  className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+                  className={`px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-widest transition-all ${
                     theme === 'light' ? 'bg-white dark:bg-brand-dark text-brand-red shadow-sm' : 'text-brand-gray'
                   }`}
                 >
@@ -400,7 +423,7 @@ export default function Navbar() {
                 </button>
                 <button
                   onClick={() => setTheme('dark')}
-                  className={`px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+                  className={`px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-widest transition-all ${
                     theme === 'dark' ? 'bg-brand-red text-white shadow-sm' : 'text-brand-gray'
                   }`}
                 >
@@ -413,7 +436,7 @@ export default function Navbar() {
             <div className="space-y-4">
               <div className="flex items-center gap-3">
                 <Palette className="w-5 h-5 text-brand-red" />
-                <span className="text-sm font-bold text-brand-dark dark:text-white">{t('settings.accent')}</span>
+                <span className="text-sm font-bold text-brand-dark">{t('settings.accent')}</span>
               </div>
               <div className="flex gap-3 justify-center">
                 {COLORS.map((color) => (
@@ -453,18 +476,36 @@ export default function Navbar() {
                 />
               </div>
             </div>
-            <div className="p-4 space-y-6">
+            <div className="p-4 space-y-4">
               {categories.map(category => {
                 const categoryTools = filteredTools.filter(t => t.category === category);
                 if (categoryTools.length === 0) return null;
+                const isExpanded = expandedCategory === category || searchQuery.length > 0;
+
                 return (
-                  <div key={category} className="space-y-3">
-                    <h3 className="text-[10px] font-black text-brand-gray uppercase tracking-widest border-b border-border-primary pb-2">
-                      {category === 'Analytics' ? t('cat.analytics_global') : t(`cat.${category.toLowerCase()}_tools`)}
-                    </h3>
-                    <div className="grid grid-cols-1 gap-2">
-                      {categoryTools.map(tool => renderToolLink(tool))}
-                    </div>
+                  <div key={category} className="space-y-2">
+                    <button 
+                      onClick={() => setExpandedCategory(expandedCategory === category ? null : category)}
+                      className="w-full flex items-center justify-between text-[10px] font-black text-brand-gray uppercase tracking-widest border-b border-border-primary pb-2 hover:text-brand-red transition-colors"
+                    >
+                      <span>{category === 'Analytics' ? t('cat.analytics_global') : t(`cat.${category.toLowerCase()}_tools`)}</span>
+                      <ChevronDown className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+                    </button>
+                    
+                    <AnimatePresence>
+                      {isExpanded && (
+                        <motion.div 
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="grid grid-cols-1 gap-2 pt-1">
+                            {categoryTools.map(tool => renderToolLink(tool))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 );
               })}

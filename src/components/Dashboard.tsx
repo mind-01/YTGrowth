@@ -184,27 +184,27 @@ export default function Dashboard() {
                 <Link
                   to={tool.path}
                   className={cn(
-                    "group block bg-card-bg rounded-2xl border border-border-primary p-6 card-hover",
-                    viewMode === 'list' && "flex items-center gap-6"
+                    "group block bg-card-bg rounded-2xl border border-border-primary p-5 sm:p-6 card-hover",
+                    viewMode === 'list' && "flex items-center gap-4 sm:gap-6"
                   )}
                 >
                   <div className={cn(
-                    "w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-colors",
+                    "w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-3 sm:mb-4 transition-colors",
                     "bg-bg-primary group-hover:bg-brand-red/10 text-brand-gray group-hover:text-brand-red",
                     viewMode === 'list' && "mb-0 shrink-0"
                   )}>
-                    <tool.icon className="w-6 h-6" />
+                    <tool.icon className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between mb-1">
-                      <h3 className="font-bold text-brand-dark group-hover:text-brand-red transition-colors">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1 gap-2">
+                      <h3 className="font-bold text-brand-dark group-hover:text-brand-red transition-colors text-sm sm:text-base truncate">
                         {t(`tool.${tool.id}.name`)}
                       </h3>
-                      <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-bg-primary text-brand-gray">
+                      <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-md bg-bg-primary text-brand-gray shrink-0">
                         {t(`cat.${tool.category.toLowerCase()}`)}
                       </span>
                     </div>
-                    <p className="text-sm text-brand-gray line-clamp-2">
+                    <p className="text-xs sm:text-sm text-brand-gray line-clamp-2 leading-relaxed">
                       {t(`tool.${tool.id}.desc`)}
                     </p>
                   </div>

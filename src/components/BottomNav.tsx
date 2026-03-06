@@ -31,8 +31,8 @@ const BottomNav = () => {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-brand-dark border-t border-gray-100 dark:border-border-primary shadow-[0_-8px_30px_rgba(0,0,0,0.04)] z-50 h-[70px] px-2 md:hidden">
-      <div className="max-w-md mx-auto h-full flex items-center justify-between">
+    <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-brand-dark border-t border-gray-100 dark:border-border-primary shadow-[0_-8px_30px_rgba(0,0,0,0.04)] z-50 h-[70px] px-1 md:hidden">
+      <div className="h-full flex items-center justify-around max-w-lg mx-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.tab && location.pathname === '/';
@@ -41,16 +41,16 @@ const BottomNav = () => {
             <button
               key={item.tab}
               onClick={() => handleTabClick(item.tab)}
-              className={`flex flex-col items-center justify-center gap-1 transition-all relative w-16 ${
+              className={`flex flex-col items-center justify-center gap-0.5 transition-all relative flex-1 min-w-0 ${
                 isActive ? 'text-brand-red' : 'text-brand-gray hover:text-brand-dark dark:hover:text-white'
               }`}
             >
               <div className={`p-1.5 rounded-xl transition-all ${isActive ? 'bg-brand-red/10' : ''}`}>
                 <Icon 
-                  className={`w-6 h-6 transition-all ${isActive ? 'stroke-[2.5px]' : 'stroke-2'}`} 
+                  className={`w-5 h-5 transition-all ${isActive ? 'stroke-[2.5px]' : 'stroke-2'}`} 
                 />
               </div>
-              <span className={`text-[10px] font-black uppercase tracking-tight ${
+              <span className={`text-[9px] font-black uppercase tracking-tighter leading-none text-center truncate w-full px-1 ${
                 isActive ? 'text-brand-red' : 'text-brand-gray font-bold'
               }`}>
                 {item.label}
