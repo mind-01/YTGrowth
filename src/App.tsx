@@ -19,6 +19,8 @@ import SettingsPage from './pages/SettingsPage';
 import Navbar from './components/Navbar';
 import BottomNav from './components/BottomNav';
 import Footer from './components/Footer';
+import Customizer from './components/Customizer';
+import ProfileMenu from './components/ProfileMenu';
 import { Link } from 'react-router-dom';
 
 export default function App() {
@@ -48,6 +50,10 @@ export default function App() {
             <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </main>
+
+        {/* Global UI Elements */}
+        <Customizer />
+        <ProfileMenu />
 
         {/* Footer & Navigation */}
         <Footer />

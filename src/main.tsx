@@ -5,13 +5,16 @@ import './index.css';
 import { LanguageProvider } from './contexts/LanguageContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { AuthProvider } from './contexts/AuthContext';
+import { MobileNavProvider } from './contexts/MobileNavContext';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <LanguageProvider>
       <ThemeProvider>
         <AuthProvider>
-          <App />
+          <MobileNavProvider>
+            <App />
+          </MobileNavProvider>
         </AuthProvider>
       </ThemeProvider>
     </LanguageProvider>

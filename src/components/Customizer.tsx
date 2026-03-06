@@ -9,10 +9,10 @@ export default function Customizer() {
 
   return (
     <>
-      {/* Floating Toggle Button */}
+      {/* Floating Toggle Button - Hidden on mobile, visible on desktop */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed right-0 top-1/2 -translate-y-1/2 z-50 bg-brand-red text-white p-3 rounded-l-2xl shadow-2xl hover:pr-5 transition-all group"
+        className="fixed right-0 top-1/2 -translate-y-1/2 z-50 bg-brand-red text-white p-3 rounded-l-2xl shadow-2xl hover:pr-5 transition-all group hidden lg:block"
         aria-label="Customize Website"
       >
         <Settings className="w-6 h-6 group-hover:rotate-90 transition-transform duration-500" />

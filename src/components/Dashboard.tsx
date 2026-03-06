@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Search, Filter, LayoutGrid, List, Bookmark, BookmarkCheck } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useMobileNav } from '../contexts/MobileNavContext';
 import { TOOLS, Tool } from '../constants';
 import { Link, useLocation } from 'react-router-dom';
 import { clsx, type ClassValue } from 'clsx';
@@ -15,6 +16,7 @@ function cn(...inputs: ClassValue[]) {
 export default function Dashboard() {
   const { t } = useLanguage();
   const { user, savedTools, toggleSaveTool, isSaved } = useAuth();
+  const { activeTab } = useMobileNav();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -22,7 +24,33 @@ export default function Dashboard() {
 
   const categories = ['All', 'Saved', 'SEO', 'Content', 'Channel', 'Analytics'];
 
-  const filteredTools = TOOLS.filter(tool => {
+  // Mobile filtering logic
+  const getMobileFilteredTools = (tools: Tool[]) => {
+    // Only apply mobile filtering on small screens
+    if (window.innerWidth >= 768) return tools;
+
+    switch (activeTab) {
+      case 'Video':
+        return tools.filter(t => [
+          'title-gen', 'desc-gen', 'video-ideas', 'script-gen', 
+          'thumb-maker', 'thumb-score', 'best-time', 'name-ideas',
+          'seo-check', 'keyword-res'
+        ].includes(t.id));
+      case 'Shorts':
+        return tools.filter(t => [
+          'shorts-ideas', 'hook-gen', 'tag-gen', 'hash-gen'
+        ].includes(t.id));
+      case 'Analytics':
+        return tools.filter(t => [
+          'analytics-dash', 'comp-spy', 'trending-topics', 
+          'sentiment', 'global-reach', 'audit', 'monetization'
+        ].includes(t.id));
+      default:
+        return tools;
+    }
+  };
+
+  const filteredTools = getMobileFilteredTools(TOOLS.filter(tool => {
     const matchesSearch = tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          tool.description.toLowerCase().includes(searchQuery.toLowerCase());
     
@@ -33,7 +61,7 @@ export default function Dashboard() {
     }
 
     return matchesSearch && matchesCategory;
-  });
+  }));
 
   React.useEffect(() => {
     const hash = window.location.hash;
@@ -50,13 +78,13 @@ export default function Dashboard() {
   }, [location.hash]);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8 sm:px-6 lg:px-8">
       {/* Hero Section */}
-      <div className="text-center mb-12">
+      <div className="text-center mb-6 sm:mb-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="inline-block px-4 py-1.5 mb-4 rounded-full bg-brand-red/10 text-brand-red text-sm font-semibold tracking-wide uppercase"
+          className="inline-block px-3 py-1 sm:px-4 sm:py-1.5 mb-3 sm:mb-4 rounded-full bg-brand-red/10 text-brand-red text-[10px] sm:text-sm font-semibold tracking-wide uppercase"
         >
           {t('hero.badge')}
         </motion.div>
@@ -64,29 +92,29 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-4xl sm:text-6xl font-extrabold text-brand-dark tracking-tight mb-4"
+          className="text-2xl sm:text-4xl lg:text-6xl font-extrabold text-brand-dark tracking-tight mb-3 sm:mb-4 leading-tight"
         >
-          {t('hero.title')} <br />
+          {t('hero.title')} <br className="hidden sm:block" />
           <span className="text-brand-red">{t('hero.subtitle')}</span>
         </motion.h1>
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-lg text-brand-gray max-w-2xl mx-auto"
+          className="text-sm sm:text-lg text-brand-gray max-w-2xl mx-auto px-2"
         >
           {t('hero.description')}
         </motion.p>
       </div>
 
       {/* Search and Filters */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between mb-8">
+      <div className="flex flex-col md:flex-row gap-3 sm:gap-4 items-center justify-between mb-6 sm:mb-8">
         <div className="relative w-full md:w-96">
-          <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-brand-gray w-5 h-5" />
+          <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 text-brand-gray w-4 h-4 sm:w-5 h-5" />
           <input
             type="text"
             placeholder={t('search.placeholder')}
-            className="input-field !pl-14"
+            className="input-field !pl-11 sm:!pl-14 !py-2.5 sm:!py-3 text-sm sm:text-base"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
