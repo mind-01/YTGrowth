@@ -383,43 +383,6 @@ export default function Navbar() {
             exit={{ opacity: 0, y: -20 }}
             className="lg:hidden absolute top-full left-0 right-0 bg-card-bg border-b border-border-primary shadow-2xl z-50 p-6 space-y-8"
           >
-            {/* Account Info (Mobile Only) */}
-            {user && (
-              <div className="flex items-center gap-4 p-4 bg-bg-primary dark:bg-brand-dark rounded-2xl border border-border-primary">
-                <img 
-                  src={avatarUrl} 
-                  alt={displayName} 
-                  className="w-12 h-12 rounded-xl border border-border-primary object-cover"
-                />
-                <div className="flex-grow">
-                  <p className="text-sm font-black text-brand-dark dark:text-white">{displayName}</p>
-                  <Link to="/user-dashboard" onClick={() => setActiveMenu(null)} className="text-xs text-brand-red font-bold hover:underline">
-                    View Dashboard
-                  </Link>
-                </div>
-                <button 
-                  onClick={() => {
-                    logout();
-                    setActiveMenu(null);
-                  }}
-                  className="p-2 text-brand-gray hover:text-brand-red transition-colors"
-                >
-                  <LogOut className="w-5 h-5" />
-                </button>
-              </div>
-            )}
-
-            {!user && (
-              <Link 
-                to="/login" 
-                onClick={() => setActiveMenu(null)}
-                className="flex items-center justify-center gap-3 p-4 bg-brand-red text-white rounded-2xl font-black uppercase tracking-widest text-sm shadow-lg shadow-brand-red/20"
-              >
-                <UserIcon className="w-5 h-5" />
-                Sign In / Sign Up
-              </Link>
-            )}
-
             {/* Theme Toggle */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
