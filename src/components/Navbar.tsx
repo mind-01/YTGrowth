@@ -18,15 +18,14 @@ interface NavDropdownProps {
 
 function NavDropdown({ label, isOpen, onMouseEnter, onMouseLeave, children, className = "" }: NavDropdownProps) {
   return (
-    <div 
+    <div
       className={`relative h-16 flex items-center ${className}`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
       <button
-        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-          isOpen ? 'bg-brand-red text-white' : 'bg-bg-primary text-brand-gray hover:bg-border-primary'
-        }`}
+        className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${isOpen ? 'bg-brand-red text-white' : 'bg-bg-primary text-brand-gray hover:bg-border-primary'
+          }`}
       >
         <span>{label}</span>
         <ChevronDown className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
@@ -83,7 +82,7 @@ export default function Navbar() {
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
   const avatarUrl = user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=EA3323&color=fff`;
 
-  const filteredTools = TOOLS.filter(tool => 
+  const filteredTools = TOOLS.filter(tool =>
     tool.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     tool.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -92,17 +91,15 @@ export default function Navbar() {
     <Link
       key={tool.id}
       to={tool.path}
-      className={`flex items-start gap-3 p-3 rounded-2xl transition-all group ${
-        currentToolId === tool.id 
-          ? 'bg-brand-red/5 text-brand-red' 
-          : 'hover:bg-brand-red/5 text-brand-dark'
-      }`}
+      className={`flex items-start gap-3 p-3 rounded-2xl transition-all group ${currentToolId === tool.id
+        ? 'bg-brand-red/5 text-brand-red'
+        : 'hover:bg-brand-red/5 text-brand-dark'
+        }`}
     >
-      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-        currentToolId === tool.id 
-          ? 'bg-brand-red text-white' 
-          : 'bg-bg-primary group-hover:bg-brand-red/10 group-hover:text-brand-red text-brand-gray'
-      }`}>
+      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${currentToolId === tool.id
+        ? 'bg-brand-red text-white'
+        : 'bg-bg-primary group-hover:bg-brand-red/10 group-hover:text-brand-red text-brand-gray'
+        }`}>
         <tool.icon className="w-4 h-4" />
       </div>
       <div className="min-w-0">
@@ -122,10 +119,10 @@ export default function Navbar() {
           <Link to="/" className="flex items-center gap-2 group mr-4">
             <div className="w-9 h-9 bg-brand-red rounded-xl flex items-center justify-center text-white shadow-lg shadow-brand-red/30 group-hover:scale-110 transition-transform relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-              <svg 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                xmlns="http://www.w3.org/2000/svg" 
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
                 className="w-6 h-6 relative z-10"
               >
                 <rect x="3" y="14" width="3" height="7" rx="1" fill="white" />
@@ -144,16 +141,15 @@ export default function Navbar() {
           <div className="flex items-center gap-2">
             {/* Category Shortcuts */}
             {['SEO', 'Content', 'Channel'].map((cat) => (
-              <div 
+              <div
                 key={cat}
                 className="relative h-16 flex items-center"
                 onMouseEnter={() => handleMouseEnter(cat.toLowerCase())}
                 onMouseLeave={handleMouseLeave}
               >
                 <button
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-                    activeMenu === cat.toLowerCase() ? 'bg-brand-red text-white' : 'bg-card-bg text-brand-gray hover:bg-bg-primary'
-                  }`}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${activeMenu === cat.toLowerCase() ? 'bg-brand-red text-white' : 'bg-card-bg text-brand-gray hover:bg-bg-primary'
+                    }`}
                 >
                   <span>{t(`cat.${cat.toLowerCase()}`)}</span>
                   <ChevronDown className={`w-4 h-4 transition-transform ${activeMenu === cat.toLowerCase() ? 'rotate-180' : ''}`} />
@@ -177,15 +173,14 @@ export default function Navbar() {
             ))}
 
             {/* All Tools Mega Menu */}
-            <div 
+            <div
               className="relative h-16 flex items-center"
               onMouseEnter={() => handleMouseEnter('all')}
               onMouseLeave={handleMouseLeave}
             >
               <button
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${
-                  activeMenu === 'all' ? 'bg-brand-red text-white' : 'bg-bg-primary text-brand-gray hover:bg-border-primary'
-                }`}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all ${activeMenu === 'all' ? 'bg-brand-red text-white' : 'bg-bg-primary text-brand-gray hover:bg-border-primary'
+                  }`}
               >
                 <span>{t('nav.all_tools')}</span>
                 <ChevronDown className={`w-4 h-4 transition-transform ${activeMenu === 'all' ? 'rotate-180' : ''}`} />
@@ -230,7 +225,7 @@ export default function Navbar() {
                         );
                       })}
                     </div>
-                    
+
                     <div className="p-5 bg-brand-dark text-center">
                       <p className="text-[11px] font-bold text-bg-primary/50 uppercase tracking-[0.3em]">
                         {t('nav.ultimate_suite')}
@@ -246,14 +241,14 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           {user ? (
             <div className="relative flex items-center gap-3">
-              <button 
+              <button
                 onClick={() => setIsProfileOpen(!isProfileOpen)}
                 className="flex items-center gap-2 p-1 pr-3 rounded-full bg-bg-primary border border-border-primary hover:border-brand-red/50 transition-all shadow-sm active:scale-95"
               >
                 <div className="relative">
-                  <img 
-                    src={avatarUrl} 
-                    alt={displayName} 
+                  <img
+                    src={avatarUrl}
+                    alt={displayName}
                     className="w-8 h-8 rounded-full border border-border-primary object-cover"
                     referrerPolicy="no-referrer"
                     onError={(e) => {
@@ -263,10 +258,10 @@ export default function Navbar() {
                   <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full" />
                 </div>
                 <div className="flex flex-col items-start leading-none hidden sm:flex">
-                  <span className="text-[13px] font-black text-brand-dark dark:text-white">
+                  <span className="text-[13px] font-black text-brand-dark">
                     {displayName.split(' ')[0]}
                   </span>
-                  <span className="text-[9px] font-bold text-brand-gray dark:text-gray-400 uppercase tracking-wider">
+                  <span className="text-[9px] font-bold text-brand-gray uppercase tracking-wider">
                     Creator
                   </span>
                 </div>
@@ -276,8 +271,8 @@ export default function Navbar() {
               <AnimatePresence>
                 {isProfileOpen && (
                   <>
-                    <div 
-                      className="fixed inset-0 z-40" 
+                    <div
+                      className="fixed inset-0 z-40"
                       onClick={() => setIsProfileOpen(false)}
                     />
                     <motion.div
@@ -288,15 +283,15 @@ export default function Navbar() {
                     >
                       <div className="p-6 border-b border-border-primary bg-bg-primary/30">
                         <div className="flex items-center gap-3 mb-3">
-                          <img 
-                            src={avatarUrl} 
-                            alt={displayName} 
+                          <img
+                            src={avatarUrl}
+                            alt={displayName}
                             className="w-10 h-10 rounded-full border border-border-primary"
                             referrerPolicy="no-referrer"
                           />
                           <div className="min-w-0">
-                            <p className="text-sm font-black text-brand-dark dark:text-white truncate">{displayName}</p>
-                            <p className="text-[10px] font-bold text-brand-gray dark:text-gray-400 truncate">{user.email}</p>
+                            <p className="text-sm font-black text-brand-dark truncate">{displayName}</p>
+                            <p className="text-[10px] font-bold text-brand-gray truncate">{user.email}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-red/10 text-brand-red text-[10px] font-black uppercase tracking-widest w-fit">
@@ -308,35 +303,35 @@ export default function Navbar() {
                         <Link
                           to="/user-dashboard"
                           onClick={() => setIsProfileOpen(false)}
-                          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-brand-dark dark:text-gray-300 hover:text-brand-red dark:hover:text-white hover:bg-bg-primary transition-all group"
+                          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-black hover:text-brand-dark hover:bg-bg-primary transition-all group"
                         >
                           <div className="w-8 h-8 rounded-xl bg-bg-primary flex items-center justify-center group-hover:bg-brand-red/10 group-hover:text-brand-red transition-colors">
                             <UserIcon className="w-4 h-4" />
                           </div>
-                          <span className="text-slate-900 dark:text-white">Account</span>
+                          <span>Account</span>
                         </Link>
                         <Link
                           to="/user-dashboard"
                           onClick={() => setIsProfileOpen(false)}
-                          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-brand-dark dark:text-gray-300 hover:text-brand-red dark:hover:text-white hover:bg-bg-primary transition-all group"
+                          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-black hover:text-brand-dark hover:bg-bg-primary transition-all group"
                         >
                           <div className="w-8 h-8 rounded-xl bg-bg-primary flex items-center justify-center group-hover:bg-brand-red/10 group-hover:text-brand-red transition-colors">
                             <Heart className="w-4 h-4" />
                           </div>
-                          <span className="text-slate-900 dark:text-white">Features</span>
+                          <span>Favorites</span>
                         </Link>
-                        <button 
+                        <button
                           onClick={() => {
                             logout();
                             setIsProfileOpen(false);
                           }}
-                          className="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold text-brand-dark dark:text-gray-300 hover:text-brand-red hover:bg-brand-red/5 transition-all group"
+                          className="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold text-black hover:text-brand-red hover:bg-brand-red/5 transition-all group"
                         >
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-xl bg-bg-primary flex items-center justify-center group-hover:bg-brand-red/10 group-hover:text-brand-red transition-colors">
                               <LogOut className="w-4 h-4" />
                             </div>
-                            <span className="text-slate-900 dark:text-white">Sign Out</span>
+                            <span>Sign Out</span>
                           </div>
                         </button>
                       </div>
@@ -346,7 +341,7 @@ export default function Navbar() {
               </AnimatePresence>
             </div>
           ) : (
-            <Link 
+            <Link
               to="/login"
               className="px-6 py-2 bg-brand-red text-white rounded-xl text-sm font-black uppercase tracking-widest hover:bg-red-600 transition-all shadow-lg shadow-brand-red/20 flex items-center gap-2"
             >
@@ -359,7 +354,7 @@ export default function Navbar() {
 
       {/* Mobile Navigation Top Bar */}
       <div className="lg:hidden flex items-center justify-between h-16 px-4">
-        <button 
+        <button
           onClick={() => setActiveMenu(activeMenu === 'all' ? null : 'all')}
           className="p-2 text-brand-dark hover:bg-bg-primary rounded-xl transition-colors"
         >
@@ -368,10 +363,10 @@ export default function Navbar() {
 
         <Link to="/" className="flex items-center gap-2">
           <div className="w-8 h-8 bg-brand-red rounded-lg flex items-center justify-center text-white shadow-md">
-            <svg 
-              viewBox="0 0 24 24" 
-              fill="none" 
-              xmlns="http://www.w3.org/2000/svg" 
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
               className="w-5 h-5"
             >
               <rect x="3" y="14" width="3" height="7" rx="1" fill="white" />
@@ -388,7 +383,7 @@ export default function Navbar() {
         </Link>
 
         <div className="flex items-center gap-2">
-          <button 
+          <button
             onClick={() => setActiveMenu(activeMenu === 'settings' ? null : 'settings')}
             className={`p-2 rounded-xl transition-colors ${activeMenu === 'settings' ? 'bg-brand-red text-white' : 'text-brand-dark hover:bg-bg-primary'}`}
           >
@@ -415,17 +410,15 @@ export default function Navbar() {
               <div className="flex bg-bg-primary dark:bg-bg-primary p-0.5 rounded-lg border border-border-primary/50">
                 <button
                   onClick={() => setTheme('light')}
-                  className={`px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-widest transition-all ${
-                    theme === 'light' ? 'bg-white dark:bg-bg-primary text-brand-red shadow-sm' : 'text-brand-gray'
-                  }`}
+                  className={`px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-widest transition-all ${theme === 'light' ? 'bg-white dark:bg-bg-primary text-brand-red shadow-sm' : 'text-brand-gray'
+                    }`}
                 >
                   {t('settings.light')}
                 </button>
                 <button
                   onClick={() => setTheme('dark')}
-                  className={`px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-widest transition-all ${
-                    theme === 'dark' ? 'bg-brand-red text-white shadow-sm' : 'text-brand-gray'
-                  }`}
+                  className={`px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-widest transition-all ${theme === 'dark' ? 'bg-brand-red text-white shadow-sm' : 'text-brand-gray'
+                    }`}
                 >
                   {t('settings.dark')}
                 </button>
@@ -443,9 +436,8 @@ export default function Navbar() {
                   <button
                     key={color}
                     onClick={() => setAccentColor(color)}
-                    className={`w-10 h-10 rounded-full border-2 transition-all ${
-                      accentColor === color ? 'border-brand-red scale-110 shadow-lg' : 'border-transparent'
-                    }`}
+                    className={`w-10 h-10 rounded-full border-2 transition-all ${accentColor === color ? 'border-brand-red scale-110 shadow-lg' : 'border-transparent'
+                      }`}
                     style={{ backgroundColor: color }}
                   />
                 ))}
@@ -484,17 +476,17 @@ export default function Navbar() {
 
                 return (
                   <div key={category} className="space-y-2">
-                    <button 
+                    <button
                       onClick={() => setExpandedCategory(expandedCategory === category ? null : category)}
                       className="w-full flex items-center justify-between text-[10px] font-black text-brand-gray uppercase tracking-widest border-b border-border-primary pb-2 hover:text-brand-red transition-colors"
                     >
                       <span>{category === 'Analytics' ? t('cat.analytics_global') : t(`cat.${category.toLowerCase()}_tools`)}</span>
                       <ChevronDown className={`w-3 h-3 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
                     </button>
-                    
+
                     <AnimatePresence>
                       {isExpanded && (
-                        <motion.div 
+                        <motion.div
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: 'auto', opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}
