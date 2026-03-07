@@ -48,7 +48,7 @@ export default function SettingsPage() {
           {user ? (
             <Link 
               to="/user-dashboard"
-              className="flex items-center gap-4 p-4 bg-card-bg dark:bg-brand-dark/50 border border-border-primary rounded-2xl hover:border-brand-red/30 transition-all group"
+              className="flex items-center gap-4 p-4 bg-card-bg dark:bg-bg-primary/50 border border-border-primary rounded-2xl hover:border-brand-red/30 transition-all group"
             >
               <img 
                 src={avatarUrl} 
@@ -64,9 +64,9 @@ export default function SettingsPage() {
           ) : (
             <Link 
               to="/login"
-              className="flex items-center gap-4 p-4 bg-card-bg dark:bg-brand-dark/50 border border-border-primary rounded-2xl hover:border-brand-red/30 transition-all group"
+              className="flex items-center gap-4 p-4 bg-card-bg dark:bg-bg-primary/50 border border-border-primary rounded-2xl hover:border-brand-red/30 transition-all group"
             >
-              <div className="w-12 h-12 rounded-xl bg-bg-primary dark:bg-brand-dark flex items-center justify-center text-brand-gray">
+              <div className="w-12 h-12 rounded-xl bg-bg-primary dark:bg-bg-primary flex items-center justify-center text-brand-gray">
                 <User className="w-6 h-6" />
               </div>
               <div className="flex-grow">

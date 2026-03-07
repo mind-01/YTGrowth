@@ -54,7 +54,7 @@ export default function ProfileMenu() {
             animate={{ y: 0 }}
             exit={{ y: '100%' }}
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed bottom-0 left-0 right-0 bg-white dark:bg-brand-dark rounded-t-[2.5rem] z-[70] p-8 pb-12 md:hidden border-t border-border-primary shadow-2xl"
+            className="fixed bottom-0 left-0 right-0 bg-white dark:bg-card-bg rounded-t-[2.5rem] z-[70] p-8 pb-12 md:hidden border-t border-border-primary shadow-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-8">
@@ -72,7 +72,7 @@ export default function ProfileMenu() {
                 </div>
               ) : (
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-bg-primary dark:bg-brand-dark/50 flex items-center justify-center text-brand-gray">
+                  <div className="w-12 h-12 rounded-2xl bg-bg-primary dark:bg-bg-primary/50 flex items-center justify-center text-brand-gray">
                     <User className="w-6 h-6" />
                   </div>
                   <div>
@@ -83,7 +83,7 @@ export default function ProfileMenu() {
               )}
               <button 
                 onClick={() => setIsProfileMenuOpen(false)}
-                className="p-2 bg-bg-primary dark:bg-brand-dark/50 rounded-xl text-brand-gray hover:text-brand-red transition-colors"
+                className="p-2 bg-bg-primary dark:bg-bg-primary/50 rounded-xl text-brand-gray hover:text-brand-red transition-colors"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -97,9 +97,9 @@ export default function ProfileMenu() {
                     <button
                       key={item.label}
                       onClick={() => handleItemClick(item.path)}
-                      className="w-full flex items-center gap-4 p-4 rounded-2xl bg-bg-primary dark:bg-brand-dark/30 border border-border-primary hover:border-brand-red/30 transition-all group"
+                      className="w-full flex items-center gap-4 p-4 rounded-2xl bg-bg-primary dark:bg-bg-primary/30 border border-border-primary hover:border-brand-red/30 transition-all group"
                     >
-                      <div className="w-10 h-10 rounded-xl bg-white dark:bg-brand-dark flex items-center justify-center text-brand-red shadow-sm group-hover:scale-110 transition-transform">
+                      <div className="w-10 h-10 rounded-xl bg-white dark:bg-bg-primary flex items-center justify-center text-brand-red shadow-sm group-hover:scale-110 transition-transform">
                         <item.icon className="w-5 h-5" />
                       </div>
                       <span className="text-sm font-black text-brand-dark dark:text-white uppercase tracking-widest">{item.label}</span>
@@ -112,7 +112,7 @@ export default function ProfileMenu() {
                       onClick={handleSignOut}
                       className="w-full flex items-center gap-4 p-4 rounded-2xl bg-brand-red/5 border border-brand-red/10 text-brand-red hover:bg-brand-red hover:text-white transition-all group"
                     >
-                      <div className="w-10 h-10 rounded-xl bg-white dark:bg-brand-dark flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                      <div className="w-10 h-10 rounded-xl bg-white dark:bg-bg-primary flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
                         <LogOut className="w-5 h-5" />
                       </div>
                       <span className="text-sm font-black uppercase tracking-widest">Sign Out</span>

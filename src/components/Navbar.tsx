@@ -412,11 +412,11 @@ export default function Navbar() {
                 {theme === 'dark' ? <Moon className="w-5 h-5 text-brand-red" /> : <Sun className="w-5 h-5 text-brand-red" />}
                 <span className="text-sm font-bold text-brand-dark">{t('settings.theme')}</span>
               </div>
-              <div className="flex bg-bg-primary dark:bg-brand-dark p-0.5 rounded-lg border border-border-primary/50">
+              <div className="flex bg-bg-primary dark:bg-bg-primary p-0.5 rounded-lg border border-border-primary/50">
                 <button
                   onClick={() => setTheme('light')}
                   className={`px-3 py-1 rounded-md text-[9px] font-black uppercase tracking-widest transition-all ${
-                    theme === 'light' ? 'bg-white dark:bg-brand-dark text-brand-red shadow-sm' : 'text-brand-gray'
+                    theme === 'light' ? 'bg-white dark:bg-bg-primary text-brand-red shadow-sm' : 'text-brand-gray'
                   }`}
                 >
                   {t('settings.light')}
