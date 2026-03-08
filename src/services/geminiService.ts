@@ -1233,3 +1233,55 @@ export const generateThumbnailText = async (topic: string) => {
   return JSON.parse(response.text);
 };
 
+export const getVideoInfo = async (url: string) => {
+  const ai = getAI();
+  const response = await ai.models.generateContent({
+    model: "gemini-3-flash-preview",
+    contents: `Analyze this video URL and provide metadata: "${url}".
+    
+    Tasks:
+    1. Identify the real video title.
+    2. Identify the real video duration (format MM:SS or HH:MM:SS).
+    3. Determine if it's a Short/Reel/TikTok (isShort: true/false).
+    4. Provide a high-quality thumbnail URL (if you can find the real one, else use picsum with a relevant seed).
+    
+    Return a JSON object:
+    {
+      "title": string,
+      "duration": string,
+      "isShort": boolean,
+      "thumbnail": string,
+      "url": string
+    }`,
+    config: {
+      tools: [{ googleSearch: {} }],
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          title: { type: Type.STRING },
+          duration: { type: Type.STRING },
+          isShort: { type: Type.BOOLEAN },
+          thumbnail: { type: Type.STRING },
+          url: { type: Type.STRING }
+        },
+        required: ["title", "duration", "isShort", "thumbnail", "url"]
+      }
+    }
+  });
+  if (!response.text) throw new Error("No response from AI");
+  const data = JSON.parse(response.text);
+  
+  // Add formats for the downloader
+  return {
+    ...data,
+    formats: [
+      { quality: '1080p', size: '45.2 MB', type: 'MP4', url: '#' },
+      { quality: '720p', size: '28.5 MB', type: 'MP4', url: '#' },
+      { quality: '480p', size: '15.1 MB', type: 'MP4', url: '#' },
+      { quality: '360p', size: '8.4 MB', type: 'MP4', url: '#' },
+      { quality: 'Audio', size: '3.2 MB', type: 'MP3', url: '#' }
+    ]
+  };
+};
+
