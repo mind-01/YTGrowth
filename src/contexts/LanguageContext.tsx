@@ -91,7 +91,6 @@ const translations: Record<Language, Record<string, string>> = {
     'tool.trending-topics.name': 'Trending Topics',
     'tool.sentiment.name': 'Comment Sentiment',
     'tool.global-reach.name': 'Global Reach',
-    'tool.video-downloader.name': 'Video Downloader',
     // Tool Descriptions
     'tool.title-gen.desc': 'Generate viral, high-CTR titles',
     'tool.desc-gen.desc': 'Create SEO-friendly descriptions',
@@ -118,7 +117,6 @@ const translations: Record<Language, Record<string, string>> = {
     'tool.trending-topics.desc': 'What is hot right now',
     'tool.sentiment.desc': 'Analyze audience feedback',
     'tool.global-reach.desc': 'Analyze international audience',
-    'tool.video-downloader.desc': 'Download videos in MP4 or Audio',
     // Settings
     'settings.title': 'Settings',
     'settings.language': 'Language',
@@ -211,7 +209,6 @@ const translations: Record<Language, Record<string, string>> = {
     'tool.trending-topics.name': 'ट्रेंडिंग टॉपिक्स',
     'tool.sentiment.name': 'कमेंट सेंटीमेंट',
     'tool.global-reach.name': 'ग्लोबल रीच',
-    'tool.video-downloader.name': 'वीडियो डाउनलोडर',
     // Tool Descriptions
     'tool.title-gen.desc': 'वायरल, हाई-CTR टाइटल बनाएं',
     'tool.desc-gen.desc': 'SEO-फ्रेंडली डिस्क्रिप्शन बनाएं',
@@ -238,7 +235,6 @@ const translations: Record<Language, Record<string, string>> = {
     'tool.trending-topics.desc': 'अभी क्या हॉट है',
     'tool.sentiment.desc': 'ऑडियंस फीडबैक का विश्लेषण करें',
     'tool.global-reach.desc': 'इंटरनेशनल ऑडियंस का विश्लेषण करें',
-    'tool.video-downloader.desc': 'वीडियो को MP4 या ऑडियो में डाउनलोड करें',
     // Settings
     'settings.title': 'सेटिंग्स',
     'settings.language': 'भाषा (Language)',
