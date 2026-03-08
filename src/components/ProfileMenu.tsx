@@ -56,7 +56,7 @@ export default function ProfileMenu() {
             transition={{ type: 'spring', damping: 25, stiffness: 200 }}
             className="fixed bottom-0 left-0 right-0 bg-white dark:bg-card-bg rounded-t-[2.5rem] z-[70] p-8 pb-12 md:hidden border-t border-border-primary shadow-2xl"
           >
-            {/* Header */}
+            {/* Header (Mobile-Only Profile Menu) */}
             <div className="flex items-center justify-between mb-8">
               {user ? (
                 <div className="flex items-center gap-4">
@@ -66,8 +66,8 @@ export default function ProfileMenu() {
                     className="w-12 h-12 rounded-2xl border-2 border-brand-red/20 object-cover"
                   />
                   <div>
-                    <h3 className="text-lg font-black text-zinc-950 dark:text-white leading-none mb-1">{displayName}</h3>
-                    <p className="text-[10px] font-bold text-brand-gray uppercase tracking-widest">Pro Creator</p>
+                    <h3 className="text-lg font-black !text-black dark:text-white leading-none mb-1">{displayName}</h3>
+                    <p className="text-[10px] font-bold !text-zinc-600 dark:text-brand-gray uppercase tracking-widest">Pro Creator</p>
                   </div>
                 </div>
               ) : (
@@ -76,8 +76,8 @@ export default function ProfileMenu() {
                     <User className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-black text-zinc-950 dark:text-white leading-none mb-1">Guest User</h3>
-                    <p className="text-[10px] font-bold text-brand-gray uppercase tracking-widest">Sign in to sync data</p>
+                    <h3 className="text-lg font-black !text-black dark:text-white leading-none mb-1">Guest User</h3>
+                    <p className="text-[10px] font-bold !text-zinc-600 dark:text-brand-gray uppercase tracking-widest">Sign in to sync data</p>
                   </div>
                 </div>
               )}
@@ -102,7 +102,7 @@ export default function ProfileMenu() {
                       <div className="w-10 h-10 rounded-xl bg-white dark:bg-bg-primary flex items-center justify-center text-brand-red shadow-sm group-hover:scale-110 transition-transform">
                         <item.icon className="w-5 h-5" />
                       </div>
-                      <span className="text-sm font-black text-zinc-950 dark:text-white uppercase tracking-widest">{item.label}</span>
+                      <span className="text-sm font-black !text-black dark:text-white uppercase tracking-widest">{item.label}</span>
                       <ChevronRight className="ml-auto w-4 h-4 text-brand-gray" />
                     </button>
                   ))}
