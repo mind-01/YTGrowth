@@ -32,6 +32,7 @@ export default function ToolPage() {
   const [loading, setLoading] = useState(false);
   const [loadingAction, setLoadingAction] = useState<string | null>(null);
   const [result, setResult] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [showLowCompOnly, setShowLowCompOnly] = useState(false);
   const [region, setRegion] = useState('IN');
@@ -203,6 +204,7 @@ export default function ToolPage() {
     if (!currentInput.trim()) return;
     setLoading(true);
     setResult(null);
+    setError(null);
     try {
       let data;
       switch (tool.id) {
@@ -356,7 +358,7 @@ export default function ToolPage() {
       const errorMessage = error.message?.includes('API_KEY') 
         ? "API Key error. Please check your Gemini API configuration."
         : error.message || "Error generating content. The model might be busy or the topic is restricted. Please try again.";
-      setResult(errorMessage);
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -1123,7 +1125,14 @@ export default function ToolPage() {
                 )}
               </AnimatePresence>
 
-              {isDownloader && result ? (
+              {/* Error Message */}
+              {error && (
+                <div className="mb-8 p-6 rounded-[2.5rem] bg-brand-red/5 border border-brand-red/20 text-brand-red text-center">
+                  <p className="font-black text-sm">{error}</p>
+                </div>
+              )}
+
+              {isDownloader && result && typeof result === 'object' ? (
                 <div className="space-y-8">
                   <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm">
                     <div className="flex flex-col md:flex-row gap-8 items-center">
