@@ -1275,9 +1275,10 @@ export const getVideoInfo = async (url: string) => {
   if (!response.text) throw new Error("No response from AI");
   const data = JSON.parse(response.text);
   
-  // Add formats for the downloader
+  // Add formats for the downloader and ensure the original URL is preserved
   return {
     ...data,
+    url: url, // Ensure we use the original input URL
     formats: [
       { quality: '1080p', size: '45.2 MB', type: 'MP4', url: '#' },
       { quality: '720p', size: '28.5 MB', type: 'MP4', url: '#' },
