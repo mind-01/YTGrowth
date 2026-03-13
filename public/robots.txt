@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mydomain.com/sitemap.xml
+Sitemap: https://yt-growth-sigma.vercel.app/sitemap.xml
