@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, Copy, Check, Loader2, Sparkles, Link as LinkIcon, Clipboard, XCircle, CheckCircle2, ExternalLink, ThumbsUp, Eye, Search, Filter, TrendingUp, Users, Calendar, Globe, Languages, Smartphone, Tv, Zap, Target, Lightbulb, FileText, Image as ImageIcon, Type as TypeIcon, ChevronDown, ChevronUp, Download, Layout, Palette, MousePointer2, Info, Video, Upload, Monitor, Clock, Edit, AlertCircle, Tag, MessageSquare, Bookmark, BookmarkCheck, Play } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Loader2, Sparkles, Link as LinkIcon, Clipboard, XCircle, CheckCircle2, ExternalLink, ThumbsUp, Eye, Search, Filter, TrendingUp, Users, Calendar, Globe, Languages, Smartphone, Tv, Zap, Target, Lightbulb, FileText, Image as ImageIcon, Type as TypeIcon, ChevronDown, ChevronUp, Download, Layout, Palette, MousePointer2, Info, Video, Upload, Monitor, Clock, Edit, AlertCircle, Tag, MessageSquare, Bookmark, BookmarkCheck } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
@@ -318,23 +318,6 @@ export default function ToolPage() {
         case 'thumb-text':
           data = await gemini.generateThumbnailText(currentInput);
           break;
-        case 'video-downloader':
-          const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.?be)\/.+$/;
-          const instagramRegex = /^(https?:\/\/)?(www\.)?instagram\.com\/(p|reel|tv)\/.+$/;
-          const facebookRegex = /^(https?:\/\/)?(www\.)?facebook\.com\/.+$/;
-          const twitterRegex = /^(https?:\/\/)?(www\.)?(twitter\.com|x\.com)\/.+$/;
-          const tiktokRegex = /^(https?:\/\/)?(www\.)?tiktok\.com\/.+$/;
-
-          if (!youtubeRegex.test(currentInput) && 
-              !instagramRegex.test(currentInput) && 
-              !facebookRegex.test(currentInput) && 
-              !twitterRegex.test(currentInput) && 
-              !tiktokRegex.test(currentInput)) {
-            throw new Error("Please enter a valid video URL (YouTube, Instagram, Facebook, X, or TikTok).");
-          }
-
-          data = await gemini.getVideoInfo(currentInput);
-          break;
         default:
           data = "This tool is under development. Please try Title Generator or Description Generator.";
       }
@@ -392,24 +375,15 @@ export default function ToolPage() {
   const isTitleAnalyzer = tool.id === 'title-analyzer';
   const isViralHooks = tool.id === 'viral-hooks';
   const isThumbText = tool.id === 'thumb-text';
-  const isDownloader = tool.id === 'video-downloader';
-
-  // Ensure result is cleared when tool changes
-  useEffect(() => {
-    setResult(null);
-    setInput('');
-  }, [tool.id]);
 
   return (
     <div className="max-w-4xl mx-auto px-4 pt-24 pb-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-2 text-[10px] font-black text-brand-gray uppercase tracking-widest">
-          <button onClick={() => navigate(-1)} className="hover:text-brand-red transition-colors">{t('nav.back')}</button>
-          <span className="text-border-primary">/</span>
-          <Link to="/" className="hover:text-brand-red transition-colors">{t('nav.dashboard')}</Link>
-          <span className="text-border-primary">/</span>
-          <span className="text-brand-dark">{t(`tool.${tool.id}.name`)}</span>
-        </div>
+      <div className="flex items-center gap-2 text-[10px] font-black text-brand-gray uppercase tracking-widest mb-8">
+        <button onClick={() => navigate(-1)} className="hover:text-brand-red transition-colors">{t('nav.back')}</button>
+        <span className="text-border-primary">/</span>
+        <Link to="/" className="hover:text-brand-red transition-colors">{t('nav.dashboard')}</Link>
+        <span className="text-border-primary">/</span>
+        <span className="text-brand-dark">{t(`tool.${tool.id}.name`)}</span>
       </div>
 
       <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm mb-8">
@@ -434,18 +408,15 @@ export default function ToolPage() {
           <p className="text-brand-gray font-medium">{t(`tool.${tool.id}.desc`)}</p>
         </div>
 
-        {isSEOCheck || isKeywordRes || isSentiment || isGlobalReach || isAnalyticsDash || isDownloader ? (
+        {isSEOCheck || isKeywordRes || isSentiment || isGlobalReach || isAnalyticsDash ? (
           <div className="space-y-8">
             <div className="text-center">
-              <h2 className="text-4xl font-black text-brand-dark mb-4 tracking-tight">
-                {isDownloader ? "Download Any Video" : t('nav.analyze_content')}
-              </h2>
-              <p className="text-brand-gray max-w-md mx-auto mb-8 font-medium">
+              <h2 className="text-4xl font-black text-brand-dark mb-4">{t('nav.analyze_content')}</h2>
+              <p className="text-brand-gray max-w-md mx-auto mb-8">
                 {isKeywordRes ? "Enter your video topic or title to find the best ranking keywords." : 
                  isSentiment ? "Video ka link yahan paste karein audience ka mood janne ke liye..." : 
                  isGlobalReach ? "Apne video ka topic likhein global audience check karne ke liye..." :
                  isAnalyticsDash ? "Enter your channel URL to see a visual growth dashboard." :
-                 isDownloader ? "Paste a link from YouTube, Instagram, Facebook, or TikTok to download in high quality." :
                  "Paste a YouTube video link below to get a detailed SEO score and actionable insights."}
               </p>
               
@@ -456,7 +427,7 @@ export default function ToolPage() {
                 <input
                   type="text"
                   className="w-full pl-14 pr-32 py-5 rounded-full border border-border-primary bg-card-bg text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red transition-all text-lg font-medium shadow-sm"
-                  placeholder={isKeywordRes || isGlobalReach ? t('nav.enter_topic') : isAnalyticsDash ? t('nav.paste_channel_link') : isDownloader ? "Paste video link here..." : t('nav.paste_video_link')}
+                  placeholder={isKeywordRes || isGlobalReach ? t('nav.enter_topic') : isAnalyticsDash ? t('nav.paste_channel_link') : t('nav.paste_video_link')}
                   value={isAnalyticsDash ? channelUrl : input}
                   onChange={(e) => isAnalyticsDash ? setChannelUrl(e.target.value) : setInput(e.target.value)}
                 />
@@ -470,7 +441,7 @@ export default function ToolPage() {
                       console.error('Failed to read clipboard contents: ', err);
                     }
                   }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-border-primary hover:bg-bg-primary transition-all text-sm font-bold text-brand-dark shadow-sm"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-bg-primary hover:bg-border-primary transition-colors text-sm font-bold text-brand-dark"
                 >
                   <Clipboard className="w-4 h-4" />
                   {t('nav.paste')}
@@ -539,7 +510,7 @@ export default function ToolPage() {
                 disabled={loading || (isAnalyticsDash ? !channelUrl : !input.trim())}
                 className="btn-primary w-full max-w-xl py-5 text-xl font-black uppercase tracking-widest mb-2"
               >
-                {loading ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : (isKeywordRes ? t('nav.search_keywords') : (isSentiment || isGlobalReach || isAnalyticsDash) ? t('nav.generate_results') : isDownloader ? "Download Video" : t('nav.checklist'))}
+                {loading ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : (isKeywordRes ? t('nav.search_keywords') : (isSentiment || isGlobalReach || isAnalyticsDash) ? t('nav.generate_results') : t('nav.checklist'))}
               </button>
             </div>
           </div>
@@ -1094,7 +1065,6 @@ export default function ToolPage() {
                  isTitleAnalyzer ? "Analyzing title strength..." :
                  isViralHooks ? "Generating viral hooks..." :
                  isThumbText ? "Creating thumbnail text..." :
-                 isDownloader ? "Fetching video information..." :
                  isKeywordRes ? "Researching keywords..." : 
                  isSEOCheck ? "Analyzing video SEO..." : "Generating your results..."}
               </p>
@@ -1123,114 +1093,7 @@ export default function ToolPage() {
                 )}
               </AnimatePresence>
 
-              {isDownloader && result ? (
-                <div className="space-y-8">
-                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm">
-                    <div className="flex flex-col md:flex-row gap-8 items-center">
-                      <div className={cn(
-                        "w-full rounded-2xl overflow-hidden shadow-xl border border-border-primary relative group",
-                        result.isShort ? "md:w-1/3 aspect-[9/16]" : "md:w-1/2 aspect-video"
-                      )}>
-                        {result.url.includes('youtube.com') || result.url.includes('youtu.be') ? (
-                          <iframe 
-                            src={`https://www.youtube.com/embed/${result.url.split('v=')[1] || result.url.split('/').pop()}`}
-                            className="w-full h-full border-0"
-                            allowFullScreen
-                          />
-                        ) : (
-                          <div className="relative w-full h-full">
-                            <img 
-                              src={result.thumbnail} 
-                              alt={result.title}
-                              className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                              referrerPolicy="no-referrer"
-                            />
-                            <div className="absolute inset-0 flex items-center justify-center bg-black/20 group-hover:bg-black/40 transition-colors">
-                              <div className="w-16 h-16 rounded-full bg-brand-red/90 text-white flex items-center justify-center shadow-2xl transform group-hover:scale-110 transition-transform">
-                                <Play className="w-8 h-8 fill-current ml-1" />
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                        {!result.url.includes('youtube') && (
-                          <div className="absolute bottom-4 right-4 px-3 py-1 bg-black/80 text-white text-xs font-black rounded-lg backdrop-blur-sm">
-                            {result.duration}
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex-1 text-center md:text-left">
-                        <h3 className="text-2xl font-black text-brand-dark mb-4">{result.title}</h3>
-                        <div className="flex flex-wrap justify-center md:justify-start gap-4 mb-6">
-                          <div className="px-4 py-2 rounded-xl bg-bg-primary border border-border-primary">
-                            <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest block">Status</span>
-                            <span className="text-sm font-black text-emerald-600 flex items-center gap-2">
-                              <CheckCircle2 className="w-4 h-4" /> Available
-                            </span>
-                          </div>
-                          <div className="px-4 py-2 rounded-xl bg-bg-primary border border-border-primary">
-                            <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest block">Quality</span>
-                            <span className="text-sm font-black text-brand-dark">Up to 1080p</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 gap-4">
-                    <h3 className="text-xs font-black text-brand-dark uppercase tracking-[0.4em] flex items-center gap-3 mb-2">
-                      <Download className="w-4 h-4 text-brand-red" />
-                      Download Options
-                    </h3>
-                    <div className="space-y-3">
-                      {result.formats.map((format: any, idx: number) => (
-                        <div key={idx} className="flex items-center justify-between p-4 rounded-2xl bg-card-bg border border-border-primary hover:border-brand-red/30 transition-all group shadow-sm">
-                          <div className="flex items-center gap-4">
-                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center font-black text-xs ${format.type === 'MP3' ? 'bg-amber-100 text-amber-600' : 'bg-brand-red/10 text-brand-red'}`}>
-                              {format.type}
-                            </div>
-                            <div>
-                              <p className="text-sm font-black text-brand-dark">{format.quality}</p>
-                              <p className="text-[10px] font-bold text-brand-gray uppercase tracking-widest">{format.size}</p>
-                            </div>
-                          </div>
-                          <button 
-                            onClick={async () => {
-                              setToast(`Starting ${format.type} download...`);
-                              
-                              try {
-                                // Use CORS-friendly sample media URLs from GitHub Raw to avoid "Failed to fetch" errors
-                                const sampleUrl = format.type === 'MP3' 
-                                  ? 'https://raw.githubusercontent.com/rafaelreis-hotmart/Audio-Sample-files/master/sample.mp3'
-                                  : 'https://raw.githubusercontent.com/intel-iot-devkit/sample-videos/master/bottle-detection.mp4';
-                                
-                                const response = await fetch(sampleUrl);
-                                const blob = await response.blob();
-                                const url = window.URL.createObjectURL(blob);
-                                
-                                const link = document.createElement('a');
-                                link.href = url;
-                                const safeTitle = result.title.replace(/[^a-z0-9]/gi, '_').toLowerCase();
-                                link.download = `${safeTitle}_${format.quality}.${format.type.toLowerCase()}`;
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
-                                window.URL.revokeObjectURL(url);
-                              } catch (error) {
-                                console.error("Download error:", error);
-                                setToast("Download failed. Please try again.");
-                              }
-                            }}
-                            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-brand-dark text-white text-[10px] font-black uppercase tracking-widest hover:bg-brand-red transition-all shadow-lg group-hover:scale-105"
-                          >
-                            <Download className="w-4 h-4" />
-                            Download
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              ) : tool.id === 'name-ideas' && Array.isArray(result) ? (
+              {tool.id === 'name-ideas' && Array.isArray(result) ? (
                 <div className="space-y-8">
                   <div className="flex items-center justify-between">
                     <h3 className="text-xs font-black text-brand-dark uppercase tracking-[0.4em] flex items-center gap-3">
@@ -3366,11 +3229,11 @@ export default function ToolPage() {
                               ))}
                             </div>
                           ) : (
-                            <ReactMarkdown>{typeof result === 'string' ? result : ''}</ReactMarkdown>
+                            <ReactMarkdown>{result}</ReactMarkdown>
                           )}
                         </div>
                         <button
-                          onClick={() => copyToClipboard(typeof result === 'string' ? result : JSON.stringify(result, null, 2))}
+                          onClick={() => copyToClipboard(result)}
                           className="w-full flex md:hidden items-center justify-center gap-2 py-4 rounded-2xl bg-brand-red text-white font-black uppercase tracking-widest shadow-lg shadow-brand-red/20"
                         >
                           <Copy className="w-5 h-5" />

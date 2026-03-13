@@ -14,9 +14,9 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const COLORS = [
   '#3B82F6', // Blue
   '#3F51B5', // Indigo
-  '#ee2424ff', // Red
+  '#EF4444', // Red
   '#10B981', // Green
-  '#ff4d00ff', // Dark/Blackish
+  '#1A202C', // Dark/Blackish
 ];
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {

@@ -512,8 +512,8 @@ export default function Features() {
             </p>
             <div className="flex flex-wrap gap-4 mt-8">
               <Link to="/" className="text-brand-red hover:underline font-bold">All Tools</Link>
-              <Link to="/privacy" className="text-brand-red hover:underline font-bold" style={{ backgroundColor: '#d52d2d' }}>Privacy Policy</Link>
-              <Link to="/blog" className="text-brand-red hover:underline font-bold">Creator Blog</Link>
+              <Link to="/info/pricing" className="text-brand-red hover:underline font-bold">Pricing Plans</Link>
+              <Link to="#" className="text-brand-red hover:underline font-bold">Creator Blog</Link>
             </div>
           </div>
         </div>

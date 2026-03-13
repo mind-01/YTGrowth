@@ -1,9 +1,6 @@
 import express from "express";
 import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
-import path from "path";
-import { TOOLS } from "./src/constants";
-import { BLOG_POSTS } from "./src/constants/blogData";
 
 dotenv.config();
 
@@ -552,59 +549,6 @@ app.get("/api/youtube/competitor-spy", async (req, res) => {
   }
 });
 
-// Sitemap and Robots.txt
-app.get("/robots.txt", (req, res) => {
-  const baseUrl = process.env.APP_URL || `https://${req.get("host")}`;
-  res.type("text/plain");
-  res.send(`User-agent: *
-Allow: /
-
-Sitemap: ${baseUrl}/sitemap.xml`);
-});
-
-app.get("/sitemap.xml", (req, res) => {
-  const baseUrl = process.env.APP_URL || `https://${req.get("host")}`;
-  
-  const staticPages = [
-    "",
-    "features",
-    "tools",
-    "faq",
-    "security",
-    "privacy",
-    "terms",
-    "cookies",
-    "about",
-    "contact",
-    "disclaimer",
-    "blog",
-    "login"
-  ];
-
-  const toolPages = TOOLS.map(tool => `tool/${tool.id}`);
-  const blogPages = BLOG_POSTS.map(post => `blog/${post.slug}`);
-
-  const allPages = [...staticPages, ...toolPages, ...blogPages];
-
-  const urlset = allPages.map(page => {
-    const url = `${baseUrl}/${page}`.replace(/\/$/, "");
-    const priority = page === "" ? "1.0" : (page.startsWith("blog/") || page.startsWith("tool/") ? "0.8" : "0.5");
-    return `  <url>
-    <loc>${url}</loc>
-    <changefreq>weekly</changefreq>
-    <priority>${priority}</priority>
-  </url>`;
-  }).join("\n");
-
-  const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urlset}
-</urlset>`;
-
-  res.type("application/xml");
-  res.send(xml);
-});
-
 // Vite middleware for development
 if (process.env.NODE_ENV !== "production") {
   const vite = await createViteServer({
@@ -614,9 +558,6 @@ if (process.env.NODE_ENV !== "production") {
   app.use(vite.middlewares);
 } else {
   app.use(express.static("dist"));
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(process.cwd(), 'dist', 'index.html'));
-  });
 }
 
 app.listen(PORT, "0.0.0.0", () => {

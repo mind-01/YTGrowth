@@ -13,8 +13,6 @@ import Cookies from './pages/Cookies';
 import About from './pages/About';
 import Contact from './pages/Contact';
 import Disclaimer from './pages/Disclaimer';
-import Blog from './pages/Blog';
-import BlogPost from './pages/BlogPost';
 import LoginPage from './pages/LoginPage';
 import UserDashboard from './pages/UserDashboard';
 import SettingsPage from './pages/SettingsPage';
@@ -47,8 +45,6 @@ export default function App() {
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/disclaimer" element={<Disclaimer />} />
-            <Route path="/blog" element={<Blog />} />
-            <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/user-dashboard" element={<UserDashboard />} />
             <Route path="/settings" element={<SettingsPage />} />

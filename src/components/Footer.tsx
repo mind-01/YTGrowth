@@ -33,6 +33,7 @@ const Footer = () => {
     PRODUCT: [
       { label: t('footer.home'), path: '/', type: 'link' },
       { label: t('footer.features'), path: '/features', type: 'link' },
+      { label: t('footer.price'), path: '/info/pricing', type: 'link' },
       { label: t('footer.tool'), path: '/tools', type: 'link' },
       { label: t('footer.faq'), path: '/faq', type: 'link' },
     ],
@@ -45,7 +46,7 @@ const Footer = () => {
     COMPANY: [
       { label: t('footer.about'), path: '/about', type: 'link' },
       { label: t('footer.contact'), path: '/contact', type: 'link' },
-      { label: t('footer.blog'), path: '/blog', type: 'link' },
+      { label: t('footer.blog'), path: '#', type: 'link' },
       { label: t('footer.disclaimer'), path: '/disclaimer', type: 'link' },
     ]
   };
