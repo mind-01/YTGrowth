@@ -263,10 +263,10 @@ export default function Navbar() {
                   <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full" />
                 </div>
                 <div className="flex flex-col items-start leading-none hidden sm:flex">
-                  <span className="text-[13px] font-black text-brand-dark dark:text-white">
+                  <span className="text-[13px] font-black text-slate-900 dark:text-white">
                     {displayName.split(' ')[0]}
                   </span>
-                  <span className="text-[9px] font-bold text-brand-gray dark:text-gray-400 uppercase tracking-wider">
+                  <span className="text-[9px] font-bold text-slate-500 dark:text-gray-400 uppercase tracking-wider">
                     Creator
                   </span>
                 </div>
@@ -284,7 +284,7 @@ export default function Navbar() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
-                      className="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-card-bg border border-border-primary rounded-[2rem] shadow-2xl z-[100] opacity-100 visible"
+                      className="absolute top-full right-0 mt-2 w-64 bg-white dark:bg-card-bg border border-border-primary rounded-[2rem] shadow-2xl z-[100]"
                     >
                       <div className="p-6 border-b border-border-primary bg-bg-primary/30">
                         <div className="flex items-center gap-3 mb-3">
@@ -295,8 +295,8 @@ export default function Navbar() {
                             referrerPolicy="no-referrer"
                           />
                           <div className="min-w-0">
-                            <p className="text-sm font-black text-brand-dark dark:text-white truncate">{displayName}</p>
-                            <p className="text-[10px] font-bold text-brand-gray dark:text-gray-400 truncate">{user.email}</p>
+                            <p className="text-sm font-black truncate" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>{displayName}</p>
+                            <p className="text-[10px] font-bold truncate" style={{ color: theme === 'dark' ? '#A0A0A0' : '#000000' }}>{user.email}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-red/10 text-brand-red text-[10px] font-black uppercase tracking-widest w-fit">
@@ -308,45 +308,45 @@ export default function Navbar() {
                         <Link
                           to="/user-dashboard"
                           onClick={() => setIsProfileOpen(false)}
-                          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-brand-dark dark:text-gray-300 hover:text-brand-red dark:hover:text-white hover:bg-bg-primary transition-all group"
+                          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold hover:bg-bg-primary transition-all group"
                         >
                           <div className="w-8 h-8 rounded-xl bg-bg-primary flex items-center justify-center group-hover:bg-brand-red/10 group-hover:text-brand-red transition-colors">
                             <UserIcon className="w-4 h-4" />
                           </div>
-                          <span className="text-brand-dark dark:text-white">Account</span>
+                          <span className="font-black uppercase tracking-widest" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>Account</span>
                         </Link>
                         <Link
                           to="/user-dashboard"
                           onClick={() => setIsProfileOpen(false)}
-                          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-brand-dark dark:text-gray-300 hover:text-brand-red dark:hover:text-white hover:bg-bg-primary transition-all group"
+                          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold hover:bg-bg-primary transition-all group"
                         >
                           <div className="w-8 h-8 rounded-xl bg-bg-primary flex items-center justify-center group-hover:bg-brand-red/10 group-hover:text-brand-red transition-colors">
                             <Heart className="w-4 h-4" />
                           </div>
-                          <span className="text-brand-dark dark:text-white">Features</span>
+                          <span className="font-black uppercase tracking-widest" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>Features</span>
                         </Link>
                         <Link
                           to="/user-dashboard"
                           onClick={() => setIsProfileOpen(false)}
-                          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold text-brand-dark dark:text-gray-300 hover:text-brand-red dark:hover:text-white hover:bg-bg-primary transition-all group"
+                          className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold hover:bg-bg-primary transition-all group"
                         >
                           <div className="w-8 h-8 rounded-xl bg-bg-primary flex items-center justify-center group-hover:bg-brand-red/10 group-hover:text-brand-red transition-colors">
                             <Bookmark className="w-4 h-4" />
                           </div>
-                          <span className="text-brand-dark dark:text-white">Saved Tools</span>
+                          <span className="font-black uppercase tracking-widest" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>Saved Tools</span>
                         </Link>
                         <button 
                           onClick={() => {
                             logout();
                             setIsProfileOpen(false);
                           }}
-                          className="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold text-brand-dark dark:text-gray-300 hover:text-brand-red hover:bg-brand-red/5 transition-all group"
+                          className="w-full flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-bold hover:bg-brand-red/5 transition-all group"
                         >
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-xl bg-bg-primary flex items-center justify-center group-hover:bg-brand-red/10 group-hover:text-brand-red transition-colors">
                               <LogOut className="w-4 h-4" />
                             </div>
-                            <span className="text-brand-dark dark:text-white">Sign Out</span>
+                            <span className="font-black uppercase tracking-widest" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>Sign Out</span>
                           </div>
                         </button>
                       </div>
