@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { TOOLS } from '../constants';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -24,6 +25,7 @@ type TabType = 'account' | 'favorites' | 'futures' | 'results';
 export default function UserDashboard() {
   const { user, savedTools, toggleSaveTool } = useAuth();
   const { t } = useLanguage();
+  const { theme } = useTheme();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('account');
 
@@ -62,10 +64,10 @@ export default function UserDashboard() {
     <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8">
       {/* Header */}
       <div className="mb-10">
-        <h1 className="text-4xl font-black text-brand-dark dark:text-white tracking-tight mb-2">
+        <h1 className="text-4xl font-black tracking-tight mb-2" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>
           User <span className="text-brand-red">Dashboard</span>
         </h1>
-        <p className="text-brand-gray dark:text-gray-400 font-medium">Manage your account, favorites, and saved data.</p>
+        <p className="font-medium" style={{ color: theme === 'dark' ? '#A0A0A0' : '#606060' }}>Manage your account, favorites, and saved data.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
@@ -78,10 +80,11 @@ export default function UserDashboard() {
               className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl text-sm font-black transition-all group ${
                 activeTab === tab.id 
                   ? 'bg-brand-red text-white shadow-xl shadow-brand-red/20' 
-                  : 'bg-card-bg text-brand-gray dark:text-gray-400 hover:bg-bg-primary border border-border-primary'
+                  : 'bg-card-bg border border-border-primary hover:bg-bg-primary'
               }`}
+              style={{ color: activeTab === tab.id ? '#FFFFFF' : (theme === 'dark' ? '#A0A0A0' : '#000000') }}
             >
-              <tab.icon className={`w-5 h-5 transition-transform group-hover:scale-110 ${activeTab === tab.id ? 'text-white' : 'text-brand-gray'}`} />
+              <tab.icon className={`w-5 h-5 transition-transform group-hover:scale-110 ${activeTab === tab.id ? 'text-white' : ''}`} style={{ color: activeTab === tab.id ? '#FFFFFF' : (theme === 'dark' ? '#A0A0A0' : '#606060') }} />
               <span className="uppercase tracking-widest">{tab.label}</span>
               {activeTab === tab.id && (
                 <motion.div layoutId="active-pill" className="ml-auto">
@@ -117,13 +120,13 @@ export default function UserDashboard() {
                       </div>
                     </div>
                     <div className="text-center sm:text-left">
-                      <h2 className="text-3xl font-black text-brand-dark dark:text-white mb-1">{displayName}</h2>
-                      <p className="text-brand-gray dark:text-gray-400 font-bold uppercase tracking-widest text-sm mb-4">Pro Creator Plan</p>
+                      <h2 className="text-3xl font-black mb-1" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>{displayName}</h2>
+                      <p className="font-bold uppercase tracking-widest text-sm mb-4" style={{ color: theme === 'dark' ? '#A0A0A0' : '#606060' }}>Pro Creator Plan</p>
                       <div className="flex flex-wrap justify-center sm:justify-start gap-3">
                         <span className="px-4 py-1.5 rounded-full bg-brand-red/10 text-brand-red text-xs font-black uppercase tracking-widest">
                           Verified
                         </span>
-                        <span className="px-4 py-1.5 rounded-full bg-bg-primary text-brand-gray text-xs font-black uppercase tracking-widest border border-border-primary">
+                        <span className="px-4 py-1.5 rounded-full bg-bg-primary text-xs font-black uppercase tracking-widest border border-border-primary" style={{ color: theme === 'dark' ? '#A0A0A0' : '#606060' }}>
                           Member since 2024
                         </span>
                       </div>
@@ -132,15 +135,15 @@ export default function UserDashboard() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div className="space-y-6">
-                      <h3 className="text-xs font-black text-brand-gray uppercase tracking-[0.2em] mb-4">Personal Information</h3>
+                      <h3 className="text-xs font-black uppercase tracking-[0.2em] mb-4" style={{ color: theme === 'dark' ? '#A0A0A0' : '#606060' }}>Personal Information</h3>
                       <div className="space-y-4">
                         <div className="flex items-center gap-4 p-4 rounded-2xl bg-bg-primary border border-border-primary">
                           <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-brand-red shadow-sm">
                             <UserIcon className="w-5 h-5" />
                           </div>
                           <div>
-                            <p className="text-[10px] font-bold text-brand-gray dark:text-gray-400 uppercase tracking-widest">Username</p>
-                            <p className="text-sm font-black text-brand-dark dark:text-white">{displayName}</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: theme === 'dark' ? '#A0A0A0' : '#606060' }}>Username</p>
+                            <p className="text-sm font-black" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>{displayName}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-4 p-4 rounded-2xl bg-bg-primary border border-border-primary">
@@ -148,24 +151,24 @@ export default function UserDashboard() {
                             <Mail className="w-5 h-5" />
                           </div>
                           <div>
-                            <p className="text-[10px] font-bold text-brand-gray dark:text-gray-400 uppercase tracking-widest">Email Address</p>
-                            <p className="text-sm font-black text-brand-dark dark:text-white">{user.email}</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: theme === 'dark' ? '#A0A0A0' : '#606060' }}>Email Address</p>
+                            <p className="text-sm font-black" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>{user.email}</p>
                           </div>
                         </div>
                       </div>
                     </div>
 
                     <div className="space-y-6">
-                      <h3 className="text-xs font-black text-brand-gray uppercase tracking-[0.2em] mb-4">Account Status</h3>
+                      <h3 className="text-xs font-black uppercase tracking-[0.2em] mb-4" style={{ color: theme === 'dark' ? '#A0A0A0' : '#606060' }}>Account Status</h3>
                       <div className="space-y-4">
                         <div className="flex items-center gap-4 p-4 rounded-2xl bg-bg-primary border border-border-primary">
                           <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-brand-red shadow-sm">
                             <Calendar className="w-5 h-5" />
                           </div>
                           <div>
-                            <p className="text-[10px] font-bold text-brand-gray dark:text-gray-400 uppercase tracking-widest">Registered On</p>
-                            <p className="text-sm font-black text-brand-dark dark:text-white">{registrationDate}</p>
-                            <p className="text-[10px] text-brand-gray dark:text-gray-400 font-bold">{registrationTime}</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: theme === 'dark' ? '#A0A0A0' : '#606060' }}>Registered On</p>
+                            <p className="text-sm font-black" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>{registrationDate}</p>
+                            <p className="text-[10px] font-bold" style={{ color: theme === 'dark' ? '#A0A0A0' : '#606060' }}>{registrationTime}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-4 p-4 rounded-2xl bg-bg-primary border border-border-primary">
@@ -173,8 +176,8 @@ export default function UserDashboard() {
                             <Bookmark className="w-5 h-5" />
                           </div>
                           <div>
-                            <p className="text-[10px] font-bold text-brand-gray dark:text-gray-400 uppercase tracking-widest">Favorited Tools</p>
-                            <p className="text-sm font-black text-brand-dark dark:text-white">{savedTools.length} Tools</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: theme === 'dark' ? '#A0A0A0' : '#606060' }}>Favorited Tools</p>
+                            <p className="text-sm font-black" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>{savedTools.length} Tools</p>
                           </div>
                         </div>
                       </div>
@@ -186,7 +189,7 @@ export default function UserDashboard() {
               {activeTab === 'favorites' && (
                 <div className="space-y-8">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-black text-brand-dark dark:text-white">Your <span className="text-brand-red">Favorites</span></h2>
+                    <h2 className="text-2xl font-black" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>Your <span className="text-brand-red">Favorites</span></h2>
                     <span className="px-4 py-1.5 rounded-full bg-brand-red/10 text-brand-red text-xs font-black uppercase tracking-widest">
                       {favoritedTools.length} Saved
                     </span>
@@ -204,8 +207,8 @@ export default function UserDashboard() {
                             <tool.icon className="w-6 h-6" />
                           </div>
                           <div className="min-w-0 flex-grow">
-                            <p className="text-sm font-black text-brand-dark dark:text-white truncate">{t(`tool.${tool.id}.name`)}</p>
-                            <p className="text-[10px] font-bold text-brand-gray dark:text-gray-400 uppercase tracking-widest">{tool.category}</p>
+                            <p className="text-sm font-black truncate" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>{t(`tool.${tool.id}.name`)}</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: theme === 'dark' ? '#A0A0A0' : '#606060' }}>{tool.category}</p>
                           </div>
                           <button
                             onClick={(e) => {
@@ -233,7 +236,7 @@ export default function UserDashboard() {
 
               {activeTab === 'futures' && (
                 <div className="space-y-8">
-                  <h2 className="text-2xl font-black text-brand-dark dark:text-white">Upcoming <span className="text-brand-red">Futures</span></h2>
+                  <h2 className="text-2xl font-black" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>Upcoming <span className="text-brand-red">Futures</span></h2>
                   <div className="space-y-4">
                     {[
                       { title: 'AI Video Script Generator', desc: 'Generate full video scripts from a single keyword.', date: 'Coming Q2 2024' },
@@ -244,8 +247,8 @@ export default function UserDashboard() {
                         <div className="absolute top-0 right-0 p-4">
                           <Zap className="w-5 h-5 text-brand-red/20 group-hover:text-brand-red transition-colors" />
                         </div>
-                        <h3 className="text-lg font-black text-brand-dark dark:text-white mb-1">{item.title}</h3>
-                        <p className="text-sm text-brand-gray dark:text-gray-400 font-medium mb-4">{item.desc}</p>
+                        <h3 className="text-lg font-black mb-1" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>{item.title}</h3>
+                        <p className="text-sm font-medium mb-4" style={{ color: theme === 'dark' ? '#A0A0A0' : '#606060' }}>{item.desc}</p>
                         <span className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-red bg-brand-red/10 px-3 py-1 rounded-full">
                           {item.date}
                         </span>
@@ -257,11 +260,11 @@ export default function UserDashboard() {
 
               {activeTab === 'results' && (
                 <div className="space-y-8">
-                  <h2 className="text-2xl font-black text-brand-dark dark:text-white">Saved <span className="text-brand-red">Results</span></h2>
+                  <h2 className="text-2xl font-black" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>Saved <span className="text-brand-red">Results</span></h2>
                   <div className="text-center py-20 bg-bg-primary rounded-[2rem] border border-dashed border-border-primary">
                     <Clock className="w-12 h-12 text-brand-gray/30 mx-auto mb-4" />
-                    <p className="text-brand-gray dark:text-gray-400 font-bold">No saved analysis results found.</p>
-                    <p className="text-xs text-brand-gray/60 dark:text-gray-500 mt-1">Your tool analysis history will appear here.</p>
+                    <p className="font-bold" style={{ color: theme === 'dark' ? '#A0A0A0' : '#606060' }}>No saved analysis results found.</p>
+                    <p className="text-xs mt-1" style={{ color: theme === 'dark' ? '#606060' : '#909090' }}>Your tool analysis history will appear here.</p>
                   </div>
                 </div>
               )}
