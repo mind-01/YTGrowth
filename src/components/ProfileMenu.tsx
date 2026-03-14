@@ -1,29 +1,58 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { User, Heart, LogOut, X, ChevronRight, Bookmark, LogIn } from 'lucide-react';
+import { User, Heart, LogOut, X, ChevronRight, Bookmark, LogIn, BookmarkCheck } from 'lucide-react';
 import { useMobileNav } from '../contexts/MobileNavContext';
 import { useAuth } from '../contexts/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
+import { TOOLS } from '../constants';
 
 export default function ProfileMenu() {
   const { isProfileMenuOpen, setIsProfileMenuOpen } = useMobileNav();
-  const { user, logout } = useAuth();
+  const { user, logout, savedTools, toggleSaveTool, isSaved } = useAuth();
   const { theme } = useTheme();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [toast, setToast] = useState<string | null>(null);
+
+  const currentToolId = location.pathname.startsWith('/tool/') ? location.pathname.split('/')[2] : null;
+  const currentTool = currentToolId ? TOOLS.find(t => t.id === currentToolId) : null;
+
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  const handleToggleSave = async (toolId: string) => {
+    const wasSaved = isSaved(toolId);
+    await toggleSaveTool(toolId);
+    setToast(wasSaved ? 'Removed from saved tools' : 'Added to saved tools');
+  };
 
   const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
   const avatarUrl = user?.user_metadata?.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=EA3323&color=fff`;
 
   const menuItems = [
     { label: 'Account', icon: User, path: '/user-dashboard' },
-    { label: 'Favorites', icon: Heart, path: '/user-dashboard' },
-    { label: 'Saved Tools', icon: Bookmark, path: '/user-dashboard' },
+    ...(currentTool ? [{
+      label: isSaved(currentTool.id) ? 'Saved' : 'Save Tool',
+      icon: isSaved(currentTool.id) ? BookmarkCheck : currentTool.icon,
+      onClick: () => handleToggleSave(currentTool.id)
+    }] : [
+      { label: 'Favorites', icon: Heart, path: '/user-dashboard?tab=favorites' }
+    ]),
+    { label: 'Saved Tools', icon: Bookmark, path: '/user-dashboard?tab=favorites' },
   ];
 
-  const handleItemClick = (path: string) => {
-    navigate(path);
-    setIsProfileMenuOpen(false);
+  const handleItemClick = (item: any) => {
+    if (item.onClick) {
+      item.onClick();
+    } else {
+      navigate(item.path);
+      setIsProfileMenuOpen(false);
+    }
   };
 
   const handleSignOut = async () => {
@@ -98,7 +127,7 @@ export default function ProfileMenu() {
                   {menuItems.map((item) => (
                     <button
                       key={item.label}
-                      onClick={() => handleItemClick(item.path)}
+                      onClick={() => handleItemClick(item)}
                       className="w-full flex items-center gap-4 p-4 rounded-2xl bg-bg-primary dark:bg-bg-primary/30 border border-border-primary hover:border-brand-red/30 transition-all group"
                     >
                       <div className="w-10 h-10 rounded-xl bg-white dark:bg-bg-primary flex items-center justify-center text-brand-red shadow-sm group-hover:scale-110 transition-transform">
@@ -109,18 +138,33 @@ export default function ProfileMenu() {
                     </button>
                   ))}
 
-                  <div className="pt-4 mt-4 border-t border-border-primary">
-                    <button
-                      onClick={handleSignOut}
-                      className="w-full flex items-center gap-4 p-4 rounded-2xl bg-brand-red/5 border border-brand-red/10 text-brand-red hover:bg-brand-red hover:text-white transition-all group"
-                    >
-                      <div className="w-10 h-10 rounded-xl bg-white dark:bg-bg-primary flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
-                        <LogOut className="w-5 h-5" />
-                      </div>
-                      <span className="text-sm font-black text-brand-red uppercase tracking-widest">Sign Out</span>
-                    </button>
-                  </div>
-                </>
+                    <div className="pt-4 mt-4 border-t border-border-primary">
+                      <button
+                        onClick={handleSignOut}
+                        className="w-full flex items-center gap-4 p-4 rounded-2xl bg-brand-red/5 border border-brand-red/10 text-brand-red hover:bg-brand-red hover:text-white transition-all group"
+                      >
+                        <div className="w-10 h-10 rounded-xl bg-white dark:bg-bg-primary flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                          <LogOut className="w-5 h-5" />
+                        </div>
+                        <span className="text-sm font-black text-brand-red uppercase tracking-widest">Sign Out</span>
+                      </button>
+                    </div>
+
+                    {/* Toast Notification */}
+                    <AnimatePresence>
+                      {toast && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 20 }}
+                          className="absolute bottom-4 left-4 right-4 z-[80] px-6 py-3 bg-brand-dark text-white rounded-2xl shadow-2xl font-bold flex items-center gap-3 border border-white/10"
+                        >
+                          <BookmarkCheck className="w-5 h-5 text-brand-red" />
+                          <span className="text-[10px] uppercase tracking-widest">{toast}</span>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </>
               ) : (
                 <button
                   onClick={handleSignIn}
