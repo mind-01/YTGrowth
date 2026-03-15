@@ -23,7 +23,7 @@ import {
 
 export default function ToolPage() {
   const { t } = useLanguage();
-  const { user, toggleSaveTool, isSaved } = useAuth();
+  const { user, loading: authLoading, toggleSaveTool, isSaved } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -192,6 +192,7 @@ export default function ToolPage() {
   }, [id, searchParams]);
 
   const toggleSaveToolWithFeedback = async (toolId: string) => {
+    if (authLoading) return;
     if (!user) {
       setToast('Please sign in to save tools');
       return;
