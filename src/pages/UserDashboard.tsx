@@ -24,7 +24,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 type TabType = 'account' | 'favorites' | 'futures' | 'results';
 
 export default function UserDashboard() {
-  const { user, savedTools, toggleSaveTool } = useAuth();
+  const { user, loading, savedTools, toggleSaveTool } = useAuth();
   const { t } = useLanguage();
   const { theme } = useTheme();
   const navigate = useNavigate();
@@ -56,10 +56,18 @@ export default function UserDashboard() {
 
   // Redirect if not logged in
   React.useEffect(() => {
-    if (!user) {
+    if (!loading && !user) {
       navigate('/login');
     }
-  }, [user, navigate]);
+  }, [user, loading, navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-brand-red border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!user) return null;
 
