@@ -562,28 +562,28 @@ export const generateBestTimeToPost = async (category: string, region: string) =
   return JSON.parse(response.text);
 };
 
-export const analyzeChannelMonetization = async (channelUrl: string, language: string) => {
+export const analyzeChannelMonetization = async (channelUrl: string, channelData: any, language: string) => {
   const ai = getAI();
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
-    contents: `Analyze this YouTube channel for monetization status and growth: ${channelUrl}.
+    contents: `Analyze this YouTube channel data for monetization growth:
+    Channel: ${channelData.channelName}
+    Subscribers: ${channelData.subscriberCount}
+    Watch Time: ${channelData.watchTime} hours
+    URL: ${channelUrl}
     
     Target Language for advice: ${language}
     
     Tasks:
-    1. Identify Channel Name and Profile Picture URL (if possible, else use a placeholder).
-    2. Get/Estimate Subscriber Count.
-    3. Estimate Watch Time (based on video count/length/views if public).
-    4. Determine if they meet the 1000 subs / 4000 hours threshold.
-    5. Calculate the "Gap" to the next milestone.
-    6. Provide a 5-step roadmap to reach/surpass monetization.
+    1. Provide a 5-step roadmap to reach/surpass monetization based on their current stats.
+    2. Identify the "Gap" to the next milestone (1000 subs / 4000 hours).
     
     Return a JSON object:
     {
       "channelName": string,
-      "profilePicture": string (URL),
+      "profilePicture": string,
       "subscriberCount": number,
-      "watchTime": number (hours),
+      "watchTime": number,
       "isMonetized": boolean,
       "gapSubscribers": number,
       "gapWatchTime": number,
@@ -598,9 +598,9 @@ export const analyzeChannelMonetization = async (channelUrl: string, language: s
     
     LANGUAGE INSTRUCTIONS:
     - If language is 'Hindi', write the 'roadmap' steps in Hindi (Devanagari).
-    - If language is 'English', write the 'roadmap' steps in English.`,
+    - If language is 'Hinglish', write in a mix of Hindi and English.
+    - Otherwise use English.`,
     config: {
-      tools: [{ googleSearch: {} }],
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
@@ -619,7 +619,16 @@ export const analyzeChannelMonetization = async (channelUrl: string, language: s
     }
   });
   if (!response.text) throw new Error("No response from AI");
-  return JSON.parse(response.text);
+  const aiData = JSON.parse(response.text);
+  
+  // Merge AI advice with real data
+  return {
+    ...channelData,
+    ...aiData,
+    channelName: channelData.channelName, // Preserve real name
+    subscriberCount: channelData.subscriberCount, // Preserve real count
+    watchTime: channelData.watchTime, // Preserve real watch time
+  };
 };
 
 export const generateChannelAudit = async (channelUrl: string, channelData: any, language: string = 'English') => {
@@ -1236,17 +1245,19 @@ export const generateThumbnailText = async (topic: string) => {
   return JSON.parse(response.text);
 };
 
-export const getVideoInfo = async (url: string) => {
+export const getVideoInfo = async (url: string, videoData: any) => {
   const ai = getAI();
   const response = await ai.models.generateContent({
     model: "gemini-3-flash-preview",
-    contents: `Analyze this video URL and provide metadata: "${url}".
+    contents: `Analyze this YouTube video metadata and provide enhanced info:
+    Title: ${videoData.title}
+    Duration: ${videoData.duration}
+    Channel: ${videoData.channelTitle}
+    URL: ${url}
     
     Tasks:
-    1. Identify the real video title.
-    2. Identify the real video duration (format MM:SS or HH:MM:SS).
-    3. Determine if it's a Short/Reel/TikTok (isShort: true/false).
-    4. Provide a high-quality thumbnail URL (if you can find the real one, else use picsum with a relevant seed).
+    1. Confirm if it's a Short/Reel/TikTok (isShort: true/false).
+    2. Provide a high-quality thumbnail URL (use the one provided: ${videoData.thumbnail}).
     
     Return a JSON object:
     {
@@ -1257,7 +1268,6 @@ export const getVideoInfo = async (url: string) => {
       "url": string
     }`,
     config: {
-      tools: [{ googleSearch: {} }],
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
@@ -1275,10 +1285,10 @@ export const getVideoInfo = async (url: string) => {
   if (!response.text) throw new Error("No response from AI");
   const data = JSON.parse(response.text);
   
-  // Add formats for the downloader and ensure the original URL is preserved
   return {
+    ...videoData,
     ...data,
-    url: url, // Ensure we use the original input URL
+    url: url,
     formats: [
       { quality: '1080p', size: '45.2 MB', type: 'MP4', url: '#' },
       { quality: '720p', size: '28.5 MB', type: 'MP4', url: '#' },
