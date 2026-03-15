@@ -58,22 +58,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .from('profiles')
         .select('saved_tools')
         .eq('id', userId)
-        .single();
+        .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 is "no rows returned"
-        console.error('Error fetching saved tools:', error);
+      if (error) {
+        console.error('Error fetching saved tools:', error.message);
       }
 
       if (data) {
-        setSavedTools(data.saved_tools || []);
+        const tools = Array.isArray(data.saved_tools) ? data.saved_tools : [];
+        setSavedTools(tools);
       } else {
         // Initialize profile if it doesn't exist
         const { error: upsertError } = await supabase
           .from('profiles')
-          .upsert({ id: userId, saved_tools: [], updated_at: new Date().toISOString() });
+          .upsert({ 
+            id: userId, 
+            saved_tools: [], 
+            updated_at: new Date().toISOString() 
+          }, { onConflict: 'id' });
         
         if (upsertError) {
-          console.error('Error initializing profile:', upsertError);
+          console.error('Error initializing profile:', upsertError.message);
         }
         setSavedTools([]);
       }
@@ -145,29 +150,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!supabase || !user) return;
 
     const isAlreadySaved = savedTools.includes(toolId);
-    const newSavedTools = isAlreadySaved
+    const nextTools = isAlreadySaved
       ? savedTools.filter(id => id !== toolId)
       : [...savedTools, toolId];
+    
+    const previousTools = [...savedTools];
 
     // Optimistic update
-    const previousSavedTools = [...savedTools];
-    setSavedTools(newSavedTools);
+    setSavedTools(nextTools);
 
     try {
       const { error } = await supabase
         .from('profiles')
         .upsert({ 
           id: user.id, 
-          saved_tools: newSavedTools,
+          saved_tools: nextTools,
           updated_at: new Date().toISOString()
-        });
+        }, { onConflict: 'id' });
 
       if (error) {
-        setSavedTools(previousSavedTools); // Rollback
+        console.error('Error toggling saved tool (Supabase):', error.message);
+        setSavedTools(previousTools); // Rollback
         throw error;
       }
     } catch (error) {
-      console.error('Error toggling saved tool:', error);
+      console.error('Error toggling saved tool (Unexpected):', error);
+      setSavedTools(previousTools); // Rollback
+      throw error;
     }
   };
 
