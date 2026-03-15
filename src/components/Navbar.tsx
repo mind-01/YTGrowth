@@ -263,10 +263,10 @@ export default function Navbar() {
                   <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full" />
                 </div>
                 <div className="flex flex-col items-start leading-none hidden sm:flex">
-                  <span className="text-[13px] font-black" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>
+                  <span className="text-[13px] font-black text-brand-dark dark:text-white">
                     {displayName.split(' ')[0]}
                   </span>
-                  <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: theme === 'dark' ? '#A0A0A0' : '#000000' }}>
+                  <span className="text-[9px] font-bold text-brand-dark dark:text-gray-400 uppercase tracking-wider">
                     Creator
                   </span>
                 </div>
@@ -326,7 +326,7 @@ export default function Navbar() {
                           <span className="font-black uppercase tracking-widest" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>Features</span>
                         </Link>
                         <Link
-                          to="/user-dashboard"
+                          to="/user-dashboard?tab=favorites"
                           onClick={() => setIsProfileOpen(false)}
                           className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-bold hover:bg-bg-primary transition-all group"
                         >
