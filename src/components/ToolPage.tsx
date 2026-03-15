@@ -249,11 +249,14 @@ export default function ToolPage() {
           break;
         case 'monetization':
           const monResponse = await fetch(`/api/youtube/channel-info?url=${encodeURIComponent(channelUrl)}`);
-          const monData = await monResponse.json();
-          if (monData.error) throw new Error(monData.error);
-          setManualWatchTime(monData.watchTime.toString());
-          // Now get AI analysis using the real data
-          data = await gemini.analyzeChannelMonetization(channelUrl, monData, monetizationLanguage);
+          if (!monResponse.ok) {
+            data = await gemini.analyzeChannelMonetization(channelUrl, null, monetizationLanguage);
+          } else {
+            const monData = await monResponse.json();
+            if (monData.error) throw new Error(monData.error);
+            setManualWatchTime(monData.watchTime.toString());
+            data = await gemini.analyzeChannelMonetization(channelUrl, monData, monetizationLanguage);
+          }
           break;
         case 'audit':
           const auditDataResponse = await fetch(`/api/youtube/channel-audit?url=${encodeURIComponent(channelUrl)}`);
@@ -348,13 +351,16 @@ export default function ToolPage() {
             throw new Error("Please enter a valid video URL (YouTube, Instagram, Facebook, X, or TikTok).");
           }
 
-          // Fetch real video info from backend instead of searching with Gemini
+          // Fetch real video info from backend
           const vdResponse = await fetch(`/api/youtube/video-info?url=${encodeURIComponent(currentInput)}`);
-          const vdData = await vdResponse.json();
-          if (vdData.error) throw new Error(vdData.error);
-          
-          // Use Gemini for enhancement/formatting
-          data = await gemini.getVideoInfo(currentInput, vdData);
+          if (!vdResponse.ok) {
+            // Fallback to Gemini if backend fails
+            data = await gemini.getVideoInfo(currentInput);
+          } else {
+            const vdData = await vdResponse.json();
+            if (vdData.error) throw new Error(vdData.error);
+            data = await gemini.getVideoInfo(currentInput, vdData);
+          }
           break;
         default:
           data = "This tool is under development. Please try Title Generator or Description Generator.";
