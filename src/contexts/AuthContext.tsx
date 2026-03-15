@@ -73,8 +73,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .from('profiles')
           .upsert({ 
             id: userId, 
-            saved_tools: [], 
-            updated_at: new Date().toISOString() 
+            saved_tools: []
           }, { onConflict: 'id' });
         
         if (upsertError) {
@@ -164,8 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .from('profiles')
         .upsert({ 
           id: user.id, 
-          saved_tools: nextTools,
-          updated_at: new Date().toISOString()
+          saved_tools: nextTools
         }, { onConflict: 'id' });
 
       if (error) {
