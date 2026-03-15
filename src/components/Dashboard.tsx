@@ -15,7 +15,7 @@ function cn(...inputs: ClassValue[]) {
 
 export default function Dashboard() {
   const { t } = useLanguage();
-  const { user, savedTools, toggleSaveTool, isSaved } = useAuth();
+  const { user, loading, savedTools, toggleSaveTool, isSaved } = useAuth();
   const { activeTab } = useMobileNav();
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('All');
@@ -72,6 +72,7 @@ export default function Dashboard() {
   }, [toast]);
 
   const handleToggleSave = async (toolId: string) => {
+    if (loading) return;
     if (!user) {
       setToast('Please sign in to save tools');
       return;
