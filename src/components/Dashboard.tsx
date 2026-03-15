@@ -20,6 +20,7 @@ export default function Dashboard() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [toast, setToast] = useState<string | null>(null);
   const location = useLocation();
 
   const categories = ['All', 'Saved', 'SEO', 'Content', 'Channel', 'Analytics'];
@@ -62,6 +63,23 @@ export default function Dashboard() {
 
     return matchesSearch && matchesCategory;
   }));
+
+  React.useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  const handleToggleSave = async (toolId: string) => {
+    if (!user) {
+      setToast('Please sign in to save tools');
+      return;
+    }
+    const wasSaved = isSaved(toolId);
+    await toggleSaveTool(toolId);
+    setToast(wasSaved ? 'Removed from saved tools' : 'Added to saved tools');
+  };
 
   React.useEffect(() => {
     const hash = window.location.hash;
@@ -214,7 +232,7 @@ export default function Dashboard() {
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    toggleSaveTool(tool.id);
+                    handleToggleSave(tool.id);
                   }}
                   className={cn(
                     "absolute top-4 right-4 p-2 rounded-xl transition-all z-10",
@@ -255,6 +273,21 @@ export default function Dashboard() {
           </p>
         </div>
       )}
+
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-brand-dark text-white rounded-2xl shadow-2xl font-bold flex items-center gap-3 border border-white/10"
+          >
+            <BookmarkCheck className="w-5 h-5 text-brand-red" />
+            {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
