@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   User as UserIcon, 
@@ -12,13 +12,14 @@ import {
   ExternalLink,
   ChevronRight,
   Bookmark,
+  BookmarkCheck,
   Clock
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { TOOLS } from '../constants';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 type TabType = 'account' | 'favorites' | 'futures' | 'results';
 
@@ -27,7 +28,31 @@ export default function UserDashboard() {
   const { t } = useLanguage();
   const { theme } = useTheme();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<TabType>('account');
+  const [toast, setToast] = useState<string | null>(null);
+
+  // Handle toast
+  useEffect(() => {
+    if (toast) {
+      const timer = setTimeout(() => setToast(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [toast]);
+
+  const handleToggleSave = async (toolId: string) => {
+    const wasSaved = savedTools.includes(toolId);
+    await toggleSaveTool(toolId);
+    setToast(wasSaved ? 'Removed from saved tools' : 'Added to saved tools');
+  };
+
+  // Handle tab from query param
+  useEffect(() => {
+    const tab = searchParams.get('tab') as TabType;
+    if (tab && ['account', 'favorites', 'futures', 'results'].includes(tab)) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   // Redirect if not logged in
   React.useEffect(() => {
@@ -53,7 +78,7 @@ export default function UserDashboard() {
 
   const tabs = [
     { id: 'account', label: 'Account', icon: UserIcon },
-    { id: 'favorites', label: 'Favorites', icon: Heart },
+    { id: 'favorites', label: 'Saved Tools', icon: Bookmark },
     { id: 'futures', label: 'Futures', icon: Zap },
     { id: 'results', label: 'Saved Results', icon: History },
   ] as const;
@@ -176,7 +201,7 @@ export default function UserDashboard() {
                             <Bookmark className="w-5 h-5" />
                           </div>
                           <div>
-                            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: theme === 'dark' ? '#A0A0A0' : '#606060' }}>Favorited Tools</p>
+                            <p className="text-[10px] font-bold uppercase tracking-widest" style={{ color: theme === 'dark' ? '#A0A0A0' : '#606060' }}>Saved Tools</p>
                             <p className="text-sm font-black" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>{savedTools.length} Tools</p>
                           </div>
                         </div>
@@ -189,7 +214,7 @@ export default function UserDashboard() {
               {activeTab === 'favorites' && (
                 <div className="space-y-8">
                   <div className="flex items-center justify-between">
-                    <h2 className="text-2xl font-black" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>Your <span className="text-brand-red">Favorites</span></h2>
+                    <h2 className="text-2xl font-black" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>Your <span className="text-brand-red">Saved Tools</span></h2>
                     <span className="px-4 py-1.5 rounded-full bg-brand-red/10 text-brand-red text-xs font-black uppercase tracking-widest">
                       {favoritedTools.length} Saved
                     </span>
@@ -213,19 +238,19 @@ export default function UserDashboard() {
                           <button
                             onClick={(e) => {
                               e.preventDefault();
-                              toggleSaveTool(tool.id);
+                              handleToggleSave(tool.id);
                             }}
                             className="p-2 rounded-lg hover:bg-brand-red/10 text-brand-red transition-colors"
                           >
-                            <Heart className="w-4 h-4 fill-current" />
+                            <BookmarkCheck className="w-4 h-4 fill-current" />
                           </button>
                         </Link>
                       ))}
                     </div>
                   ) : (
                     <div className="text-center py-20 bg-bg-primary rounded-[2rem] border border-dashed border-border-primary">
-                      <Heart className="w-12 h-12 text-brand-gray/30 mx-auto mb-4" />
-                      <p className="text-brand-gray font-bold">You haven't favorited any tools yet.</p>
+                      <Bookmark className="w-12 h-12 text-brand-gray/30 mx-auto mb-4" />
+                      <p className="text-brand-gray font-bold">You haven't saved any tools yet.</p>
                       <Link to="/" className="text-brand-red font-black text-sm uppercase tracking-widest hover:underline mt-2 inline-block">
                         Browse Tools
                       </Link>
@@ -272,6 +297,20 @@ export default function UserDashboard() {
           </AnimatePresence>
         </div>
       </div>
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {toast && (
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 50 }}
+            className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 px-6 py-3 bg-brand-dark text-white rounded-2xl shadow-2xl font-bold flex items-center gap-3 border border-white/10"
+          >
+            <BookmarkCheck className="w-5 h-5 text-brand-red" />
+            {toast}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
