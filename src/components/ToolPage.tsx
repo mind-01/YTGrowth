@@ -23,7 +23,7 @@ import {
 
 export default function ToolPage() {
   const { t } = useLanguage();
-  const { toggleSaveTool, isSaved } = useAuth();
+  const { user, toggleSaveTool, isSaved } = useAuth();
   const { id } = useParams();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -190,6 +190,16 @@ export default function ToolPage() {
       }
     }
   }, [id, searchParams]);
+
+  const toggleSaveToolWithFeedback = async (toolId: string) => {
+    if (!user) {
+      setToast('Please sign in to save tools');
+      return;
+    }
+    const wasSaved = isSaved(toolId);
+    await toggleSaveTool(toolId);
+    setToast(wasSaved ? 'Removed from saved tools' : 'Added to saved tools');
+  };
 
   if (!tool) return <div>Tool not found</div>;
 
@@ -417,9 +427,9 @@ export default function ToolPage() {
       <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm mb-8">
         <div className="text-center mb-8 relative">
           <button
-            onClick={() => toggleSaveTool(tool.id)}
+            onClick={() => toggleSaveToolWithFeedback(tool.id)}
             className={cn(
-              "absolute top-0 right-0 p-3 rounded-2xl transition-all shadow-sm border border-border-primary",
+              "absolute -top-2 -right-2 p-3 rounded-2xl transition-all shadow-lg border border-border-primary z-30 active:scale-90 hover:scale-110",
               isSaved(tool.id) 
                 ? "bg-brand-red text-white border-brand-red" 
                 : "bg-card-bg text-brand-gray hover:text-brand-red hover:border-brand-red"
