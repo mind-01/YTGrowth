@@ -1245,11 +1245,12 @@ export const generateThumbnailText = async (topic: string) => {
   return JSON.parse(response.text);
 };
 
-export const getVideoInfo = async (url: string, videoData: any) => {
+export const getVideoInfo = async (url: string, videoData?: any) => {
   const ai = getAI();
-  const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
-    contents: `Analyze this YouTube video metadata and provide enhanced info:
+  
+  // If no videoData provided, we try to extract basic info from URL or use AI to find it
+  const prompt = videoData 
+    ? `Analyze this YouTube video metadata and provide enhanced info:
     Title: ${videoData.title}
     Duration: ${videoData.duration}
     Channel: ${videoData.channelTitle}
@@ -1257,7 +1258,14 @@ export const getVideoInfo = async (url: string, videoData: any) => {
     
     Tasks:
     1. Confirm if it's a Short/Reel/TikTok (isShort: true/false).
-    2. Provide a high-quality thumbnail URL (use the one provided: ${videoData.thumbnail}).
+    2. Provide a high-quality thumbnail URL (use the one provided: ${videoData.thumbnail}).`
+    : `Find information for this video URL: ${url}. 
+    Provide the title, duration, and a placeholder thumbnail URL.
+    Also confirm if it's a Short/Reel/TikTok (isShort: true/false).`;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-3-flash-preview",
+    contents: `${prompt}
     
     Return a JSON object:
     {
@@ -1286,7 +1294,7 @@ export const getVideoInfo = async (url: string, videoData: any) => {
   const data = JSON.parse(response.text);
   
   return {
-    ...videoData,
+    ...(videoData || {}),
     ...data,
     url: url,
     formats: [
