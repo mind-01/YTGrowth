@@ -68,7 +68,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSavedTools(data.saved_tools || []);
       } else {
         // Initialize profile if it doesn't exist
-        await supabase.from('profiles').upsert({ id: userId, saved_tools: [] });
+        const { error: upsertError } = await supabase
+          .from('profiles')
+          .upsert({ id: userId, saved_tools: [], updated_at: new Date().toISOString() });
+        
+        if (upsertError) {
+          console.error('Error initializing profile:', upsertError);
+        }
         setSavedTools([]);
       }
     } catch (err) {
@@ -136,24 +142,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const toggleSaveTool = async (toolId: string) => {
-    if (!supabase) return;
-    if (!user) {
-      await signInWithGoogle();
-      return;
-    }
+    if (!supabase || !user) return;
 
     const isAlreadySaved = savedTools.includes(toolId);
     const newSavedTools = isAlreadySaved
       ? savedTools.filter(id => id !== toolId)
       : [...savedTools, toolId];
 
+    // Optimistic update
+    const previousSavedTools = [...savedTools];
+    setSavedTools(newSavedTools);
+
     try {
       const { error } = await supabase
         .from('profiles')
-        .upsert({ id: user.id, saved_tools: newSavedTools });
+        .upsert({ 
+          id: user.id, 
+          saved_tools: newSavedTools,
+          updated_at: new Date().toISOString()
+        });
 
-      if (error) throw error;
-      setSavedTools(newSavedTools);
+      if (error) {
+        setSavedTools(previousSavedTools); // Rollback
+        throw error;
+      }
     } catch (error) {
       console.error('Error toggling saved tool:', error);
     }
