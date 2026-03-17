@@ -39,7 +39,6 @@ const BlogPost = () => {
     { name: 'YouTube Thumbnail Score', path: '/tool/thumb-score' },
     { name: 'YouTube Thumbnail Text Generator', path: '/tool/thumb-text' },
     { name: 'YouTube Content Planner', path: '/tool/content-planner' },
-    { name: 'YouTube Video Downloader', path: '/tool/video-downloader' },
     { name: 'YouTube Best Time to Post', path: '/tool/best-time' },
     { name: 'YouTube Channel Name Ideas', path: '/tool/name-ideas' },
     { name: 'YouTube Monetization Tracker', path: '/tool/monetization' },
@@ -73,7 +72,6 @@ const BlogPost = () => {
     { name: 'Thumbnail Score', path: '/tool/thumb-score' },
     { name: 'Thumbnail Text Generator', path: '/tool/thumb-text' },
     { name: 'Content Planner', path: '/tool/content-planner' },
-    { name: 'Video Downloader', path: '/tool/video-downloader' },
     { name: 'Best Time to Post', path: '/tool/best-time' },
     { name: 'Channel Name Ideas', path: '/tool/name-ideas' },
     { name: 'Monetization Tracker', path: '/tool/monetization' },
@@ -84,7 +82,11 @@ const BlogPost = () => {
     { name: 'Comment Sentiment Analyzer', path: '/tool/sentiment' },
     { name: 'Global Reach Analyzer', path: '/tool/global-reach' },
     
-    // Synonyms
+    // Synonyms & Hubs
+    { name: 'YouTube Tools Hub', path: '/tools' },
+    { name: 'Tools Hub', path: '/tools' },
+    { name: 'Best YouTube Tools', path: '/best-youtube-tools' },
+    { name: 'YouTube Growth Tools', path: '/best-youtube-tools' },
     { name: 'YouTube Script Writer', path: '/tool/script-gen' },
     { name: 'YouTube Thumbnail Idea', path: '/tool/thumb-maker' },
     { name: 'YouTube SEO Audit', path: '/tool/audit' },
@@ -258,11 +260,27 @@ const BlogPost = () => {
               rehypePlugins={[rehypeRaw]}
               components={{
                 h2: ({ children }) => {
-                  const id = children?.toString().toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+                  const getText = (nodes: any): string => {
+                    return React.Children.toArray(nodes).map(node => {
+                      if (typeof node === 'string') return node;
+                      if (React.isValidElement(node) && (node.props as any).children) return getText((node.props as any).children);
+                      return '';
+                    }).join('');
+                  };
+                  const text = getText(children);
+                  const id = text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
                   return <h2 id={id}>{children}</h2>;
                 },
                 h3: ({ children }) => {
-                  const id = children?.toString().toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+                  const getText = (nodes: any): string => {
+                    return React.Children.toArray(nodes).map(node => {
+                      if (typeof node === 'string') return node;
+                      if (React.isValidElement(node) && (node.props as any).children) return getText((node.props as any).children);
+                      return '';
+                    }).join('');
+                  };
+                  const text = getText(children);
+                  const id = text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
                   return <h3 id={id}>{children}</h3>;
                 },
                 a: ({ href, children }) => {
@@ -301,15 +319,16 @@ const BlogPost = () => {
           >
             <div className="flex items-center gap-3 mb-8">
               <HelpCircle className="w-8 h-8 text-brand-red" />
-              <h2 className="text-3xl font-black text-[#33333b] tracking-tight">Frequently Asked Questions</h2>
+              <h2 id="frequently-asked-questions" className="text-3xl font-black text-[#33333b] tracking-tight">Frequently Asked Questions</h2>
             </div>
-            <div className="space-y-8">
+            <div className="space-y-6">
               {post.faqs.map((faq, idx) => (
-                <div key={idx} className="group">
-                  <h3 className="text-xl font-bold text-[#33333b] mb-3 flex items-start gap-3">
-                    <span className="text-brand-red mt-1">Q.</span>
+                <div key={idx} className="bg-white p-6 md:p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow group">
+                  <h3 className="text-xl font-bold text-[#33333b] mb-4 flex items-start gap-3">
+                    <span className="text-brand-red shrink-0 mt-1">Q.</span>
                     {faq.q}
                   </h3>
+                  <div className="h-px bg-gray-100 w-full mb-4" />
                   <p className="text-gray-600 font-medium leading-relaxed pl-8">
                     {faq.a}
                   </p>
@@ -328,10 +347,10 @@ const BlogPost = () => {
               Use the same tools mentioned in this article to scale your YouTube presence today.
             </p>
             <Link 
-              to="/" 
+              to="/tools" 
               className="inline-flex items-center gap-3 px-10 py-5 bg-brand-red text-white rounded-2xl text-sm font-black uppercase tracking-widest hover:bg-white hover:text-brand-red transition-all shadow-2xl"
             >
-              Go to Dashboard <ArrowRight className="w-5 h-5" />
+              Start using our free YouTube tools now → Go to Tools Hub <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
         </div>
