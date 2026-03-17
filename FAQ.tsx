@@ -1,0 +1,255 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+:root {
+  --brand-color: #FF0000;
+  --bg-primary: #F9F9F9;
+  --text-primary: #0F0F0F;
+  --card-bg: #FFFFFF;
+  --border-color: #E5E7EB;
+  --text-secondary: #606060;
+}
+
+.dark, [data-theme='dark'] {
+  --bg-primary: #0F0F0F;
+  --text-primary: #F9F9F9;
+  --card-bg: #1A1A1A;
+  --border-color: #2D2D2D;
+  --text-secondary: #A0A0A0;
+}
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  
+  --color-brand-red: var(--brand-color);
+  --color-brand-dark: var(--text-primary);
+  --color-brand-gray: var(--text-secondary);
+  --color-bg-primary: var(--bg-primary);
+  --color-card-bg: var(--card-bg);
+  --color-border-primary: var(--border-color);
+}
+
+@layer base {
+  html {
+    @apply bg-bg-primary text-brand-dark;
+  }
+  body {
+    @apply bg-bg-primary text-brand-dark font-sans transition-colors duration-300;
+  }
+}
+
+.glass {
+  @apply bg-white/80 backdrop-blur-md border border-white/20;
+}
+
+.card-hover {
+  @apply transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
+}
+
+.btn-primary {
+  @apply bg-brand-red text-white px-6 py-3 rounded-full font-semibold hover:bg-red-700 transition-colors shadow-lg shadow-red-500/20 active:scale-95;
+}
+
+.btn-secondary {
+  @apply bg-white text-brand-dark border border-gray-200 px-6 py-3 rounded-full font-semibold hover:bg-gray-50 transition-colors active:scale-95;
+}
+
+.input-field {
+  @apply w-full px-4 py-3 rounded-xl border border-border-primary bg-card-bg text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red transition-all placeholder:text-brand-gray;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  @apply bg-border-primary rounded-full hover:bg-brand-gray/30 transition-colors;
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+  :root {
+    --container-padding: 16px;
+    --section-spacing: 24px;
+    --card-spacing: 16px;
+  }
+
+  .max-w-4xl {
+    padding-left: var(--container-padding) !important;
+    padding-right: var(--container-padding) !important;
+  }
+
+  h1, .text-3xl {
+    font-size: 22px !important;
+    line-height: 1.3 !important;
+    letter-spacing: -0.02em !important;
+  }
+
+  h2, .text-2xl {
+    font-size: 18px !important;
+    line-height: 1.4 !important;
+  }
+
+  h3, .text-xl {
+    font-size: 16px !important;
+    line-height: 1.4 !important;
+  }
+
+  .text-lg {
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+  }
+
+  p, .text-sm, .text-brand-gray {
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+  }
+
+  .text-xs, .text-[10px], .text-[9px] {
+    font-size: 11px !important;
+    line-height: 1 !important;
+  }
+
+  /* Crowding prevention */
+  .space-y-4 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 1rem !important;
+  }
+  
+  .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 1.5rem !important;
+  }
+
+  .space-y-8 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: 2rem !important;
+  }
+
+  .gap-6 {
+    gap: 1.25rem !important;
+  }
+
+  .gap-8 {
+    gap: 1.5rem !important;
+  }
+
+  .input-field, input[type="text"], textarea {
+    width: 100% !important;
+    min-height: 44px !important;
+    padding: 12px 16px !important;
+    font-size: 16px !important; /* Prevents iOS zoom */
+  }
+
+  .btn-primary, .btn-secondary, button {
+    min-height: 44px !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+  }
+
+  /* Stacked layouts */
+  .flex-row-mobile {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  .grid-cols-mobile-1 {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Tag wrapping */
+  .tag-grid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+
+  .tag-item {
+    padding: 6px 12px !important;
+    font-size: 12px !important;
+    background: var(--bg-primary) !important;
+    border: 1px solid var(--border-color) !important;
+    border-radius: 8px !important;
+    white-space: nowrap !important;
+  }
+
+  /* Spacing */
+  .mobile-space-y {
+    margin-top: var(--section-spacing) !important;
+  }
+
+  .p-8, .p-10, .p-12 {
+    padding: var(--container-padding) !important;
+  }
+
+  .rounded-[2.5rem] {
+    border-radius: 1.5rem !important;
+  }
+
+  /* Result boxes */
+  .result-box {
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    overflow-x: auto !important;
+    max-height: 400px !important;
+    padding: 12px !important;
+    border-radius: 12px !important;
+    background: var(--bg-primary) !important;
+  }
+
+  /* Steps stacking */
+  .step-container {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+  }
+
+  .step-box {
+    padding: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+  }
+}
+
+/* Markdown Styles */
+.markdown-body {
+  @apply text-brand-dark leading-relaxed;
+}
+
+.markdown-body h1 {
+  @apply text-4xl font-black mb-8 mt-12 tracking-tight;
+}
+
+.markdown-body h2 {
+  @apply text-3xl font-black mb-6 mt-10 tracking-tight border-b border-border-primary pb-2;
+}
+
+.markdown-body h3 {
+  @apply text-2xl font-bold mb-4 mt-8 tracking-tight;
+}
+
+.markdown-body p {
+  @apply mb-6 text-lg text-brand-gray font-medium;
+}
+
+.markdown-body ul, .markdown-body ol {
+  @apply mb-8 ml-6 list-disc;
+}
+
+.markdown-body li {
+  @apply mb-3 text-lg text-brand-gray font-medium;
+}
+
+.markdown-body strong {
+  @apply font-bold text-brand-dark;
+}
+
+.markdown-body blockquote {
+  @apply border-l-4 border-brand-red pl-6 py-2 my-8 italic bg-brand-red/5 rounded-r-xl;
+}
+
+.markdown-body a {
+  @apply text-brand-red font-bold hover:underline;
+}
