@@ -263,10 +263,10 @@ export default function Navbar() {
                   <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full" />
                 </div>
                 <div className="flex flex-col items-start leading-none hidden sm:flex">
-                  <span className="text-[13px] font-black" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>
+                  <span className="text-[13px] font-black text-brand-dark">
                     {displayName.split(' ')[0]}
                   </span>
-                  <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: theme === 'dark' ? '#A0A0A0' : '#606060' }}>
+                  <span className="text-[9px] font-bold uppercase tracking-wider text-brand-gray">
                     Creator
                   </span>
                 </div>
@@ -295,8 +295,8 @@ export default function Navbar() {
                             referrerPolicy="no-referrer"
                           />
                           <div className="min-w-0">
-                            <p className="text-sm font-black truncate" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>{displayName}</p>
-                            <p className="text-[10px] font-bold truncate" style={{ color: theme === 'dark' ? '#A0A0A0' : '#000000' }}>{user.email}</p>
+                            <p className="text-sm font-black truncate text-brand-dark">{displayName}</p>
+                            <p className="text-[10px] font-bold truncate text-brand-gray">{user.email}</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-red/10 text-brand-red text-[10px] font-black uppercase tracking-widest w-fit">
@@ -313,7 +313,7 @@ export default function Navbar() {
                           <div className="w-8 h-8 rounded-xl bg-bg-primary flex items-center justify-center group-hover:bg-brand-red/10 group-hover:text-brand-red transition-colors">
                             <UserIcon className="w-4 h-4" />
                           </div>
-                          <span className="font-black uppercase tracking-widest" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>Account</span>
+                          <span className="font-black uppercase tracking-widest text-brand-dark">Account</span>
                         </Link>
                         <Link
                           to="/user-dashboard"
@@ -323,7 +323,7 @@ export default function Navbar() {
                           <div className="w-8 h-8 rounded-xl bg-bg-primary flex items-center justify-center group-hover:bg-brand-red/10 group-hover:text-brand-red transition-colors">
                             <Heart className="w-4 h-4" />
                           </div>
-                          <span className="font-black uppercase tracking-widest" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>Features</span>
+                          <span className="font-black uppercase tracking-widest text-brand-dark">Features</span>
                         </Link>
                         <Link
                           to="/user-dashboard?tab=favorites"
@@ -333,7 +333,7 @@ export default function Navbar() {
                           <div className="w-8 h-8 rounded-xl bg-bg-primary flex items-center justify-center group-hover:bg-brand-red/10 group-hover:text-brand-red transition-colors">
                             <Bookmark className="w-4 h-4" />
                           </div>
-                          <span className="font-black uppercase tracking-widest" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>Saved Tools</span>
+                          <span className="font-black uppercase tracking-widest text-brand-dark">Saved Tools</span>
                         </Link>
                         <button 
                           onClick={() => {
@@ -346,7 +346,7 @@ export default function Navbar() {
                             <div className="w-8 h-8 rounded-xl bg-bg-primary flex items-center justify-center group-hover:bg-brand-red/10 group-hover:text-brand-red transition-colors">
                               <LogOut className="w-4 h-4" />
                             </div>
-                            <span className="font-black uppercase tracking-widest" style={{ color: theme === 'dark' ? '#FFFFFF' : '#000000' }}>Sign Out</span>
+                            <span className="font-black uppercase tracking-widest text-brand-dark">Sign Out</span>
                           </div>
                         </button>
                       </div>

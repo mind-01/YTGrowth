@@ -35,7 +35,7 @@ export default function Dashboard() {
         return tools.filter(t => [
           'title-gen', 'desc-gen', 'video-ideas', 'script-gen', 
           'thumb-maker', 'thumb-score', 'best-time', 'name-ideas',
-          'seo-check', 'keyword-res', 'video-downloader'
+          'seo-check', 'keyword-res'
         ].includes(t.id));
       case 'Shorts':
         return tools.filter(t => [

@@ -15,6 +15,8 @@ import Contact from './pages/Contact';
 import Disclaimer from './pages/Disclaimer';
 import Blog from './pages/Blog';
 import BlogPost from './pages/BlogPost';
+import ToolsHub from './pages/ToolsHub';
+import PillarArticle from './pages/PillarArticle';
 import LoginPage from './pages/LoginPage';
 import UserDashboard from './pages/UserDashboard';
 import SettingsPage from './pages/SettingsPage';
@@ -38,7 +40,8 @@ export default function App() {
             <Route path="/tool/:id" element={<ToolPage />} />
             <Route path="/info/:slug" element={<InfoPage />} />
             <Route path="/features" element={<Features />} />
-            <Route path="/tools" element={<ToolsGuide />} />
+            <Route path="/tools" element={<ToolsHub />} />
+            <Route path="/best-youtube-tools" element={<PillarArticle />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/security" element={<Security />} />
             <Route path="/privacy" element={<Privacy />} />

@@ -54,7 +54,6 @@ export const TOOLS: Tool[] = [
   { id: 'thumb-score', name: 'Thumbnail Score', description: 'Predict your thumbnail CTR', icon: BarChart3, category: 'Content', path: '/tool/thumb-score' },
   { id: 'thumb-text', name: 'Thumbnail Text Generator', description: 'High-CTR text for thumbnails', icon: TypeIcon, category: 'Content', path: '/tool/thumb-text' },
   { id: 'content-planner', name: 'Content Planner', description: 'Plan your video schedule', icon: Calendar, category: 'Content', path: '/tool/content-planner' },
-  { id: 'video-downloader', name: 'Video Downloader', description: 'Download videos in MP4 or Audio', icon: Download, category: 'Content', path: '/tool/video-downloader' },
 
   // Channel Tools
   { id: 'best-time', name: 'Best Time to Post', description: 'When to upload for max reach', icon: Clock, category: 'Channel', path: '/tool/best-time' },
