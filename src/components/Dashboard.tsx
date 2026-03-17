@@ -100,30 +100,22 @@ export default function Dashboard() {
     <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8 sm:px-6 lg:px-8">
       {/* Hero Section */}
       <div className="text-center mb-6 sm:mb-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
+        <div
           className="inline-block px-3 py-1 sm:px-4 sm:py-1.5 mb-3 sm:mb-4 rounded-full bg-brand-red/10 text-brand-red text-[10px] sm:text-sm font-semibold tracking-wide uppercase"
         >
           {t('hero.badge')}
-        </motion.div>
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
+        </div>
+        <h1
           className="text-2xl sm:text-4xl lg:text-6xl font-extrabold text-brand-dark tracking-tight mb-3 sm:mb-4 leading-tight"
         >
           {t('hero.title')} <br className="hidden sm:block" />
           <span className="text-brand-red">{t('hero.subtitle')}</span>
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+        </h1>
+        <p
           className="text-sm sm:text-lg text-brand-gray max-w-2xl mx-auto px-2"
         >
           {t('hero.description')}
-        </motion.p>
+        </p>
       </div>
 
       {/* Search and Filters */}
