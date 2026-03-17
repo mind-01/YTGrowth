@@ -41,13 +41,13 @@ const BottomNav = () => {
             <button
               key={item.tab}
               onClick={() => handleTabClick(item.tab)}
-              className={`flex flex-col items-center justify-center gap-0.5 transition-all relative flex-1 min-w-0 ${
+              className={`flex flex-col items-center justify-center gap-0.5 relative flex-1 min-w-0 ${
                 isActive ? 'text-brand-red' : 'text-brand-gray hover:text-brand-dark dark:hover:text-white'
               }`}
             >
-              <div className={`p-1.5 rounded-xl transition-all ${isActive ? 'bg-brand-red/10' : ''}`}>
+              <div className={`p-1.5 rounded-xl transition-[background-color] duration-200 ${isActive ? 'bg-brand-red/10' : ''}`}>
                 <Icon 
-                  className={`w-5 h-5 transition-all ${isActive ? 'stroke-[2.5px]' : 'stroke-2'}`} 
+                  className={`w-5 h-5 transition-transform duration-200 ${isActive ? 'stroke-[2.5px] scale-110' : 'stroke-2'}`} 
                 />
               </div>
               <span className={`text-[9px] font-black uppercase tracking-tighter leading-none text-center truncate w-full px-1 ${
