@@ -60,7 +60,6 @@
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
   </url>
-  <url>
 
   <!-- Tools -->
   <url><loc>https://yt-growth-sigma.vercel.app/tool/title-gen</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
