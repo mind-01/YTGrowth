@@ -406,23 +406,23 @@ export default function ToolPage() {
   }, [tool.id]);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 pt-24 pb-12">
-      <div className="flex items-center justify-between mb-8">
-        <div className="flex items-center gap-2 text-[10px] font-black text-brand-gray uppercase tracking-widest">
-          <button onClick={() => navigate(-1)} className="hover:text-brand-red transition-colors">{t('nav.back')}</button>
-          <span className="text-border-primary">/</span>
-          <Link to="/" className="hover:text-brand-red transition-colors">{t('nav.dashboard')}</Link>
-          <span className="text-border-primary">/</span>
-          <span className="text-brand-dark">{t(`tool.${tool.id}.name`)}</span>
-        </div>
+    <div className="max-w-4xl mx-auto px-4 pt-20 sm:pt-24 pb-12">
+      <div className="flex items-center justify-between mb-6 sm:mb-8">
+        <button 
+          onClick={() => navigate(-1)} 
+          className="flex items-center gap-2 text-[10px] sm:text-[11px] font-black text-brand-gray uppercase tracking-widest hover:text-brand-red transition-colors group"
+        >
+          <ArrowLeft className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:-translate-x-1 transition-transform" />
+          {t('nav.back')}
+        </button>
       </div>
 
-      <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm mb-8">
-        <div className="text-center mb-8 relative">
+      <div className="bg-card-bg rounded-[2rem] sm:rounded-[2.5rem] border border-border-primary p-5 sm:p-8 shadow-sm mb-8">
+        <div className="text-center mb-6 sm:mb-8 relative">
           <button
             onClick={() => toggleSaveToolWithFeedback(tool.id)}
             className={cn(
-              "absolute -top-2 -right-2 p-3 rounded-2xl transition-all shadow-lg border border-border-primary z-30 active:scale-90 hover:scale-110",
+              "hidden sm:block absolute sm:-top-2 sm:-right-2 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl transition-all shadow-lg border border-border-primary z-30 active:scale-90 hover:scale-110",
               isSaved(tool.id) 
                 ? "bg-brand-red text-white border-brand-red" 
                 : "bg-card-bg text-brand-gray hover:text-brand-red hover:border-brand-red"
@@ -430,21 +430,62 @@ export default function ToolPage() {
             title={isSaved(tool.id) ? "Remove from saved" : "Save tool"}
           >
             {isSaved(tool.id) ? (
-              <BookmarkCheck className="w-6 h-6 fill-current" />
+              <BookmarkCheck className="w-5 h-5 sm:w-6 sm:h-6 fill-current" />
             ) : (
-              <Bookmark className="w-6 h-6" />
+              <Bookmark className="w-5 h-5 sm:w-6 sm:h-6" />
             )}
           </button>
-          <h1 className="text-3xl font-black text-brand-dark mb-2">{t(`tool.${tool.id}.name`)}</h1>
-          <p className="text-brand-gray font-medium mb-6">{t(`tool.${tool.id}.desc`)}</p>
+          <h1 className="text-2xl sm:text-3xl font-black text-brand-dark mb-2">{t(`tool.${tool.id}.name`)}</h1>
+          <p className="text-sm sm:text-base text-brand-gray font-medium mb-6">
+            {tool.id === 'desc-gen' 
+              ? "Generate high-ranking YouTube descriptions to boost SEO, views, and engagement" 
+              : tool.id === 'tag-gen'
+              ? "Generate high-ranking YouTube tags to increase video visibility, SEO, and reach"
+              : tool.id === 'title-analyzer'
+              ? "Analyze and improve your YouTube title for higher CTR and rankings"
+              : tool.id === 'title-gen'
+              ? "Generate viral, high-CTR YouTube titles that rank higher and go viral"
+              : tool.id === 'hash-gen'
+              ? "Generate trending YouTube hashtags to increase discoverability and reach"
+              : tool.id === 'video-ideas'
+              ? "Never run out of content ideas with our AI-powered video idea generator"
+              : tool.id === 'shorts-ideas'
+              ? "Viral ideas for YouTube Shorts to explode your channel growth"
+              : tool.id === 'hook-gen' || tool.id === 'viral-hooks'
+              ? "Generate high-CTR video hooks to grab attention in the first 5 seconds"
+              : tool.id === 'script-gen'
+              ? "AI-powered video script outlines to help you create better content faster"
+              : tool.id === 'thumb-text'
+              ? "Generate high-CTR text for your thumbnails to boost your views"
+              : t(`tool.${tool.id}.desc`)}
+          </p>
           
-          <button
-            onClick={copyUrl}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-bg-primary border border-border-primary text-[10px] font-black text-brand-dark hover:text-brand-red hover:border-brand-red transition-all shadow-sm"
-          >
-            <LinkIcon className="w-3.5 h-3.5" />
-            {t('tool.copy_url')}
-          </button>
+          <div className="flex items-center justify-center gap-2">
+            <button
+              onClick={copyUrl}
+              className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-bg-primary border border-border-primary text-[9px] sm:text-[10px] font-black text-brand-dark hover:text-brand-red hover:border-brand-red transition-all shadow-sm"
+            >
+              <LinkIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              {t('tool.copy_url')}
+            </button>
+
+            <button
+              onClick={() => toggleSaveToolWithFeedback(tool.id)}
+              className={cn(
+                "sm:hidden inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-bg-primary border border-border-primary text-[9px] font-black transition-all shadow-sm active:scale-90",
+                isSaved(tool.id) 
+                  ? "text-brand-red border-brand-red bg-brand-red/5" 
+                  : "text-brand-dark hover:text-brand-red hover:border-brand-red"
+              )}
+            >
+              {isSaved(tool.id) ? (
+                <BookmarkCheck className="w-3 h-3 fill-current" />
+              ) : (
+                <Bookmark className="w-3 h-3" />
+              )}
+              {isSaved(tool.id) ? "SAVED" : "SAVE"}
+            </button>
+          </div>
         </div>
 
         {isSEOCheck || isKeywordRes || isSentiment || isGlobalReach || isAnalyticsDash ? (
@@ -465,9 +506,9 @@ export default function ToolPage() {
                 <div className="absolute left-6 top-1/2 -translate-y-1/2 text-brand-dark">
                   {isKeywordRes || isGlobalReach ? <Search className="w-5 h-5" /> : <LinkIcon className="w-5 h-5" />}
                 </div>
-                <input
+                <input 
                   type="text"
-                  className="w-full pl-14 pr-32 py-5 rounded-full border border-border-primary bg-card-bg text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red transition-all text-lg font-medium shadow-sm"
+                  className="w-full pl-12 sm:pl-14 pr-24 sm:pr-32 py-3 sm:py-5 rounded-full border border-border-primary bg-card-bg text-brand-dark focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red transition-all text-base sm:text-lg font-medium shadow-sm"
                   placeholder={isKeywordRes || isGlobalReach ? t('nav.enter_topic') : isAnalyticsDash ? t('nav.paste_channel_link') : t('nav.paste_video_link')}
                   value={isAnalyticsDash ? channelUrl : input}
                   onChange={(e) => isAnalyticsDash ? setChannelUrl(e.target.value) : setInput(e.target.value)}
@@ -482,9 +523,9 @@ export default function ToolPage() {
                       console.error('Failed to read clipboard contents: ', err);
                     }
                   }}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white border border-border-primary hover:bg-bg-primary transition-all text-sm font-bold text-brand-dark shadow-sm"
+                  className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-lg sm:rounded-xl bg-white border border-border-primary hover:bg-bg-primary transition-all text-xs sm:text-sm font-bold text-brand-dark shadow-sm"
                 >
-                  <Clipboard className="w-4 h-4" />
+                  <Clipboard className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   {t('nav.paste')}
                 </button>
               </div>
@@ -519,12 +560,12 @@ export default function ToolPage() {
               )}
 
               {(isSentiment || isGlobalReach) && (
-                <div className="flex flex-col items-center gap-4 mb-8">
+                <div className="flex flex-col items-center gap-3 sm:gap-4 mb-6 sm:mb-8">
                   <div className="flex items-center gap-2">
-                    <Languages className="w-4 h-4 text-brand-gray" />
-                    <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">Analysis Language</span>
+                    <Languages className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-gray" />
+                    <span className="text-[8px] sm:text-[10px] font-black text-brand-gray uppercase tracking-widest">Analysis Language</span>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
                     {[
                       { id: 'en', label: '🇺🇸 English' },
                       { id: 'hi', label: '🇮🇳 Hindi' },
@@ -533,7 +574,7 @@ export default function ToolPage() {
                       <button
                         key={lang.id}
                         onClick={() => setLanguage(lang.id)}
-                        className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
+                        className={`px-3 sm:px-6 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl text-[8px] sm:text-[10px] font-bold sm:font-black uppercase tracking-wider transition-all ${
                           language === lang.id 
                           ? 'bg-brand-dark text-white shadow-lg scale-105' 
                           : 'bg-card-bg text-brand-gray border border-border-primary hover:border-brand-red hover:text-brand-red'
@@ -549,7 +590,7 @@ export default function ToolPage() {
               <button
                 onClick={() => handleAction(isAnalyticsDash ? "ANALYTICS_DASHBOARD" : undefined)}
                 disabled={loading || (isAnalyticsDash ? !channelUrl : !input.trim())}
-                className="btn-primary w-full max-w-xl py-5 text-xl font-black uppercase tracking-widest mb-2"
+                className="btn-primary w-full max-w-xl py-4 sm:py-5 text-lg sm:text-xl font-black uppercase tracking-widest mb-2"
               >
                 {loading ? <Loader2 className="w-6 h-6 animate-spin mx-auto" /> : (isKeywordRes ? t('nav.search_keywords') : (isSentiment || isGlobalReach || isAnalyticsDash) ? t('nav.generate_results') : t('nav.checklist'))}
               </button>
@@ -740,13 +781,13 @@ export default function ToolPage() {
             )}
 
             {(tool.id === 'monetization' || tool.id === 'audit') && (
-              <div className="space-y-8">
-                <div className="flex items-center gap-4 p-4 bg-bg-primary rounded-2xl border border-border-primary">
+              <div className="space-y-6 sm:space-y-8">
+                <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 p-3 sm:p-4 bg-bg-primary rounded-xl sm:rounded-2xl border border-border-primary">
                   <div className="flex items-center gap-2">
-                    <Languages className="w-4 h-4 text-brand-gray" />
-                    <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">Report Language</span>
+                    <Languages className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-gray" />
+                    <span className="text-[8px] sm:text-[10px] font-black text-brand-gray uppercase tracking-widest">Report Language</span>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
                     {[
                       { id: 'English', label: '🇺🇸 English' },
                       { id: 'Hindi', label: '🇮🇳 Hindi' },
@@ -758,10 +799,10 @@ export default function ToolPage() {
                           if (tool.id === 'monetization') setMonetizationLanguage(lang.id);
                           else setAuditLanguage(lang.id);
                         }}
-                        className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
+                        className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[8px] sm:text-[10px] font-bold sm:font-black uppercase tracking-wider transition-all ${
                           (tool.id === 'monetization' ? monetizationLanguage : auditLanguage) === lang.id 
-                          ? 'bg-brand-red text-white shadow-md' 
-                          : 'bg-card-bg text-brand-gray border border-border-primary hover:border-brand-red hover:text-brand-red'
+                            ? 'bg-brand-red text-white shadow-md' 
+                            : 'bg-card-bg text-brand-gray border border-border-primary hover:border-brand-red hover:text-brand-red'
                         }`}
                       >
                         {lang.label}
@@ -798,12 +839,12 @@ export default function ToolPage() {
             )}
 
             {tool.id === 'comp-spy' && (
-              <div className="flex flex-col items-center gap-4 mb-6">
+              <div className="flex flex-col items-center gap-3 sm:gap-4 mb-6">
                 <div className="flex items-center gap-2">
-                  <Languages className="w-4 h-4 text-brand-gray" />
-                  <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">Report Language</span>
+                  <Languages className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-brand-gray" />
+                  <span className="text-[8px] sm:text-[10px] font-black text-brand-gray uppercase tracking-widest">Report Language</span>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex flex-wrap justify-center gap-1.5 sm:gap-2">
                   {[
                     { id: 'English', label: '🇺🇸 English' },
                     { id: 'Hindi', label: '🇮🇳 Hindi' },
@@ -812,7 +853,7 @@ export default function ToolPage() {
                     <button
                       key={lang.id}
                       onClick={() => setSpyLanguage(lang.id)}
-                      className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${
+                      className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[8px] sm:text-[10px] font-bold sm:font-black uppercase tracking-wider transition-all ${
                         spyLanguage === lang.id 
                         ? 'bg-brand-red text-white shadow-md' 
                         : 'bg-card-bg text-brand-gray border border-border-primary hover:border-brand-red hover:text-brand-red'
@@ -900,23 +941,23 @@ export default function ToolPage() {
             {tool.id !== 'thumb-score' && tool.id !== 'best-time' && tool.id !== 'monetization' && tool.id !== 'audit' && (
               <div>
                 <label className="block text-sm font-bold text-brand-dark mb-2 uppercase tracking-widest">
-                  {tool.id === 'trending-topics' ? 'Niche / Keyword' : 'Enter Video Topic or Keywords'}
+                  {tool.id === 'trending-topics' ? 'Niche / Keyword' : 'Enter your video topic or keywords'}
                 </label>
                 <textarea
-                  className="input-field min-h-[120px] resize-none"
+                  className="input-field min-h-[80px] sm:min-h-[120px] resize-none py-3 sm:py-4 px-4 sm:px-6"
                   placeholder={
-                    tool.id === 'title-gen' ? "How to make a cake" : 
-                    tool.id === 'desc-gen' ? "Enter your video title or topic to generate a full SEO description..." :
-                    tool.id === 'tag-gen' ? "Enter your video title or topic to find viral tags..." :
-                    tool.id === 'hash-gen' ? "Enter your video topic to generate trending hashtags..." :
-                    tool.id === 'name-ideas' ? "Apne niche ke hisaab se keywords likhein (e.g., Cooking, Fitness)..." :
-                    tool.id === 'comp-spy' ? "Competitor ka channel link ya topic yahan dalein (2-3 links separate with comma or newline)..." :
-                    tool.id === 'trending-topics' ? "Enter your niche (e.g. Tech, Gaming, Cooking)..." :
-                    tool.id === 'content-planner' ? "Enter your niche (e.g. Tech, Gaming, Cooking)..." :
+                    tool.id === 'title-gen' ? "Enter your video topic or title..." : 
+                    tool.id === 'desc-gen' ? "Enter your video topic, title, or keywords..." :
+                    tool.id === 'tag-gen' ? "Enter your video topic, title, or keywords..." :
+                    tool.id === 'hash-gen' ? "Enter your video topic or keywords..." :
+                    tool.id === 'name-ideas' ? "Enter keywords (e.g., Cooking, Fitness)..." :
+                    tool.id === 'comp-spy' ? "Enter links or topic..." :
+                    tool.id === 'trending-topics' ? "Enter your niche..." :
+                    tool.id === 'content-planner' ? "Enter your niche..." :
                     tool.id === 'title-analyzer' ? "Enter your video title to analyze..." :
                     tool.id === 'viral-hooks' ? "Enter your video topic or keywords..." :
                     tool.id === 'thumb-text' ? "Enter your video topic or keywords..." :
-                    "Enter your video topic or keywords here to get started..."
+                    "Enter your video topic, title, or keywords..."
                   }
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
@@ -1071,23 +1112,38 @@ export default function ToolPage() {
             )}
 
             {tool.id !== 'hook-gen' && tool.id !== 'best-time' && tool.id !== 'monetization' && tool.id !== 'audit' && (
-              <button
-                onClick={() => handleAction()}
-                disabled={loading || !input.trim()}
-                className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed py-4"
-              >
-                {loading ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles className="w-5 h-5" />
-                    Generate Results
-                  </>
-                )}
-              </button>
+              <>
+                <button
+                  onClick={() => handleAction()}
+                  disabled={loading || !input.trim()}
+                  className="btn-primary w-full flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed py-4 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-5 h-5" />
+                      {tool.id === 'desc-gen' ? 'Generate SEO Description' : 
+                     tool.id === 'tag-gen' ? 'Generate YouTube Tags' : 
+                     tool.id === 'title-gen' ? 'Generate Viral Titles' :
+                     tool.id === 'hash-gen' ? 'Generate Hashtags' :
+                     tool.id === 'title-analyzer' ? 'Analyze Title Score' :
+                     tool.id === 'video-ideas' ? 'Generate Video Ideas' :
+                     tool.id === 'shorts-ideas' ? 'Generate Shorts Ideas' :
+                     tool.id === 'hook-gen' || tool.id === 'viral-hooks' ? 'Generate Video Hooks' :
+                     tool.id === 'script-gen' ? 'Generate Script Blueprint' :
+                     tool.id === 'thumb-text' ? 'Generate Thumbnail Text' :
+                     'Generate Results'}
+                    </>
+                  )}
+                </button>
+                <p className="text-[10px] text-brand-gray mt-3 font-medium opacity-80 text-center">
+                  ⚡ AI-powered • SEO optimized • Ready to use
+                </p>
+              </>
             )}
           </div>
         )}
