@@ -375,6 +375,11 @@ export default function ToolPage() {
     setToast('Copied to clipboard!');
   };
 
+  const copyUrl = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setToast(t('tool.url_copied'));
+  };
+
   const handlePaste = async () => {
     try {
       const text = await navigator.clipboard.readText();
@@ -431,7 +436,15 @@ export default function ToolPage() {
             )}
           </button>
           <h1 className="text-3xl font-black text-brand-dark mb-2">{t(`tool.${tool.id}.name`)}</h1>
-          <p className="text-brand-gray font-medium">{t(`tool.${tool.id}.desc`)}</p>
+          <p className="text-brand-gray font-medium mb-6">{t(`tool.${tool.id}.desc`)}</p>
+          
+          <button
+            onClick={copyUrl}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-bg-primary border border-border-primary text-[10px] font-black text-brand-dark hover:text-brand-red hover:border-brand-red transition-all shadow-sm"
+          >
+            <LinkIcon className="w-3.5 h-3.5" />
+            {t('tool.copy_url')}
+          </button>
         </div>
 
         {isSEOCheck || isKeywordRes || isSentiment || isGlobalReach || isAnalyticsDash ? (
@@ -887,12 +900,15 @@ export default function ToolPage() {
             {tool.id !== 'thumb-score' && tool.id !== 'best-time' && tool.id !== 'monetization' && tool.id !== 'audit' && (
               <div>
                 <label className="block text-sm font-bold text-brand-dark mb-2 uppercase tracking-widest">
-                  {tool.id === 'trending-topics' ? 'Niche / Keyword' : 'INPUT'}
+                  {tool.id === 'trending-topics' ? 'Niche / Keyword' : 'Enter Video Topic or Keywords'}
                 </label>
                 <textarea
                   className="input-field min-h-[120px] resize-none"
                   placeholder={
-                    tool.id === 'title-gen' ? "e.g. iPhone 16 Pro Review or How to bake a cake" : 
+                    tool.id === 'title-gen' ? "How to make a cake" : 
+                    tool.id === 'desc-gen' ? "Enter your video title or topic to generate a full SEO description..." :
+                    tool.id === 'tag-gen' ? "Enter your video title or topic to find viral tags..." :
+                    tool.id === 'hash-gen' ? "Enter your video topic to generate trending hashtags..." :
                     tool.id === 'name-ideas' ? "Apne niche ke hisaab se keywords likhein (e.g., Cooking, Fitness)..." :
                     tool.id === 'comp-spy' ? "Competitor ka channel link ya topic yahan dalein (2-3 links separate with comma or newline)..." :
                     tool.id === 'trending-topics' ? "Enter your niche (e.g. Tech, Gaming, Cooking)..." :
@@ -900,7 +916,7 @@ export default function ToolPage() {
                     tool.id === 'title-analyzer' ? "Enter your video title to analyze..." :
                     tool.id === 'viral-hooks' ? "Enter your video topic or keywords..." :
                     tool.id === 'thumb-text' ? "Enter your video topic or keywords..." :
-                    "Enter your video topic or keywords here..."
+                    "Enter your video topic or keywords here to get started..."
                   }
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
@@ -3314,6 +3330,46 @@ export default function ToolPage() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Related Tools Section */}
+      <div className="mt-16 pt-16 border-t border-border-primary">
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-2xl font-black text-brand-dark uppercase tracking-tight">{t('tool.related_tools')}</h2>
+            <p className="text-brand-gray font-medium">{t('tool.try_other_tools')}</p>
+          </div>
+          <Link 
+            to="/" 
+            className="text-[10px] font-black text-brand-red uppercase tracking-widest hover:underline"
+          >
+            {t('nav.all_tools')}
+          </Link>
+        </div>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {TOOLS
+            .filter(t => t.id !== tool.id)
+            .sort(() => 0.5 - Math.random())
+            .slice(0, 6)
+            .map((relatedTool) => (
+              <Link
+                key={relatedTool.id}
+                to={relatedTool.path}
+                className="group p-5 rounded-2xl bg-card-bg border border-border-primary hover:border-brand-red transition-all shadow-sm hover:shadow-md"
+              >
+                <div className="w-10 h-10 rounded-xl bg-bg-primary group-hover:bg-brand-red/10 text-brand-gray group-hover:text-brand-red flex items-center justify-center mb-3 transition-colors">
+                  <relatedTool.icon className="w-5 h-5" />
+                </div>
+                <h3 className="font-bold text-brand-dark group-hover:text-brand-red transition-colors text-sm mb-1">
+                  {t(`tool.${relatedTool.id}.name`)}
+                </h3>
+                <p className="text-xs text-brand-gray line-clamp-1">
+                  {t(`tool.${relatedTool.id}.desc`)}
+                </p>
+              </Link>
+            ))}
+        </div>
+      </div>
     </div>
   );
 }
