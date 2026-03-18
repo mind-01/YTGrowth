@@ -152,19 +152,21 @@ const Footer = () => {
           {/* Social Icons */}
           <div className="flex items-center gap-6 order-1 md:order-2">
             {[
-              { icon: Instagram, path: '/instagram' },
-              { icon: Pinterest, path: '/pinterest' },
-              { icon: Medium, path: '/medium' },
-              { icon: Quora, path: '/quora' },
-              { icon: Reddit, path: '/reddit' }
+              { icon: Instagram, url: 'https://www.instagram.com/yt_growths?igsh=MXF1ZmlsaDFsdmVnNg==' },
+              { icon: Pinterest, url: 'https://pin.it/501nH8BqL' },
+              { icon: Medium, url: 'https://medium.com/@aicartoon8318' },
+              { icon: Quora, url: 'https://ytgrowthsspace.quora.com/?invite_code=rXQAj03INMCMJKjNwzWY' },
+              { icon: Reddit, url: 'https://www.reddit.com/user/YT_Growth/?utm_source=share&utm_medium=web3x&utm_name=web3xcss&utm_term=1&utm_content=share_button' }
             ].map((social, idx) => (
-              <Link 
+              <a 
                 key={idx} 
-                to={social.path} 
+                href={social.url}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-gray-400 hover:text-brand-red transition-all transform hover:scale-110"
               >
                 <social.icon className="w-5 h-5" />
-              </Link>
+              </a>
             ))}
           </div>
 
