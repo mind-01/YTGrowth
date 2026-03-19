@@ -369,7 +369,7 @@ export default function Features() {
                 <img 
                   src="https://picsum.photos/seed/ytgrowth/800/600" 
                   alt="YT Growth Dashboard Illustration" 
-                  className="rounded-[2.5rem] w-full h-auto"
+                  className="rounded-[40px] w-full h-auto"
                   referrerPolicy="no-referrer"
                 />
                 <div className="absolute bottom-8 left-8 right-8 bg-card-bg/80 backdrop-blur-md p-6 rounded-2xl border border-white/20 shadow-lg">
@@ -406,7 +406,7 @@ export default function Features() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {cur.trust.cards.map((card, i) => (
-              <div key={i} className="bg-card-bg p-10 rounded-[2.5rem] shadow-sm border border-border-primary">
+              <div key={i} className="bg-card-bg p-10 rounded-[40px] shadow-sm border border-border-primary">
                 <div className={`w-14 h-14 rounded-2xl ${i === 0 ? 'bg-blue-500' : 'bg-emerald-500'} flex items-center justify-center mb-6`}>
                   <card.icon className="w-7 h-7 text-white" />
                 </div>
@@ -463,7 +463,7 @@ export default function Features() {
             <h2 className="text-4xl font-black text-brand-dark mb-4 tracking-tight">{cur.faq.title}</h2>
             <p className="text-lg text-brand-gray font-medium">{cur.faq.description}</p>
           </div>
-          <div className="bg-card-bg rounded-[2.5rem] p-8 md:p-12 shadow-sm border border-border-primary">
+          <div className="bg-card-bg rounded-[40px] p-8 md:p-12 shadow-sm border border-border-primary">
             {cur.faq.items.map((item, i) => (
               <FAQItem key={i} question={item.q} answer={item.a} />
             ))}
