@@ -87,7 +87,7 @@ const Contact = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
-              className="bg-card-bg border border-border-primary rounded-[2.5rem] p-8 md:p-12 hover:shadow-xl hover:shadow-brand-red/5 transition-all duration-500 group"
+              className="bg-card-bg border border-border-primary rounded-[40px] p-8 md:p-12 hover:shadow-xl hover:shadow-brand-red/5 transition-all duration-500 group"
             >
               <div className={`w-14 h-14 ${section.color} rounded-2xl flex items-center justify-center mb-8 group-hover:scale-110 transition-transform duration-500`}>
                 <section.icon className="w-7 h-7" />
