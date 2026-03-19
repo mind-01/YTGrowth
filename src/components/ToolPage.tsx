@@ -7,9 +7,23 @@ import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { TOOLS, REGIONS, LANGUAGES, CATEGORIES, NICHES, TONES } from '../constants';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { db, auth as firebaseAuth } from '../firebase';
-import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, getDoc, doc } from 'firebase/firestore';
-import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
+import { 
+  db, 
+  auth as firebaseAuth, 
+  collection, 
+  query, 
+  where, 
+  orderBy, 
+  onSnapshot, 
+  addDoc, 
+  serverTimestamp, 
+  getDoc, 
+  doc,
+  signInWithPopup,
+  GoogleAuthProvider,
+  onAuthStateChanged
+} from '../firebase';
+import type { FirebaseUser } from '../firebase';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
