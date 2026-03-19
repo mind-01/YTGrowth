@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowLeft, Copy, Check, Loader2, Sparkles, Link as LinkIcon, Clipboard, XCircle, CheckCircle2, ExternalLink, ThumbsUp, Eye, Search, Filter, TrendingUp, Users, Calendar, Globe, Languages, Smartphone, Tv, Zap, Target, Lightbulb, FileText, Image as ImageIcon, Type as TypeIcon, ChevronDown, ChevronUp, Download, Layout, Palette, MousePointer2, Info, Video, Upload, Monitor, Clock, Edit, AlertCircle, Tag, MessageSquare, Bookmark, BookmarkCheck, Play } from 'lucide-react';
+import { ArrowLeft, Copy, Check, Loader2, Sparkles, Link as LinkIcon, Clipboard, XCircle, CheckCircle2, ExternalLink, ThumbsUp, ThumbsDown, Eye, Search, Filter, TrendingUp, Users, Calendar, Globe, Languages, Smartphone, Tv, Zap, Target, Lightbulb, FileText, Image as ImageIcon, Type as TypeIcon, ChevronDown, ChevronUp, Download, Layout, Palette, MousePointer2, Info, Video, Upload, Monitor, Clock, Edit, AlertCircle, Tag, MessageSquare, Bookmark, BookmarkCheck, Play, Send, User as UserIcon, Star } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { TOOLS, REGIONS, LANGUAGES, CATEGORIES, NICHES, TONES } from '../constants';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { db, auth as firebaseAuth } from '../firebase';
+import { collection, query, where, orderBy, onSnapshot, addDoc, serverTimestamp, getDoc, doc } from 'firebase/firestore';
+import { signInWithPopup, GoogleAuthProvider, onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -3388,20 +3391,19 @@ export default function ToolPage() {
       </AnimatePresence>
 
       {/* Related Tools Section */}
-      <div className="mt-16 pt-16 border-t border-border-primary">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h2 className="text-2xl font-black text-brand-dark uppercase tracking-tight">{t('tool.related_tools')}</h2>
-            <p className="text-brand-gray font-medium">{t('tool.try_other_tools')}</p>
+      <div className="mt-24">
+        <div className="flex items-center justify-between mb-10">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-brand-red/10 flex items-center justify-center">
+              <Sparkles className="w-6 h-6 text-brand-red" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-black text-brand-dark uppercase tracking-tight">Related Tools</h2>
+              <p className="text-brand-gray font-medium">Boost your growth with these tools</p>
+            </div>
           </div>
-          <Link 
-            to="/" 
-            className="text-[10px] font-black text-brand-red uppercase tracking-widest hover:underline"
-          >
-            {t('nav.all_tools')}
-          </Link>
         </div>
-        
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {TOOLS
             .filter(t => t.id !== tool.id)
@@ -3425,6 +3427,247 @@ export default function ToolPage() {
               </Link>
             ))}
         </div>
+      </div>
+
+      {/* Comment & Feedback Section */}
+      <div id="comment-section-container" className="mt-16 pt-16 border-t border-border-primary block">
+        <CommentSection toolId={tool.id} />
+      </div>
+    </div>
+  );
+}
+
+function CommentSection({ toolId }: { toolId: string }) {
+  const { t } = useLanguage();
+  const [comments, setComments] = useState<any[]>([]);
+  const [newComment, setNewComment] = useState('');
+  const [rating, setRating] = useState<'good' | 'bad' | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
+      setFirebaseUser(user);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const q = query(
+      collection(db, 'comments'),
+      where('toolId', '==', toolId),
+      orderBy('createdAt', 'desc')
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const commentsData = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setComments(commentsData);
+    }, (err) => {
+      console.error("Error fetching comments:", err);
+    });
+
+    return () => unsubscribe();
+  }, [toolId]);
+
+  const handleSignIn = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(firebaseAuth, provider);
+      setError(null);
+    } catch (err: any) {
+      if (err.code === 'auth/popup-closed-by-user') {
+        setError("Sign-in popup was closed before completion. Please try again.");
+      } else {
+        console.error("Sign in error:", err);
+        setError("An error occurred during sign-in. Please try again.");
+      }
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!firebaseUser) {
+      handleSignIn();
+      return;
+    }
+    if (!newComment.trim() || !rating) {
+      setError("Please provide a comment and a rating.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      await addDoc(collection(db, 'comments'), {
+        toolId,
+        userId: firebaseUser.uid,
+        userName: firebaseUser.displayName || 'Anonymous',
+        content: newComment.trim(),
+        rating,
+        createdAt: serverTimestamp()
+      });
+      setNewComment('');
+      setRating(null);
+    } catch (err: any) {
+      console.error("Error adding comment:", err);
+      setError("Failed to post comment. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="max-w-4xl mx-auto">
+      <div className="flex items-center gap-3 mb-8">
+        <div className="w-12 h-12 rounded-2xl bg-brand-red/10 flex items-center justify-center">
+          <MessageSquare className="w-6 h-6 text-brand-red" />
+        </div>
+        <div>
+          <h2 className="text-2xl font-black text-brand-dark uppercase tracking-tight">User Feedback</h2>
+          <p className="text-brand-gray font-medium">Tell us what you think about this tool</p>
+        </div>
+      </div>
+
+      {/* Comment Form */}
+      <div className="bg-card-bg rounded-[2.5rem] p-8 border border-border-primary shadow-sm mb-12">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex flex-wrap items-center gap-4 mb-2">
+            <span className="text-sm font-black text-brand-dark uppercase tracking-widest">How was your experience?</span>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setRating('good')}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all",
+                  rating === 'good' 
+                    ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" 
+                    : "bg-emerald-50 border border-emerald-100 text-emerald-600 hover:bg-emerald-100"
+                )}
+              >
+                <ThumbsUp className="w-4 h-4" />
+                Good
+              </button>
+              <button
+                type="button"
+                onClick={() => setRating('bad')}
+                className={cn(
+                  "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all",
+                  rating === 'bad' 
+                    ? "bg-brand-red text-white shadow-lg shadow-brand-red/20" 
+                    : "bg-red-50 border border-red-100 text-brand-red hover:bg-red-100"
+                )}
+              >
+                <ThumbsDown className="w-4 h-4" />
+                Bad
+              </button>
+            </div>
+          </div>
+
+          <div className="relative">
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder={firebaseUser ? "Write your feedback here..." : "Sign in to leave a comment..."}
+              className="w-full min-h-[120px] p-6 rounded-3xl bg-bg-primary border border-border-primary focus:border-brand-red focus:ring-4 focus:ring-brand-red/5 transition-all resize-none text-brand-dark font-medium placeholder:text-brand-gray/50"
+              disabled={isSubmitting}
+            />
+            {!firebaseUser && (
+              <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-[2px] rounded-3xl">
+                <button
+                  type="button"
+                  onClick={handleSignIn}
+                  className="flex items-center gap-2 px-6 py-3 bg-brand-dark text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-brand-red transition-all shadow-xl"
+                >
+                  <UserIcon className="w-4 h-4" />
+                  Sign in with Google
+                </button>
+              </div>
+            )}
+          </div>
+
+          {error && (
+            <p className="text-brand-red text-xs font-bold flex items-center gap-2">
+              <AlertCircle className="w-4 h-4" />
+              {error}
+            </p>
+          )}
+
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={isSubmitting || !firebaseUser}
+              className="flex items-center gap-2 px-8 py-4 bg-brand-red text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-brand-dark transition-all shadow-lg shadow-brand-red/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isSubmitting ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Send className="w-4 h-4" />
+              )}
+              Post Comment
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* Comments List */}
+      <div className="space-y-6">
+        <h3 className="text-sm font-black text-brand-dark uppercase tracking-widest mb-4 flex items-center gap-2">
+          Recent Feedback
+          <span className="bg-brand-red/10 text-brand-red px-2 py-0.5 rounded-lg text-[10px]">{comments.length}</span>
+        </h3>
+
+        {comments.length === 0 ? (
+          <div className="text-center py-12 bg-bg-primary rounded-[2.5rem] border border-dashed border-border-primary">
+            <MessageSquare className="w-12 h-12 text-brand-gray/20 mx-auto mb-4" />
+            <p className="text-brand-gray font-bold">No comments yet. Be the first to share your thoughts!</p>
+          </div>
+        ) : (
+          <div className="grid gap-4">
+            {comments.map((comment) => (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                key={comment.id}
+                className="bg-card-bg p-6 rounded-3xl border border-border-primary shadow-sm flex gap-4"
+              >
+                <div className="flex-shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-brand-dark/5 flex items-center justify-center text-brand-dark">
+                    <UserIcon className="w-5 h-5" />
+                  </div>
+                </div>
+                <div className="flex-grow">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-black text-brand-dark text-sm">{comment.userName}</span>
+                      {comment.rating === 'good' ? (
+                        <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-600 text-[10px] font-bold">
+                          <ThumbsUp className="w-3 h-3" />
+                          Good
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-red-50 text-brand-red text-[10px] font-bold">
+                          <ThumbsDown className="w-3 h-3" />
+                          Bad
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[10px] text-brand-gray font-bold">
+                      {comment.createdAt?.toDate ? new Date(comment.createdAt.toDate()).toLocaleDateString() : 'Just now'}
+                    </span>
+                  </div>
+                  <p className="text-brand-gray font-medium text-sm leading-relaxed">
+                    {comment.content}
+                  </p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
