@@ -1,0 +1,44 @@
+{
+  "entities": {
+    "Comment": {
+      "title": "Comment",
+      "description": "A user feedback comment for a specific tool.",
+      "type": "object",
+      "properties": {
+        "toolId": {
+          "type": "string",
+          "description": "The ID of the tool this comment is for."
+        },
+        "userId": {
+          "type": "string",
+          "description": "The ID of the user who left the comment (if authenticated)."
+        },
+        "userName": {
+          "type": "string",
+          "description": "The name of the user who left the comment."
+        },
+        "content": {
+          "type": "string",
+          "description": "The text content of the comment."
+        },
+        "rating": {
+          "type": "string",
+          "enum": ["good", "bad"],
+          "description": "The user's rating of the tool."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the comment was created."
+        }
+      },
+      "required": ["toolId", "content", "rating", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/comments/{commentId}": {
+      "schema": "Comment",
+      "description": "Collection of user feedback comments."
+    }
+  }
+}

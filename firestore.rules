@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: comments
+    // Document ID: auto-generated
+    // Fields:
+    //   - toolId: string (required) - The ID of the tool
+    //   - userId: string (optional) - The ID of the authenticated user
+    //   - userName: string (required) - The name of the user
+    //   - content: string (required) - The comment text (max 500 chars)
+    //   - rating: string (required) - "good" or "bad"
+    //   - createdAt: timestamp (required) - Creation time
+    //
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidComment(data) {
+      return data.keys().hasAll(['toolId', 'userName', 'content', 'rating', 'createdAt']) &&
+             data.toolId is string &&
+             data.userName is string && data.userName.size() > 0 && data.userName.size() <= 50 &&
+             data.content is string && data.content.size() > 0 && data.content.size() <= 500 &&
+             data.rating in ['good', 'bad'] &&
+             data.createdAt is timestamp;
+    }
+
+    match /comments/{commentId} {
+      // Allow anyone to read comments (public feedback)
+      allow read: if true;
+      
+      // Allow authenticated users to create comments
+      allow create: if isAuthenticated() && 
+                      isValidComment(request.resource.data) &&
+                      (request.resource.data.userId == request.auth.uid || !('userId' in request.resource.data));
+      
+      // Only the owner can update or delete their comment
+      allow update, delete: if isAuthenticated() && isOwner(resource.data.userId);
+    }
+
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+  }
+}
