@@ -108,7 +108,7 @@
     line-height: 1.5 !important;
   }
 
-  .text-xs, .text-[10px], .text-[9px] {
+  .text-xs, .text-\[10px\], .text-\[9px\] {
     font-size: 9px !important;
     line-height: 1 !important;
   }
