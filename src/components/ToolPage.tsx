@@ -7,23 +7,7 @@ import { Link, useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { TOOLS, REGIONS, LANGUAGES, CATEGORIES, NICHES, TONES } from '../constants';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
-import { 
-  db, 
-  auth as firebaseAuth, 
-  collection, 
-  query, 
-  where, 
-  orderBy, 
-  onSnapshot, 
-  addDoc, 
-  serverTimestamp, 
-  getDoc, 
-  doc,
-  signInWithPopup,
-  GoogleAuthProvider,
-  onAuthStateChanged
-} from '../firebase.ts';
-import type { FirebaseUser } from '../firebase.ts';
+import { supabase } from '../lib/supabase';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -3453,58 +3437,73 @@ export default function ToolPage() {
 
 function CommentSection({ toolId }: { toolId: string }) {
   const { t } = useLanguage();
+  const { user, signInWithGoogle } = useAuth();
   const [comments, setComments] = useState<any[]>([]);
   const [newComment, setNewComment] = useState('');
   const [rating, setRating] = useState<'good' | 'bad' | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [firebaseUser, setFirebaseUser] = useState<FirebaseUser | null>(null);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(firebaseAuth, (user) => {
-      setFirebaseUser(user);
-    });
-    return () => unsubscribe();
-  }, []);
+    if (!supabase) return;
 
-  useEffect(() => {
-    const q = query(
-      collection(db, 'comments'),
-      where('toolId', '==', toolId),
-      orderBy('createdAt', 'desc')
-    );
+    const fetchComments = async () => {
+      const { data, error } = await supabase
+        .from('comments')
+        .select('*')
+        .eq('tool_id', toolId)
+        .order('created_at', { ascending: false });
 
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const commentsData = snapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setComments(commentsData);
-    }, (err) => {
-      console.error("Error fetching comments:", err);
-    });
+      if (error) {
+        console.error("Error fetching comments:", error);
+      } else {
+        setComments(data || []);
+      }
+    };
 
-    return () => unsubscribe();
+    fetchComments();
+
+    // Subscribe to real-time changes
+    const subscription = supabase
+      .channel('comments-channel')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'comments',
+          filter: `tool_id=eq.${toolId}`
+        },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            setComments(prev => [payload.new, ...prev]);
+          } else if (payload.eventType === 'DELETE') {
+            setComments(prev => prev.filter(c => c.id !== payload.old.id));
+          } else if (payload.eventType === 'UPDATE') {
+            setComments(prev => prev.map(c => c.id === payload.new.id ? payload.new : c));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [toolId]);
 
   const handleSignIn = async () => {
     try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(firebaseAuth, provider);
+      await signInWithGoogle();
       setError(null);
     } catch (err: any) {
-      if (err.code === 'auth/popup-closed-by-user') {
-        setError("Sign-in popup was closed before completion. Please try again.");
-      } else {
-        console.error("Sign in error:", err);
-        setError("An error occurred during sign-in. Please try again.");
-      }
+      console.error("Sign in error:", err);
+      setError("An error occurred during sign-in. Please try again.");
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!firebaseUser) {
+    if (!user) {
       handleSignIn();
       return;
     }
@@ -3517,14 +3516,21 @@ function CommentSection({ toolId }: { toolId: string }) {
     setError(null);
 
     try {
-      await addDoc(collection(db, 'comments'), {
-        toolId,
-        userId: firebaseUser.uid,
-        userName: firebaseUser.displayName || 'Anonymous',
-        content: newComment.trim(),
-        rating,
-        createdAt: serverTimestamp()
-      });
+      if (!supabase) throw new Error("Supabase is not configured");
+
+      const { error: insertError } = await supabase
+        .from('comments')
+        .insert({
+          tool_id: toolId,
+          user_id: user.id,
+          user_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
+          content: newComment.trim(),
+          rating,
+          created_at: new Date().toISOString() // Fallback if server default is not set
+        });
+
+      if (insertError) throw insertError;
+
       setNewComment('');
       setRating(null);
     } catch (err: any) {
@@ -3586,11 +3592,11 @@ function CommentSection({ toolId }: { toolId: string }) {
             <textarea
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              placeholder={firebaseUser ? "Write your feedback here..." : "Sign in to leave a comment..."}
+              placeholder={user ? "Write your feedback here..." : "Sign in to leave a comment..."}
               className="w-full min-h-[120px] p-6 rounded-3xl bg-bg-primary border border-border-primary focus:border-brand-red focus:ring-4 focus:ring-brand-red/5 transition-all resize-none text-brand-dark font-medium placeholder:text-brand-gray/50"
               disabled={isSubmitting}
             />
-            {!firebaseUser && (
+            {!user && (
               <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-[2px] rounded-3xl">
                 <button
                   type="button"
@@ -3614,7 +3620,7 @@ function CommentSection({ toolId }: { toolId: string }) {
           <div className="flex justify-end">
             <button
               type="submit"
-              disabled={isSubmitting || !firebaseUser}
+              disabled={isSubmitting || !user}
               className="flex items-center gap-2 px-8 py-4 bg-brand-red text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-brand-dark transition-all shadow-lg shadow-brand-red/20 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
@@ -3657,7 +3663,7 @@ function CommentSection({ toolId }: { toolId: string }) {
                 <div className="flex-grow">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <span className="font-black text-brand-dark text-sm">{comment.userName}</span>
+                      <span className="font-black text-brand-dark text-sm">{comment.user_name}</span>
                       {comment.rating === 'good' ? (
                         <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-600 text-[10px] font-bold">
                           <ThumbsUp className="w-3 h-3" />
@@ -3671,7 +3677,7 @@ function CommentSection({ toolId }: { toolId: string }) {
                       )}
                     </div>
                     <span className="text-[10px] text-brand-gray font-bold">
-                      {comment.createdAt?.toDate ? new Date(comment.createdAt.toDate()).toLocaleDateString() : 'Just now'}
+                      {comment.created_at ? new Date(comment.created_at).toLocaleDateString() : 'Just now'}
                     </span>
                   </div>
                   <p className="text-brand-gray font-medium text-sm leading-relaxed">
