@@ -135,7 +135,7 @@ export default function UserDashboard() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="bg-card-bg border border-border-primary rounded-[2.5rem] p-8 lg:p-12 shadow-2xl shadow-brand-dark/5 min-h-[500px]"
+              className="bg-card-bg border border-border-primary rounded-[40px] p-8 lg:p-12 shadow-2xl shadow-brand-dark/5 min-h-[500px]"
             >
               {activeTab === 'account' && (
                 <div className="space-y-10">
@@ -144,7 +144,7 @@ export default function UserDashboard() {
                       <img 
                         src={avatarUrl} 
                         alt={displayName} 
-                        className="w-32 h-32 rounded-[2.5rem] border-4 border-white shadow-2xl object-cover"
+                        className="w-32 h-32 rounded-[40px] border-4 border-white shadow-2xl object-cover"
                         referrerPolicy="no-referrer"
                       />
                       <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-emerald-500 border-4 border-white rounded-2xl flex items-center justify-center shadow-lg">
