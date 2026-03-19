@@ -7,6 +7,9 @@ export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
     plugins: [react(), tailwindcss()],
+    optimizeDeps: {
+      include: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
+    },
     define: {
       'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY || process.env.GEMINI_API_KEY),
     },
@@ -17,6 +20,7 @@ export default defineConfig(({mode}) => {
             'vendor-react': ['react', 'react-dom', 'react-router-dom'],
             'vendor-icons': ['lucide-react'],
             'vendor-motion': ['motion/react'],
+            'vendor-firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore'],
           },
         },
       },
