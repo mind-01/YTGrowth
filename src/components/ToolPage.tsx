@@ -22,8 +22,8 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   onAuthStateChanged
-} from '../firebase';
-import type { FirebaseUser } from '../firebase';
+} from '@/src/firebase';
+import type { FirebaseUser } from '@/src/firebase';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -434,7 +434,7 @@ export default function ToolPage() {
         </button>
       </div>
 
-      <div className="bg-card-bg rounded-[2rem] sm:rounded-[2.5rem] border border-border-primary p-5 sm:p-8 shadow-sm mb-8">
+      <div className="bg-card-bg rounded-[2rem] sm:rounded-[40px] border border-border-primary p-5 sm:p-8 shadow-sm mb-8">
         <div className="text-center mb-6 sm:mb-8 relative">
           <button
             onClick={() => toggleSaveToolWithFeedback(tool.id)}
@@ -636,7 +636,7 @@ export default function ToolPage() {
                     onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
                   />
                   <div className={`
-                    aspect-video rounded-[2.5rem] border-4 border-dashed transition-all duration-300 flex flex-col items-center justify-center p-8 text-center
+                    aspect-video rounded-[40px] border-4 border-dashed transition-all duration-300 flex flex-col items-center justify-center p-8 text-center
                     ${thumbnailImage ? 'border-brand-red bg-brand-red/5' : dragActive ? 'border-brand-red bg-brand-red/5' : 'border-border-primary bg-bg-primary hover:border-brand-red/50 hover:bg-bg-primary/80'}
                   `}>
                     {thumbnailImage ? (
@@ -1212,7 +1212,7 @@ export default function ToolPage() {
 
               {/* Error Message */}
               {error && (
-                <div className="mb-8 p-6 rounded-[2.5rem] bg-brand-red/5 border border-brand-red/20 text-brand-red text-center">
+                <div className="mb-8 p-6 rounded-[40px] bg-brand-red/5 border border-brand-red/20 text-brand-red text-center">
                   <p className="font-black text-sm">{error}</p>
                 </div>
               )}
@@ -1227,7 +1227,7 @@ export default function ToolPage() {
                   </div>
                   <div className="space-y-4 step-container">
                     {result.map((item: any, idx: number) => (
-                      <div key={idx} className="flex flex-col md:flex-row gap-6 p-6 rounded-[2.5rem] bg-card-bg border border-border-primary shadow-sm hover:shadow-md transition-all group step-box">
+                      <div key={idx} className="flex flex-col md:flex-row gap-6 p-6 rounded-[40px] bg-card-bg border border-border-primary shadow-sm hover:shadow-md transition-all group step-box">
                         <div className="w-12 h-12 rounded-2xl bg-brand-dark text-white flex items-center justify-center shrink-0 font-black text-lg group-hover:bg-brand-red transition-colors shadow-lg">
                           {idx + 1}
                         </div>
@@ -1268,7 +1268,7 @@ export default function ToolPage() {
               ) : tool.id === 'monetization' && result ? (
                 <div className="space-y-8">
                   {/* Channel Header */}
-                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm flex flex-col md:flex-row items-center gap-8 relative">
+                  <div className="bg-card-bg rounded-[40px] border border-border-primary p-8 shadow-sm flex flex-col md:flex-row items-center gap-8 relative">
                     <button 
                       onClick={() => copyToClipboard(`Channel: ${result.channelName}\nSubs: ${result.subscriberCount}\nWatch Time: ${manualWatchTime || result.watchTime}h\nMonetized: ${(result.subscriberCount >= 1000 && Number(manualWatchTime || result.watchTime) >= 4000) ? 'Yes' : 'No'}`)}
                       className="absolute top-6 right-6 flex items-center gap-2 px-4 py-2 rounded-xl bg-bg-primary border border-border-primary text-xs font-black text-brand-dark hover:text-brand-red transition-all shadow-sm"
@@ -1328,7 +1328,7 @@ export default function ToolPage() {
                   {/* Progress Dashboard - Centered */}
                   <div className="flex flex-col md:flex-row justify-center items-center gap-8 flex-row-mobile">
                     {/* Watch Time Progress */}
-                    <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm text-center w-full max-w-sm">
+                    <div className="bg-card-bg rounded-[40px] border border-border-primary p-8 shadow-sm text-center w-full max-w-sm">
                       <h3 className="text-sm font-black text-brand-gray uppercase tracking-widest mb-6">Watch Time Progress</h3>
                       <div className="relative w-48 h-48 mx-auto mb-6">
                         <svg className="w-full h-full -rotate-90">
@@ -1368,7 +1368,7 @@ export default function ToolPage() {
                     </div>
 
                     {/* Subscribers Progress */}
-                    <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm text-center w-full max-w-sm">
+                    <div className="bg-card-bg rounded-[40px] border border-border-primary p-8 shadow-sm text-center w-full max-w-sm">
                       <h3 className="text-sm font-black text-brand-gray uppercase tracking-widest mb-6">Subscribers Progress</h3>
                       <div className="relative w-48 h-48 mx-auto mb-6">
                         <svg className="w-full h-full -rotate-90">
@@ -1410,7 +1410,7 @@ export default function ToolPage() {
 
                   {/* AI Growth Tips */}
                   {result.roadmap && result.roadmap.length > 0 && (
-                    <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm overflow-hidden">
+                    <div className="bg-card-bg rounded-[40px] border border-border-primary shadow-sm overflow-hidden">
                       <div className="flex items-center justify-between px-8 py-6 border-b border-border-primary bg-bg-primary">
                         <div>
                           <h2 className="text-xl font-black text-brand-dark uppercase tracking-widest">AI Growth Tips</h2>
@@ -1461,7 +1461,7 @@ export default function ToolPage() {
                   </div>
 
                   {/* Detailed Findings Document */}
-                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm overflow-hidden">
+                  <div className="bg-card-bg rounded-[40px] border border-border-primary shadow-sm overflow-hidden">
                     <div className="p-8 md:p-12 space-y-12">
                       <div className="flex items-center justify-between border-b border-border-primary pb-8">
                         <div>
@@ -1550,7 +1550,7 @@ export default function ToolPage() {
                   </div>
                 </div>
               ) : tool.id === 'best-time' ? (
-                <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm overflow-hidden">
+                <div className="bg-card-bg rounded-[40px] border border-border-primary shadow-sm overflow-hidden">
                   <div className="flex items-center justify-between px-8 py-4 border-b border-border-primary bg-bg-primary">
                     <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">Strategic Schedule Advisor</span>
                     <div className="flex items-center gap-2">
@@ -1660,7 +1660,7 @@ export default function ToolPage() {
                   </div>
                 </div>
               ) : typeof result === 'string' ? (
-                <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm overflow-hidden">
+                <div className="bg-card-bg rounded-[40px] border border-border-primary shadow-sm overflow-hidden">
                   <div className="flex items-center justify-between px-8 py-4 border-b border-border-primary bg-bg-primary">
                     <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">Generated Document</span>
                     <div className="flex items-center gap-2">
@@ -1693,7 +1693,7 @@ export default function ToolPage() {
               ) : (isGlobalReach && result?.globalDemand !== undefined) ? (
                 <div className="space-y-8">
                   {/* Global Demand Score */}
-                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm text-center">
+                  <div className="bg-card-bg rounded-[40px] border border-border-primary p-8 shadow-sm text-center">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-sm font-black text-brand-dark uppercase tracking-widest">Global Potential</h3>
                       <button 
@@ -1742,7 +1742,7 @@ export default function ToolPage() {
                   </div>
 
                   {/* Strategic Roadmap */}
-                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm overflow-hidden">
+                  <div className="bg-card-bg rounded-[40px] border border-border-primary shadow-sm overflow-hidden">
                     <div className="px-8 py-4 border-b border-border-primary bg-bg-primary">
                       <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">Global Expansion Roadmap</span>
                     </div>
@@ -1822,7 +1822,7 @@ export default function ToolPage() {
               ) : (isSentiment && result?.sentiment) ? (
                 <div className="space-y-8">
                   {/* Sentiment Overview (Mood Meter) */}
-                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm text-center">
+                  <div className="bg-card-bg rounded-[40px] border border-border-primary p-8 shadow-sm text-center">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="text-sm font-black text-brand-dark uppercase tracking-widest">Mood Meter</h3>
                       <button 
@@ -1884,7 +1884,7 @@ export default function ToolPage() {
                   </div>
 
                   {/* AI Analysis Report */}
-                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm overflow-hidden">
+                  <div className="bg-card-bg rounded-[40px] border border-border-primary shadow-sm overflow-hidden">
                     <div className="px-8 py-4 border-b border-border-primary bg-bg-primary">
                       <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">AI Analysis Report</span>
                     </div>
@@ -1910,7 +1910,7 @@ export default function ToolPage() {
                 </div>
               ) : (isPlanner && result?.items) ? (
                 <div className="space-y-6 step-container">
-                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm text-center">
+                  <div className="bg-card-bg rounded-[40px] border border-border-primary p-8 shadow-sm text-center">
                     <h3 className="text-xl font-black text-brand-dark uppercase tracking-widest mb-2">{result.planType} Content Plan</h3>
                     <p className="text-brand-gray text-sm">Your AI-generated content schedule for {input}</p>
                   </div>
@@ -1930,7 +1930,7 @@ export default function ToolPage() {
                 </div>
               ) : (isTitleAnalyzer && result?.score !== undefined) ? (
                 <div className="space-y-8">
-                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-10 shadow-sm text-center">
+                  <div className="bg-card-bg rounded-[40px] border border-border-primary p-10 shadow-sm text-center">
                     <div className="inline-flex items-center justify-center w-32 h-32 rounded-full border-8 border-brand-red/10 mb-6 relative">
                       <span className="text-4xl font-black text-brand-dark">{result.score}</span>
                       <span className="absolute -bottom-2 bg-brand-red text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">Title Score</span>
@@ -1954,7 +1954,7 @@ export default function ToolPage() {
                     ))}
                   </div>
 
-                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm overflow-hidden">
+                  <div className="bg-card-bg rounded-[40px] border border-border-primary shadow-sm overflow-hidden">
                     <div className="px-8 py-4 border-b border-border-primary bg-bg-primary">
                       <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">AI Suggestions for Improvement</span>
                     </div>
@@ -1972,7 +1972,7 @@ export default function ToolPage() {
                 </div>
               ) : (isViralHooks && Array.isArray(result)) ? (
                 <div className="space-y-6 step-container">
-                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm text-center">
+                  <div className="bg-card-bg rounded-[40px] border border-border-primary p-8 shadow-sm text-center">
                     <h3 className="text-xl font-black text-brand-dark uppercase tracking-widest mb-2">Viral Hooks</h3>
                     <p className="text-brand-gray text-sm">5 high-retention opening hooks for {input}</p>
                   </div>
@@ -1999,7 +1999,7 @@ export default function ToolPage() {
                 </div>
               ) : (isThumbText && Array.isArray(result)) ? (
                 <div className="space-y-6 step-container">
-                  <div className="bg-card-bg rounded-[2.5rem] border border-border-primary p-8 shadow-sm text-center">
+                  <div className="bg-card-bg rounded-[40px] border border-border-primary p-8 shadow-sm text-center">
                     <h3 className="text-xl font-black text-brand-dark uppercase tracking-widest mb-2">Thumbnail Text Ideas</h3>
                     <p className="text-brand-gray text-sm">Short, punchy text for maximum CTR</p>
                   </div>
@@ -2036,7 +2036,7 @@ export default function ToolPage() {
                   </div>
 
                   {/* Score Card */}
-                  <div className="text-center p-8 rounded-[2.5rem] bg-card-bg border border-border-primary shadow-sm">
+                  <div className="text-center p-8 rounded-[40px] bg-card-bg border border-border-primary shadow-sm">
                     <h2 className="text-2xl font-black text-brand-dark mb-4">Video SEO Check</h2>
                     <div className="w-full h-3 bg-bg-primary rounded-full mb-4 overflow-hidden">
                       <motion.div 
@@ -2398,7 +2398,7 @@ export default function ToolPage() {
                     ) : tool.id === 'thumb-maker' && Array.isArray(result) ? (
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 step-container">
                         {result.map((concept: any, idx: number) => (
-                          <div key={idx} className="bg-card-bg rounded-[2.5rem] border border-border-primary overflow-hidden shadow-sm hover:shadow-xl transition-all group step-box">
+                          <div key={idx} className="bg-card-bg rounded-[40px] border border-border-primary overflow-hidden shadow-sm hover:shadow-xl transition-all group step-box">
                             {/* Storyboard Header/Sketch Placeholder */}
                             <div className="aspect-video bg-bg-primary flex items-center justify-center border-b border-border-primary relative overflow-hidden">
                               <div className="absolute inset-0 opacity-10 pointer-events-none">
@@ -2525,7 +2525,7 @@ export default function ToolPage() {
                       </div>
                     ) : tool.id === 'shorts-ideas' && Array.isArray(result) ? (
                       <div className="space-y-4">
-                        <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm p-6 md:p-10 font-sans">
+                        <div className="bg-card-bg rounded-[40px] border border-border-primary shadow-sm p-6 md:p-10 font-sans">
                           <div className="space-y-4 step-container">
                             {result.map((idea: any, idx: number) => (
                               <div 
@@ -2821,7 +2821,7 @@ export default function ToolPage() {
                               <Smartphone className="w-4 h-4" /> Small Mobile View
                             </h3>
                             <div className="flex justify-center">
-                              <div className="w-[200px] aspect-[9/19] bg-card-bg rounded-[2.5rem] border-[6px] border-brand-dark overflow-hidden shadow-2xl relative">
+                              <div className="w-[200px] aspect-[9/19] bg-card-bg rounded-[40px] border-[6px] border-brand-dark overflow-hidden shadow-2xl relative">
                                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-5 bg-brand-dark rounded-b-2xl z-20" />
                                 <div className="p-2 space-y-4 mt-6">
                                   <div className="aspect-video rounded-lg overflow-hidden bg-bg-primary border border-border-primary">
@@ -2864,13 +2864,13 @@ export default function ToolPage() {
                               {result.map((res: any, idx: number) => (
                                 <div key={idx} className="relative">
                                   {res.error ? (
-                                    <div className="bg-red-50 border border-red-100 rounded-[2.5rem] p-8 text-center h-full flex flex-col items-center justify-center">
+                                    <div className="bg-red-50 border border-red-100 rounded-[40px] p-8 text-center h-full flex flex-col items-center justify-center">
                                       <AlertCircle className="w-8 h-8 text-brand-red mb-4" />
                                       <p className="text-brand-dark font-black uppercase tracking-widest text-xs mb-2">Failed: {res.query}</p>
                                       <p className="text-brand-gray text-[10px] font-bold">{res.error}</p>
                                     </div>
                                   ) : (
-                                    <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm p-8 relative overflow-hidden h-full">
+                                    <div className="bg-card-bg rounded-[40px] border border-border-primary shadow-sm p-8 relative overflow-hidden h-full">
                                       <div className="mb-8">
                                         <h2 className="text-[10px] font-black text-brand-red uppercase tracking-[0.3em] mb-1">Competitor {idx + 1}</h2>
                                         <h1 className="text-xl font-black text-brand-dark uppercase tracking-tight truncate">
@@ -2944,7 +2944,7 @@ export default function ToolPage() {
                             </div>
                           </div>
                         ) : (
-                          <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm p-8 md:p-12 relative overflow-hidden">
+                          <div className="bg-card-bg rounded-[40px] border border-border-primary shadow-sm p-8 md:p-12 relative overflow-hidden">
                             {/* Top Right Copy Button */}
                             <div className="absolute top-8 right-8">
                               <button 
@@ -3064,7 +3064,7 @@ export default function ToolPage() {
                       </div>
                     ) : tool.id === 'analytics-dash' && result ? (
                       <div className="space-y-10">
-                        <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm p-8 md:p-12 relative overflow-hidden">
+                        <div className="bg-card-bg rounded-[40px] border border-border-primary shadow-sm p-8 md:p-12 relative overflow-hidden">
                           <div className="mb-12">
                             <h2 className="text-xs font-black text-brand-red uppercase tracking-[0.3em] mb-2">Channel Growth</h2>
                             <h1 className="text-3xl font-black text-brand-dark uppercase tracking-tight">
@@ -3227,7 +3227,7 @@ export default function ToolPage() {
                       </div>
                     ) : tool.id === 'trending-topics' && Array.isArray(result) ? (
                       <div className="space-y-8">
-                        <div className="bg-card-bg rounded-[2.5rem] border border-border-primary shadow-sm p-8 md:p-12 relative overflow-hidden">
+                        <div className="bg-card-bg rounded-[40px] border border-border-primary shadow-sm p-8 md:p-12 relative overflow-hidden">
                           {/* Top Right Copy Button */}
                           <div className="absolute top-8 right-8">
                             <button 
@@ -3383,7 +3383,7 @@ export default function ToolPage() {
             onClick={() => setActiveMetricInfo(null)}
           >
             <div 
-              className="bg-card-bg rounded-[2.5rem] p-8 max-w-sm w-full shadow-2xl border border-border-primary"
+              className="bg-card-bg rounded-[40px] p-8 max-w-sm w-full shadow-2xl border border-border-primary"
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
@@ -3548,7 +3548,7 @@ function CommentSection({ toolId }: { toolId: string }) {
       </div>
 
       {/* Comment Form */}
-      <div className="bg-card-bg rounded-[2.5rem] p-8 border border-border-primary shadow-sm mb-12">
+      <div className="bg-card-bg rounded-[40px] p-8 border border-border-primary shadow-sm mb-12">
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="flex flex-wrap items-center gap-4 mb-2">
             <span className="text-sm font-black text-brand-dark uppercase tracking-widest">How was your experience?</span>
@@ -3636,7 +3636,7 @@ function CommentSection({ toolId }: { toolId: string }) {
         </h3>
 
         {comments.length === 0 ? (
-          <div className="text-center py-12 bg-bg-primary rounded-[2.5rem] border border-dashed border-border-primary">
+          <div className="text-center py-12 bg-bg-primary rounded-[40px] border border-dashed border-border-primary">
             <MessageSquare className="w-12 h-12 text-brand-gray/20 mx-auto mb-4" />
             <p className="text-brand-gray font-bold">No comments yet. Be the first to share your thoughts!</p>
           </div>
