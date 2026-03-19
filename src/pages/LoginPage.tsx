@@ -93,7 +93,7 @@ export default function LoginPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-card-bg border border-border-primary rounded-[2.5rem] p-8 shadow-2xl shadow-brand-dark/5"
+          className="bg-card-bg border border-border-primary rounded-[40px] p-8 shadow-2xl shadow-brand-dark/5"
         >
           {/* Status Messages */}
           <AnimatePresence mode="wait">
