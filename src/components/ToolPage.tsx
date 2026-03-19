@@ -22,8 +22,8 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   onAuthStateChanged
-} from '../firebase';
-import type { FirebaseUser } from '../firebase';
+} from '../firebase.ts';
+import type { FirebaseUser } from '../firebase.ts';
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
