@@ -99,23 +99,41 @@ export default function Dashboard() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-6 sm:py-8 sm:px-6 lg:px-8">
       {/* Hero Section */}
-      <div className="text-center mb-6 sm:mb-12">
-        <div
-          className="inline-block px-3 py-1 sm:px-4 sm:py-1.5 mb-3 sm:mb-4 rounded-full bg-brand-red/10 text-brand-red text-[10px] sm:text-sm font-semibold tracking-wide uppercase"
-        >
-          {t('hero.badge')}
-        </div>
-        <h1
-          className="text-2xl sm:text-4xl lg:text-6xl font-extrabold text-brand-dark tracking-tight mb-3 sm:mb-4 leading-tight"
-        >
-          {t('hero.title')} <br className="hidden sm:block" />
-          <span className="text-brand-red">{t('hero.subtitle')}</span>
-        </h1>
-        <p
-          className="text-sm sm:text-lg text-brand-gray max-w-2xl mx-auto px-2"
-        >
-          {t('hero.description')}
-        </p>
+      <div className="text-center mb-12 sm:mb-16">
+        {user ? (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="space-y-4"
+          >
+            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-brand-dark tracking-tight leading-tight">
+              Hello <span className="text-brand-red">{user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || 'Creator'}</span>, <br className="hidden sm:block" />
+              Ready to grow your channel?
+            </h1>
+            <p className="text-lg sm:text-xl text-brand-gray font-medium max-w-2xl mx-auto">
+              Welcome back! Let's use our AI tools to dominate the YouTube algorithm today.
+            </p>
+          </motion.div>
+        ) : (
+          <>
+            <h1
+              className="text-3xl sm:text-5xl lg:text-6xl font-bold text-brand-dark tracking-tight mb-4 sm:mb-6 leading-tight"
+            >
+              {t('hero.title')} <br className="hidden sm:block" />
+              <span className="text-brand-red">{t('hero.subtitle')}</span>
+            </h1>
+            <p
+              className="text-base sm:text-lg lg:text-xl text-brand-gray/80 max-w-4xl mx-auto px-4 font-normal leading-relaxed"
+            >
+              {t('hero.description').split(/[।.]\s+/).map((sentence, i, arr) => (
+                <React.Fragment key={i}>
+                  {sentence}{i < arr.length - 1 ? (t('hero.description').includes('।') ? '। ' : '. ') : ''}
+                  {i === 0 && <br className="hidden md:block" />}
+                </React.Fragment>
+              ))}
+            </p>
+          </>
+        )}
       </div>
 
       {/* Search and Filters */}
