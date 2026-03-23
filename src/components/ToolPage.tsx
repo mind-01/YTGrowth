@@ -3448,6 +3448,9 @@ function CommentSection({ toolId }: { toolId: string }) {
   const goodCount = comments.filter(c => c.rating === 'good').length;
   const badCount = comments.filter(c => c.rating === 'bad').length;
   
+  // Only show comments that have text content in the list
+  const displayComments = comments.filter(c => c.content && c.content.trim() !== '');
+  
   // Check if current user has already provided a rating for this tool
   const hasRated = user ? comments.some(c => c.user_id === user.id && c.rating !== null) : false;
 
@@ -3741,17 +3744,17 @@ function CommentSection({ toolId }: { toolId: string }) {
       <div className="space-y-6">
         <h3 className="text-sm font-black text-brand-dark uppercase tracking-widest mb-4 flex items-center gap-2">
           Recent Feedback
-          <span className="bg-brand-red/10 text-brand-red px-2 py-0.5 rounded-lg text-[10px]">{comments.length}</span>
+          <span className="bg-brand-red/10 text-brand-red px-2 py-0.5 rounded-lg text-[10px]">{displayComments.length}</span>
         </h3>
 
-        {comments.length === 0 ? (
+        {displayComments.length === 0 ? (
           <div className="text-center py-12 bg-bg-primary rounded-[40px] border border-dashed border-border-primary">
             <MessageSquare className="w-12 h-12 text-brand-gray/20 mx-auto mb-4" />
             <p className="text-brand-gray font-bold">No comments yet. Be the first to share your thoughts!</p>
           </div>
         ) : (
           <div className="grid gap-4">
-            {comments.map((comment) => (
+            {displayComments.map((comment) => (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -3784,15 +3787,9 @@ function CommentSection({ toolId }: { toolId: string }) {
                       {comment.created_at ? new Date(comment.created_at).toLocaleDateString() : 'Just now'}
                     </span>
                   </div>
-                  {comment.content ? (
-                    <p className="text-brand-gray font-medium text-sm leading-relaxed">
-                      {comment.content}
-                    </p>
-                  ) : (
-                    <p className="text-brand-gray/40 italic text-xs">
-                      Provided {comment.rating} feedback
-                    </p>
-                  )}
+                  <p className="text-brand-gray font-medium text-sm leading-relaxed">
+                    {comment.content}
+                  </p>
                 </div>
               </motion.div>
             ))}
