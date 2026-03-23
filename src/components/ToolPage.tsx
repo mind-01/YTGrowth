@@ -3444,6 +3444,9 @@ function CommentSection({ toolId }: { toolId: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const goodCount = comments.filter(c => c.rating === 'good').length;
+  const badCount = comments.filter(c => c.rating === 'bad').length;
+
   useEffect(() => {
     if (!supabase) return;
 
@@ -3516,7 +3519,7 @@ function CommentSection({ toolId }: { toolId: string }) {
     setError(null);
 
     try {
-      if (!supabase) throw new Error("Supabase is not configured");
+      if (!supabase) throw new Error("Supabase is not configured. Please check your environment variables.");
 
       const { error: insertError } = await supabase
         .from('comments')
@@ -3526,16 +3529,20 @@ function CommentSection({ toolId }: { toolId: string }) {
           user_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
           content: newComment.trim(),
           rating,
-          created_at: new Date().toISOString() // Fallback if server default is not set
+          created_at: new Date().toISOString()
         });
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        console.error("Supabase insert error:", insertError);
+        throw new Error(insertError.message);
+      }
 
       setNewComment('');
       setRating(null);
+      setError(null);
     } catch (err: any) {
       console.error("Error adding comment:", err);
-      setError("Failed to post comment. Please try again.");
+      setError(err.message || "Failed to post comment. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -3550,6 +3557,32 @@ function CommentSection({ toolId }: { toolId: string }) {
         <div>
           <h2 className="text-2xl font-black text-brand-dark uppercase tracking-tight">User Feedback</h2>
           <p className="text-brand-gray font-medium">Tell us what you think about this tool</p>
+        </div>
+      </div>
+
+      {/* Rating Summary */}
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20">
+              <ThumbsUp className="w-5 h-5 fill-current" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Helpful</p>
+              <p className="text-2xl font-black text-emerald-700">{goodCount}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-rose-50 border border-rose-100 rounded-3xl p-6 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-brand-red text-white flex items-center justify-center shadow-lg shadow-brand-red/20">
+              <ThumbsDown className="w-5 h-5 fill-current" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black text-brand-red uppercase tracking-widest">Not Helpful</p>
+              <p className="text-2xl font-black text-brand-red">{badCount}</p>
+            </div>
+          </div>
         </div>
       </div>
 
