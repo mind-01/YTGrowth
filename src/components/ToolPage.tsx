@@ -3429,7 +3429,7 @@ export default function ToolPage() {
 
       {/* Comment & Feedback Section */}
       <div id="comment-section-container" className="mt-16 pt-16 border-t border-border-primary block">
-        <CommentSection toolId={tool.id} />
+        <CommentSection key={tool.id} toolId={tool.id} />
       </div>
     </div>
   );
@@ -3532,7 +3532,7 @@ function CommentSection({ toolId }: { toolId: string }) {
     try {
       if (!supabase) throw new Error("Supabase is not configured. Please check your environment variables.");
 
-      const { error: insertError } = await supabase
+      const { data: insertedData, error: insertError } = await supabase
         .from('comments')
         .insert({
           tool_id: toolId,
@@ -3541,11 +3541,18 @@ function CommentSection({ toolId }: { toolId: string }) {
           content: newComment.trim() || null,
           rating: rating || null,
           created_at: new Date().toISOString()
-        });
+        })
+        .select()
+        .single();
 
       if (insertError) {
         console.error("Supabase insert error:", insertError);
         throw new Error(insertError.message);
+      }
+
+      // Manually update local state for immediate feedback
+      if (insertedData) {
+        setComments(prev => [insertedData, ...prev]);
       }
 
       setNewComment('');
