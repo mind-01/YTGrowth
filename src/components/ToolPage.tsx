@@ -3444,8 +3444,12 @@ function CommentSection({ toolId }: { toolId: string }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Calculate unique counts for ratings
   const goodCount = comments.filter(c => c.rating === 'good').length;
   const badCount = comments.filter(c => c.rating === 'bad').length;
+  
+  // Check if current user has already provided a rating for this tool
+  const hasRated = user ? comments.some(c => c.user_id === user.id && c.rating !== null) : false;
 
   useEffect(() => {
     if (!supabase) return;
@@ -3510,8 +3514,15 @@ function CommentSection({ toolId }: { toolId: string }) {
       handleSignIn();
       return;
     }
-    if (!newComment.trim() || !rating) {
-      setError("Please provide a comment and a rating.");
+    if (!newComment.trim() && !rating) {
+      setError("Please provide at least a comment or a rating.");
+      return;
+    }
+
+    // Double check rating restriction
+    if (rating && hasRated) {
+      setError("You have already provided feedback for this tool.");
+      setRating(null);
       return;
     }
 
@@ -3527,8 +3538,8 @@ function CommentSection({ toolId }: { toolId: string }) {
           tool_id: toolId,
           user_id: user.id,
           user_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
-          content: newComment.trim(),
-          rating,
+          content: newComment.trim() || null,
+          rating: rating || null,
           created_at: new Date().toISOString()
         });
 
@@ -3562,7 +3573,12 @@ function CommentSection({ toolId }: { toolId: string }) {
 
       {/* Rating Summary */}
       <div className="grid grid-cols-2 gap-4 mb-8">
-        <div className="bg-emerald-50 border border-emerald-100 rounded-3xl p-6 flex items-center justify-between">
+        <motion.div 
+          key={`good-${goodCount}`}
+          initial={{ scale: 0.95 }}
+          animate={{ scale: 1 }}
+          className="bg-emerald-50 border border-emerald-100 rounded-3xl p-6 flex items-center justify-between"
+        >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/20">
               <ThumbsUp className="w-5 h-5 fill-current" />
@@ -3572,8 +3588,13 @@ function CommentSection({ toolId }: { toolId: string }) {
               <p className="text-2xl font-black text-emerald-700">{goodCount}</p>
             </div>
           </div>
-        </div>
-        <div className="bg-rose-50 border border-rose-100 rounded-3xl p-6 flex items-center justify-between">
+        </motion.div>
+        <motion.div 
+          key={`bad-${badCount}`}
+          initial={{ scale: 0.95 }}
+          animate={{ scale: 1 }}
+          className="bg-rose-50 border border-rose-100 rounded-3xl p-6 flex items-center justify-between"
+        >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-brand-red text-white flex items-center justify-center shadow-lg shadow-brand-red/20">
               <ThumbsDown className="w-5 h-5 fill-current" />
@@ -3583,43 +3604,50 @@ function CommentSection({ toolId }: { toolId: string }) {
               <p className="text-2xl font-black text-brand-red">{badCount}</p>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
 
       {/* Comment Form */}
       <div className="bg-card-bg rounded-[40px] p-8 border border-border-primary shadow-sm mb-12">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="flex flex-wrap items-center gap-4 mb-2">
-            <span className="text-sm font-black text-brand-dark uppercase tracking-widest">How was your experience?</span>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setRating('good')}
-                className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all",
-                  rating === 'good' 
-                    ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" 
-                    : "bg-emerald-50 border border-emerald-100 text-emerald-600 hover:bg-emerald-100"
-                )}
-              >
-                <ThumbsUp className="w-4 h-4" />
-                Good
-              </button>
-              <button
-                type="button"
-                onClick={() => setRating('bad')}
-                className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all",
-                  rating === 'bad' 
-                    ? "bg-brand-red text-white shadow-lg shadow-brand-red/20" 
-                    : "bg-red-50 border border-red-100 text-brand-red hover:bg-red-100"
-                )}
-              >
-                <ThumbsDown className="w-4 h-4" />
-                Bad
-              </button>
+          {!hasRated ? (
+            <div className="flex flex-wrap items-center gap-4 mb-2">
+              <span className="text-sm font-black text-brand-dark uppercase tracking-widest">How was your experience?</span>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setRating('good')}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all",
+                    rating === 'good' 
+                      ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" 
+                      : "bg-emerald-50 border border-emerald-100 text-emerald-600 hover:bg-emerald-100"
+                  )}
+                >
+                  <ThumbsUp className="w-4 h-4" />
+                  Good
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRating('bad')}
+                  className={cn(
+                    "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all",
+                    rating === 'bad' 
+                      ? "bg-brand-red text-white shadow-lg shadow-brand-red/20" 
+                      : "bg-red-50 border border-red-100 text-brand-red hover:bg-red-100"
+                  )}
+                >
+                  <ThumbsDown className="w-4 h-4" />
+                  Bad
+                </button>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="flex items-center gap-2 px-4 py-2 bg-brand-dark/5 rounded-xl border border-brand-dark/10 mb-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+              <span className="text-[10px] font-black text-brand-dark uppercase tracking-widest">You have already provided feedback for this tool</span>
+            </div>
+          )}
 
           <div className="relative">
             <textarea
@@ -3697,12 +3725,13 @@ function CommentSection({ toolId }: { toolId: string }) {
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <span className="font-black text-brand-dark text-sm">{comment.user_name}</span>
-                      {comment.rating === 'good' ? (
+                      {comment.rating === 'good' && (
                         <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-600 text-[10px] font-bold">
                           <ThumbsUp className="w-3 h-3" />
                           Good
                         </span>
-                      ) : (
+                      )}
+                      {comment.rating === 'bad' && (
                         <span className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-red-50 text-brand-red text-[10px] font-bold">
                           <ThumbsDown className="w-3 h-3" />
                           Bad
@@ -3713,9 +3742,15 @@ function CommentSection({ toolId }: { toolId: string }) {
                       {comment.created_at ? new Date(comment.created_at).toLocaleDateString() : 'Just now'}
                     </span>
                   </div>
-                  <p className="text-brand-gray font-medium text-sm leading-relaxed">
-                    {comment.content}
-                  </p>
+                  {comment.content ? (
+                    <p className="text-brand-gray font-medium text-sm leading-relaxed">
+                      {comment.content}
+                    </p>
+                  ) : (
+                    <p className="text-brand-gray/40 italic text-xs">
+                      Provided {comment.rating} feedback
+                    </p>
+                  )}
                 </div>
               </motion.div>
             ))}
