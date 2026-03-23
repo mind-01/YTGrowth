@@ -3508,21 +3508,54 @@ function CommentSection({ toolId }: { toolId: string }) {
     }
   };
 
+  const handleRating = async (type: 'good' | 'bad') => {
+    if (!user) {
+      handleSignIn();
+      return;
+    }
+    if (hasRated || isSubmitting) return;
+
+    setIsSubmitting(true);
+    setError(null);
+
+    try {
+      if (!supabase) throw new Error("Supabase is not configured.");
+
+      const { data: insertedData, error: insertError } = await supabase
+        .from('comments')
+        .insert({
+          tool_id: toolId,
+          user_id: user.id,
+          user_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
+          content: null,
+          rating: type,
+          created_at: new Date().toISOString()
+        })
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+
+      if (insertedData) {
+        setComments(prev => [insertedData, ...prev]);
+      }
+      setRating(type);
+    } catch (err: any) {
+      console.error("Error submitting rating:", err);
+      setError(err.message || "Failed to submit rating.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
       handleSignIn();
       return;
     }
-    if (!newComment.trim() && !rating) {
-      setError("Please provide at least a comment or a rating.");
-      return;
-    }
-
-    // Double check rating restriction
-    if (rating && hasRated) {
-      setError("You have already provided feedback for this tool.");
-      setRating(null);
+    if (!newComment.trim()) {
+      setError("Please write a comment before posting.");
       return;
     }
 
@@ -3538,8 +3571,8 @@ function CommentSection({ toolId }: { toolId: string }) {
           tool_id: toolId,
           user_id: user.id,
           user_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Anonymous',
-          content: newComment.trim() || null,
-          rating: rating || null,
+          content: newComment.trim(),
+          rating: null,
           created_at: new Date().toISOString()
         })
         .select()
@@ -3550,13 +3583,11 @@ function CommentSection({ toolId }: { toolId: string }) {
         throw new Error(insertError.message);
       }
 
-      // Manually update local state for immediate feedback
       if (insertedData) {
         setComments(prev => [insertedData, ...prev]);
       }
 
       setNewComment('');
-      setRating(null);
       setError(null);
     } catch (err: any) {
       console.error("Error adding comment:", err);
@@ -3623,12 +3654,14 @@ function CommentSection({ toolId }: { toolId: string }) {
               <div className="flex gap-2">
                 <button
                   type="button"
-                  onClick={() => setRating('good')}
+                  onClick={() => handleRating('good')}
+                  disabled={isSubmitting}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all",
                     rating === 'good' 
                       ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" 
-                      : "bg-emerald-50 border border-emerald-100 text-emerald-600 hover:bg-emerald-100"
+                      : "bg-emerald-50 border border-emerald-100 text-emerald-600 hover:bg-emerald-100",
+                    isSubmitting && "opacity-50 cursor-not-allowed"
                   )}
                 >
                   <ThumbsUp className="w-4 h-4" />
@@ -3636,12 +3669,14 @@ function CommentSection({ toolId }: { toolId: string }) {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setRating('bad')}
+                  onClick={() => handleRating('bad')}
+                  disabled={isSubmitting}
                   className={cn(
                     "flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all",
                     rating === 'bad' 
                       ? "bg-brand-red text-white shadow-lg shadow-brand-red/20" 
-                      : "bg-red-50 border border-red-100 text-brand-red hover:bg-red-100"
+                      : "bg-red-50 border border-red-100 text-brand-red hover:bg-red-100",
+                    isSubmitting && "opacity-50 cursor-not-allowed"
                   )}
                 >
                   <ThumbsDown className="w-4 h-4" />
