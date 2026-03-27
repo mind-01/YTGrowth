@@ -139,30 +139,52 @@ const BlogPost = () => {
 
   useEffect(() => {
     if (post) {
+      // Update Meta Tags
       document.title = post.metaTitle;
-      const metaDescription = document.querySelector('meta[name="description"]');
-      if (metaDescription) {
-        metaDescription.setAttribute('content', post.metaDescription);
+      
+      let metaDescription = document.querySelector('meta[name="description"]');
+      if (!metaDescription) {
+        metaDescription = document.createElement('meta');
+        metaDescription.setAttribute('name', 'description');
+        document.head.appendChild(metaDescription);
       }
+      metaDescription.setAttribute('content', post.metaDescription);
+
+      // Canonical Link
+      let canonical = document.querySelector('link[rel="canonical"]');
+      if (!canonical) {
+        canonical = document.createElement('link');
+        canonical.setAttribute('rel', 'canonical');
+        document.head.appendChild(canonical);
+      }
+      canonical.setAttribute('href', window.location.href);
 
       const blogSchema = {
         "@context": "https://schema.org",
         "@type": "BlogPosting",
+        "mainEntityOfPage": {
+          "@type": "WebPage",
+          "@id": window.location.href
+        },
         "headline": post.title,
+        "name": post.title,
+        "description": post.metaDescription,
+        "image": post.image,
         "author": {
           "@type": "Person",
-          "name": post.author
+          "name": post.author,
+          "url": window.location.origin + "/about"
         },
         "publisher": {
           "@type": "Organization",
-          "name": "YT Growth",
+          "name": "YT Growth Tool",
           "logo": {
             "@type": "ImageObject",
-            "url": "https://ais-dev-5sui2un4r2bd6cxqlajncl-277374021059.asia-east1.run.app/logo.png"
+            "url": window.location.origin + "/logo.png"
           }
         },
-        "datePublished": post.date,
-        "description": post.metaDescription
+        "datePublished": new Date(post.date).toISOString(),
+        "dateModified": new Date(post.date).toISOString()
       };
 
       const faqSchema = {
