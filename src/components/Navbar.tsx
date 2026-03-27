@@ -88,6 +88,29 @@ export default function Navbar() {
     tool.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const renderCompactToolLink = (tool: any) => (
+    <Link
+      key={tool.id}
+      to={tool.path}
+      className={`flex items-center gap-2.5 p-2 rounded-xl transition-all group ${
+        currentToolId === tool.id 
+          ? 'bg-brand-red/5 text-brand-red' 
+          : 'hover:bg-brand-red/5 text-brand-dark'
+      }`}
+    >
+      <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+        currentToolId === tool.id 
+          ? 'bg-brand-red text-white' 
+          : 'bg-bg-primary group-hover:bg-brand-red/10 group-hover:text-brand-red text-brand-gray'
+      }`}>
+        <tool.icon className="w-3.5 h-3.5" />
+      </div>
+      <span className="text-[12px] font-bold leading-none truncate group-hover:text-brand-red transition-colors">
+        {t(`tool.${tool.id}.name`)}
+      </span>
+    </Link>
+  );
+
   const renderToolLink = (tool: any) => (
     <Link
       key={tool.id}
@@ -213,26 +236,26 @@ export default function Navbar() {
                       </div>
                     </div>
 
-                    <div className="p-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 max-h-[75vh] overflow-y-auto custom-scrollbar">
+                    <div className="p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-8 max-h-none overflow-visible">
                       {categories.map(category => {
                         const categoryTools = filteredTools.filter(t => t.category === category);
                         if (categoryTools.length === 0) return null;
 
                         return (
-                          <div key={category} className="space-y-5">
-                            <h3 className="text-[11px] font-black text-brand-gray uppercase tracking-[0.25em] border-b border-border-primary pb-3">
+                          <div key={category} className="space-y-4">
+                            <h3 className="text-[10px] font-black text-brand-gray uppercase tracking-[0.2em] border-b border-border-primary pb-2">
                               {category === 'Analytics' ? t('cat.analytics_global') : t(`cat.${category.toLowerCase()}_tools`)}
                             </h3>
-                            <div className="space-y-2">
-                              {categoryTools.map(tool => renderToolLink(tool))}
+                            <div className="grid grid-cols-1 gap-0.5">
+                              {categoryTools.map(tool => renderCompactToolLink(tool))}
                             </div>
                           </div>
                         );
                       })}
                     </div>
                     
-                    <div className="p-5 bg-brand-dark text-center">
-                      <p className="text-[11px] font-bold text-bg-primary/50 uppercase tracking-[0.3em]">
+                    <div className="py-3 bg-brand-dark text-center">
+                      <p className="text-[9px] font-bold text-bg-primary/30 uppercase tracking-[0.4em]">
                         {t('nav.ultimate_suite')}
                       </p>
                     </div>
