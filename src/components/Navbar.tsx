@@ -105,7 +105,7 @@ export default function Navbar() {
       }`}>
         <tool.icon className="w-3.5 h-3.5" />
       </div>
-      <span className="text-[12px] font-bold leading-none truncate group-hover:text-brand-red transition-colors">
+      <span className="text-[12px] font-bold leading-none group-hover:text-brand-red transition-colors">
         {t(`tool.${tool.id}.name`)}
       </span>
     </Link>
@@ -222,31 +222,17 @@ export default function Navbar() {
                     exit={{ opacity: 0, y: 10, scale: 0.98 }}
                     className="absolute top-full left-1/2 -translate-x-1/2 mt-0 w-[90vw] max-w-[1000px] bg-card-bg rounded-b-[2.5rem] border border-border-primary shadow-2xl overflow-hidden z-50"
                   >
-                    <div className="p-6 border-b border-border-primary bg-bg-primary/30">
-                      <div className="relative max-w-md mx-auto">
-                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-gray" />
-                        <input
-                          type="text"
-                          placeholder={t('nav.quick_search')}
-                          className="w-full !pl-14 pr-4 py-3 bg-card-bg border border-border-primary rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-brand-red/20 focus:border-brand-red transition-all shadow-sm"
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          autoFocus
-                        />
-                      </div>
-                    </div>
-
-                    <div className="p-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-10 gap-y-8 max-h-none overflow-visible">
+                    <div className="p-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-10 max-h-none overflow-visible">
                       {categories.map(category => {
                         const categoryTools = filteredTools.filter(t => t.category === category);
                         if (categoryTools.length === 0) return null;
 
                         return (
-                          <div key={category} className="space-y-4">
-                            <h3 className="text-[10px] font-black text-brand-gray uppercase tracking-[0.2em] border-b border-border-primary pb-2">
+                          <div key={category} className="space-y-6">
+                            <h3 className="text-[11px] font-black text-brand-gray uppercase tracking-[0.25em] border-b border-border-primary pb-3">
                               {category === 'Analytics' ? t('cat.analytics_global') : t(`cat.${category.toLowerCase()}_tools`)}
                             </h3>
-                            <div className="grid grid-cols-1 gap-0.5">
+                            <div className="grid grid-cols-1 gap-1">
                               {categoryTools.map(tool => renderCompactToolLink(tool))}
                             </div>
                           </div>
