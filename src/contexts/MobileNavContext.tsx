@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
 
-export type MobileTab = 'Home' | 'Video' | 'Shorts' | 'Analytics' | 'Profile';
+export type MobileTab = 'Home' | 'Saved' | 'Short' | 'Analyzer' | 'Profile';
 
 interface MobileNavContextType {
   activeTab: MobileTab;
