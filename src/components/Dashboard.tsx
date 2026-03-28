@@ -104,15 +104,11 @@ export default function Dashboard() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-4"
+            className="space-y-2"
           >
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-brand-dark tracking-tight leading-tight">
-              Hello <span className="text-brand-red">{user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || 'Creator'}</span>, <br className="hidden sm:block" />
-              Ready to grow your channel?
+            <h1 className="text-base sm:text-lg font-bold text-brand-dark tracking-tight leading-tight">
+              Hello <span className="text-brand-red">{user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || 'Creator'}</span>, ready to grow?
             </h1>
-            <p className="text-lg sm:text-xl text-brand-gray font-medium max-w-2xl mx-auto">
-              Welcome back! Let's use our AI tools to dominate the YouTube algorithm today.
-            </p>
           </motion.div>
         ) : (
           <>
