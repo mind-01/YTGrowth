@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import BottomNav from './components/BottomNav';
 import Footer from './components/Footer';
@@ -38,44 +38,53 @@ const PageLoader = () => (
 export default function App() {
   return (
     <Router>
-      <div className="min-h-screen flex flex-col bg-bg-primary">
-        <Navbar />
-        
-        {/* Main Content */}
-        <main className="flex-grow pb-[80px] md:pb-0">
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/tool/:id" element={<ToolPage />} />
-              <Route path="/info/:slug" element={<InfoPage />} />
-              <Route path="/features" element={<Features />} />
-              <Route path="/tools" element={<ToolsHub />} />
-              <Route path="/best-youtube-tools" element={<PillarArticle />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/security" element={<Security />} />
-              <Route path="/privacy" element={<Privacy />} />
-              <Route path="/terms" element={<Terms />} />
-              <Route path="/cookies" element={<Cookies />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/disclaimer" element={<Disclaimer />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:slug" element={<BlogPost />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/user-dashboard" element={<UserDashboard />} />
-              <Route path="/settings" element={<SettingsPage />} />
-            </Routes>
-          </Suspense>
-        </main>
-
-        {/* Global UI Elements */}
-        <Customizer />
-        <ProfileMenu />
-
-        {/* Footer & Navigation */}
-        <Footer />
-        <BottomNav />
-      </div>
+      <AppContent />
     </Router>
+  );
+}
+
+function AppContent() {
+  const location = useLocation();
+  const isLoginPage = location.pathname === '/login';
+
+  return (
+    <div className="min-h-screen flex flex-col bg-bg-primary">
+      {!isLoginPage && <Navbar />}
+      
+      {/* Main Content */}
+      <main className={`flex-grow ${!isLoginPage ? 'pb-[80px] md:pb-0' : ''}`}>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/tool/:id" element={<ToolPage />} />
+            <Route path="/info/:slug" element={<InfoPage />} />
+            <Route path="/features" element={<Features />} />
+            <Route path="/tools" element={<ToolsHub />} />
+            <Route path="/best-youtube-tools" element={<PillarArticle />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/security" element={<Security />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/cookies" element={<Cookies />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/disclaimer" element={<Disclaimer />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/user-dashboard" element={<UserDashboard />} />
+            <Route path="/settings" element={<SettingsPage />} />
+          </Routes>
+        </Suspense>
+      </main>
+
+      {/* Global UI Elements */}
+      {!isLoginPage && <Customizer />}
+      {!isLoginPage && <ProfileMenu />}
+
+      {/* Footer & Navigation */}
+      {!isLoginPage && <Footer />}
+      {!isLoginPage && <BottomNav />}
+    </div>
   );
 }
