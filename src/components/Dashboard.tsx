@@ -31,17 +31,13 @@ export default function Dashboard() {
     if (window.innerWidth >= 768) return tools;
 
     switch (activeTab) {
-      case 'Video':
-        return tools.filter(t => [
-          'title-gen', 'desc-gen', 'video-ideas', 'script-gen', 
-          'thumb-maker', 'thumb-score', 'best-time', 'name-ideas',
-          'seo-check', 'keyword-res'
-        ].includes(t.id));
-      case 'Shorts':
+      case 'Saved':
+        return tools.filter(t => savedTools.includes(t.id));
+      case 'Short':
         return tools.filter(t => [
           'shorts-ideas', 'hook-gen', 'tag-gen', 'hash-gen'
         ].includes(t.id));
-      case 'Analytics':
+      case 'Analyzer':
         return tools.filter(t => [
           'analytics-dash', 'comp-spy', 'trending-topics', 
           'sentiment', 'global-reach', 'audit', 'monetization'
@@ -106,7 +102,7 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-2"
           >
-            <h1 className="text-2xl sm:text-3xl font-bold text-brand-dark tracking-tight leading-tight">
+            <h1 className="text-2xl sm:text-xl font-bold text-brand-dark tracking-tight leading-tight">
               Hello <span className="text-brand-red">{user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || 'Creator'}</span>, ready to grow?
             </h1>
           </motion.div>
