@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Video, Zap, BarChart3, User } from 'lucide-react';
+import { Home, Bookmark, Zap, BarChart3, User } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useMobileNav, MobileTab } from '../contexts/MobileNavContext';
 
@@ -12,10 +12,10 @@ const BottomNav = () => {
   
   const navItems: { label: string; icon: any; tab: MobileTab }[] = [
     { label: t('nav.home') || 'Home', icon: Home, tab: 'Home' },
-    { label: 'Video', icon: Video, tab: 'Video' },
-    { label: 'Shorts', icon: Zap, tab: 'Shorts' },
-    { label: 'Analytics', icon: BarChart3, tab: 'Analytics' },
-    { label: 'Profile', icon: User, tab: 'Profile' },
+    { label: t('nav.saved') || 'Saved', icon: Bookmark, tab: 'Saved' },
+    { label: t('nav.short') || 'Short', icon: Zap, tab: 'Short' },
+    { label: t('nav.analyzer') || 'Analyzer', icon: BarChart3, tab: 'Analyzer' },
+    { label: t('nav.profile') || 'Profile', icon: User, tab: 'Profile' },
   ];
 
   const handleTabClick = (tab: MobileTab) => {
