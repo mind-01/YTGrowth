@@ -106,7 +106,7 @@ export default function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             className="space-y-2"
           >
-            <h1 className="text-base sm:text-lg font-bold text-brand-dark tracking-tight leading-tight">
+            <h1 className="text-2xl sm:text-3xl font-bold text-brand-dark tracking-tight leading-tight">
               Hello <span className="text-brand-red">{user.user_metadata?.full_name?.split(' ')[0] || user.email?.split('@')[0] || 'Creator'}</span>, ready to grow?
             </h1>
           </motion.div>
