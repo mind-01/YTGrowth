@@ -2,6 +2,7 @@ import express from "express";
 import { createServer as createViteServer } from "vite";
 import dotenv from "dotenv";
 import path from "path";
+import { GoogleGenAI } from "@google/genai";
 
 dotenv.config();
 
@@ -9,7 +10,15 @@ const app = express();
 app.set('trust proxy', true);
 const PORT = 3000;
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
+
+// Gemini API Setup
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+let genAI: GoogleGenAI | null = null;
+
+if (GEMINI_API_KEY) {
+  genAI = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+}
 
 // YouTube API Key
 const YOUTUBE_API_KEY = process.env.YOUTUBE_API_KEY;
@@ -550,64 +559,26 @@ app.get("/api/youtube/competitor-spy", async (req, res) => {
   }
 });
 
-// API Route for YouTube Video Info (for Downloader)
-app.get("/api/youtube/video-info", async (req, res) => {
-  const { url } = req.query;
-  if (!url) return res.status(400).json({ error: "URL is required" });
+// API Route for Gemini Content Generation
+app.post("/api/gemini/generate", async (req, res) => {
+  if (!genAI) {
+    return res.status(500).json({ error: "Gemini API key is not configured on the server." });
+  }
+
+  const { model, contents, config } = req.body;
 
   try {
-    let videoId = "";
-    const urlStr = (url as string).trim();
-    
-    if (urlStr.includes("watch?v=")) {
-      videoId = urlStr.split("watch?v=")[1].split("&")[0].split("/")[0];
-    } else if (urlStr.includes("youtu.be/")) {
-      videoId = urlStr.split("youtu.be/")[1].split("?")[0].split("/")[0];
-    } else if (urlStr.includes("/shorts/")) {
-      videoId = urlStr.split("/shorts/")[1].split("?")[0].split("/")[0];
-    } else {
-      // Try to treat as direct ID if it's 11 chars
-      if (urlStr.length === 11) videoId = urlStr;
-    }
-
-    if (!videoId) throw new Error("Invalid YouTube URL");
-
-    const response = await fetch(
-      `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${videoId}&key=${YOUTUBE_API_KEY}`
-    );
-    const data = await response.json() as any;
-
-    if (!data.items || data.items.length === 0) {
-      throw new Error("Video not found");
-    }
-
-    const video = data.items[0];
-    const snippet = video.snippet;
-    const contentDetails = video.contentDetails;
-
-    // Convert ISO 8601 duration (PT1M30S) to readable format (1:30)
-    const duration = contentDetails.duration
-      .replace('PT', '')
-      .replace('H', ':')
-      .replace('M', ':')
-      .replace('S', '')
-      .split(':')
-      .map((p: string) => p.padStart(2, '0'))
-      .join(':')
-      .replace(/^0/, '');
-
-    res.json({
-      title: decodeHtmlEntities(snippet.title),
-      duration: duration,
-      thumbnail: snippet.thumbnails.maxres?.url || snippet.thumbnails.high?.url || snippet.thumbnails.default?.url,
-      isShort: duration.split(':').length === 1 || (duration.split(':').length === 2 && parseInt(duration.split(':')[0]) === 0 && parseInt(duration.split(':')[1]) <= 60),
-      url: `https://www.youtube.com/watch?v=${videoId}`,
-      channelTitle: snippet.channelTitle,
-      publishedAt: snippet.publishedAt
+    // Using the @google/genai (v1.x) SDK syntax
+    const result = await genAI.models.generateContent({
+      model: model || "gemini-flash-latest",
+      contents: contents,
+      config: config
     });
+
+    res.json({ text: result.text });
   } catch (error: any) {
-    console.error("Error fetching video info:", error);
-    res.status(500).json({ error: error.message || "Failed to fetch video info" });
+    console.error("Gemini API Error:", error);
+    res.status(500).json({ error: error.message || "An error occurred during content generation." });
   }
 });
 
