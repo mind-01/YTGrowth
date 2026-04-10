@@ -17,7 +17,10 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 let genAI: GoogleGenAI | null = null;
 
 if (GEMINI_API_KEY) {
+  console.log("[Gemini API] API Key found. Initializing genAI...");
   genAI = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
+} else {
+  console.warn("[Gemini API] Warning: GEMINI_API_KEY is not set in environment variables.");
 }
 
 // YouTube API Key
@@ -561,24 +564,71 @@ app.get("/api/youtube/competitor-spy", async (req, res) => {
 
 // API Route for Gemini Content Generation
 app.post("/api/gemini/generate", async (req, res) => {
+  const { model, contents, config } = req.body;
+  
+  console.log("[Gemini API] Received request:", {
+    model: model,
+    contentsType: typeof contents,
+    isContentsArray: Array.isArray(contents),
+    hasConfig: !!config
+  });
+
   if (!genAI) {
-    return res.status(500).json({ error: "Gemini API key is not configured on the server." });
+    console.error("[Gemini API] Error: genAI instance is null. Checking environment variables...");
+    const key = process.env.GEMINI_API_KEY;
+    if (key) {
+      console.log("[Gemini API] Key found in process.env during request. Re-initializing...");
+      genAI = new GoogleGenAI({ apiKey: key });
+    } else {
+      console.error("[Gemini API] Error: GEMINI_API_KEY is still missing.");
+      return res.status(500).json({ error: "Gemini API key is not configured on the server." });
+    }
   }
 
-  const { model, contents, config } = req.body;
-
   try {
-    // Using the @google/genai (v1.x) SDK syntax
+    // Normalize contents to Content[] format which is most reliable
+    let normalizedContents = contents;
+    if (typeof contents === 'string') {
+      normalizedContents = [{ role: 'user', parts: [{ text: contents }] }];
+    } else if (contents && contents.parts && !Array.isArray(contents)) {
+      normalizedContents = [contents];
+    } else if (Array.isArray(contents) && contents.length > 0 && typeof contents[0] === 'string') {
+      normalizedContents = [{ role: 'user', parts: contents.map(t => ({ text: t })) }];
+    }
+
+    console.log("[Gemini API] Calling generateContent with normalized contents...");
+    
     const result = await genAI.models.generateContent({
       model: model || "gemini-flash-latest",
-      contents: contents,
+      contents: normalizedContents,
       config: config
     });
 
-    res.json({ text: result.text });
+    if (!result) {
+      console.error("[Gemini API] Error: Received null/undefined result from generateContent.");
+      return res.status(500).json({ error: "No response from Gemini API." });
+    }
+
+    console.log("[Gemini API] Success: Received response from Gemini.");
+    
+    const text = result.text;
+    if (text === undefined) {
+      console.warn("[Gemini API] Warning: result.text is undefined. Full response:", JSON.stringify(result, null, 2));
+    }
+
+    res.json({ text: text });
   } catch (error: any) {
-    console.error("Gemini API Error:", error);
-    res.status(500).json({ error: error.message || "An error occurred during content generation." });
+    console.error("[Gemini API] Exception caught during generation:", error);
+    
+    // Provide more details in the error response for debugging
+    const errorMessage = error.message || "An error occurred during content generation.";
+    const errorStatus = error.status || 500;
+    
+    res.status(errorStatus).json({ 
+      error: errorMessage,
+      details: error.stack,
+      rawError: error
+    });
   }
 });
 
