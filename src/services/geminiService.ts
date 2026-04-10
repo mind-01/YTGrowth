@@ -3,12 +3,14 @@ import { GoogleGenAI, Type } from "@google/genai";
 let aiInstance: GoogleGenAI | null = null;
 
 const getAI = () => {
-  // AI Studio uses process.env, but Vercel/Vite uses import.meta.env
-  const apiKey = (typeof process !== 'undefined' && process.env?.GEMINI_API_KEY) || 
-                 ((import.meta as any).env?.VITE_GEMINI_API_KEY);
+  // Use process.env.GEMINI_API_KEY as recommended by the Gemini API skill
+  // We also check VITE_GEMINI_API_KEY as a fallback for Vercel deployments
+  const apiKey = process.env.GEMINI_API_KEY || 
+                 (import.meta as any).env?.VITE_GEMINI_API_KEY;
                  
   if (!apiKey) {
-    throw new Error("API_KEY_MISSING: Gemini API key is not configured. Please add VITE_GEMINI_API_KEY to your environment variables.");
+    console.error("Gemini API Key is missing. Please ensure GEMINI_API_KEY or VITE_GEMINI_API_KEY is set in your environment variables.");
+    throw new Error("API_KEY_MISSING: Gemini API key is not configured. Please add GEMINI_API_KEY to your environment variables on Vercel and REDEPLOY your app.");
   }
   if (!aiInstance) {
     aiInstance = new GoogleGenAI({ apiKey });
@@ -17,22 +19,27 @@ const getAI = () => {
 };
 
 export const generateTitles = async (topic: string) => {
-  const ai = getAI();
-  const response = await ai.models.generateContent({
-    model: "gemini-flash-latest",
-    contents: `Generate 5 viral, high-CTR YouTube titles for the topic: "${topic}". Make them catchy and optimized for search.`,
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: {
-        type: Type.ARRAY,
-        items: {
-          type: Type.STRING,
+  try {
+    const ai = getAI();
+    const response = await ai.models.generateContent({
+      model: "gemini-flash-latest",
+      contents: `Generate 5 viral, high-CTR YouTube titles for the topic: "${topic}". Make them catchy and optimized for search.`,
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.ARRAY,
+          items: {
+            type: Type.STRING,
+          },
         },
       },
-    },
-  });
-  if (!response.text) throw new Error("No response from AI");
-  return JSON.parse(response.text);
+    });
+    if (!response.text) throw new Error("No response from AI");
+    return JSON.parse(response.text);
+  } catch (error: any) {
+    console.error("Error in generateTitles:", error);
+    throw error;
+  }
 };
 
 export const generateDescription = async (title: string) => {
@@ -86,7 +93,7 @@ export const generateThumbnailScore = async (topic: string, imageData?: string, 
   }
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-flash-latest",
     contents: { parts },
     config: {
       responseMimeType: "application/json",
@@ -565,7 +572,7 @@ export const generateBestTimeToPost = async (category: string, region: string) =
 export const analyzeChannelMonetization = async (channelUrl: string, channelData: any, language: string) => {
   const ai = getAI();
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-flash-latest",
     contents: `Analyze this YouTube channel data for monetization growth:
     Channel: ${channelData.channelName}
     Subscribers: ${channelData.subscriberCount}
@@ -644,7 +651,7 @@ export const generateChannelAudit = async (channelUrl: string, channelData: any,
   }
 
     const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-flash-latest",
     contents: `Analyze this YouTube channel for a comprehensive health audit: ${channelUrl}.
     
     Current Channel Data from API:
@@ -675,7 +682,6 @@ export const generateChannelAudit = async (channelUrl: string, channelData: any,
     
     Note: Use the provided channelData to inform your scores, especially for engagement and consistency if available. If not, use your search capabilities to estimate.`,
     config: {
-      tools: [{ googleSearch: {} }],
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
@@ -715,7 +721,7 @@ export const generateCompetitorSpy = async (query: string, competitorData: any, 
   }
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-flash-latest",
     contents: `Analyze this YouTube competitor data for: "${query}".
     
     Competitor Data from API:
@@ -742,7 +748,6 @@ export const generateCompetitorSpy = async (query: string, competitorData: any, 
     
     Note: Use the provided competitorData to inform your analysis. If data is limited, use your knowledge of the niche to provide high-quality insights.`,
     config: {
-      tools: [{ googleSearch: {} }],
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
@@ -775,7 +780,7 @@ export const generateTrendingTopics = async (niche: string, timeFrame: string, l
   }
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-flash-latest",
     contents: `Find the most viral and trending YouTube topics for the niche: "${niche}".
     
     Filters:
@@ -804,7 +809,6 @@ export const generateTrendingTopics = async (niche: string, timeFrame: string, l
       ...
     ]`,
     config: {
-      tools: [{ googleSearch: {} }],
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.ARRAY,
@@ -839,7 +843,7 @@ export const generateCommentSentiment = async (url: string, language: string = '
   }
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-flash-latest",
     contents: `Analyze the audience sentiment and comments for the YouTube video at this URL: "${url}".
     
     Tasks:
@@ -868,7 +872,6 @@ export const generateCommentSentiment = async (url: string, language: string = '
     
     Note: If you cannot access live comments, simulate a realistic analysis based on typical audience behavior for the niche of the video.`,
     config: {
-      tools: [{ googleSearch: {} }],
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
@@ -915,7 +918,7 @@ export const generateGlobalReach = async (topic: string, language: string = 'Hin
   }
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-flash-latest",
     contents: `Act as a YouTube Global Expansion Strategist. Analyze the international potential for a video about: "${topic}".
     
     Tasks:
@@ -945,7 +948,6 @@ export const generateGlobalReach = async (topic: string, language: string = 'Hin
       "strategySummary": "string"
     }`,
     config: {
-      tools: [{ googleSearch: {} }],
       responseMimeType: "application/json",
       responseSchema: {
         type: Type.OBJECT,
@@ -1010,7 +1012,7 @@ export const generateAnalyticsDashboard = async (url: string, auditData: any, la
   }
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-flash-preview",
+    model: "gemini-flash-latest",
     contents: `Act as a YouTube Data Scientist. Create a visual analytics dashboard report for the channel at "${url}".
     
     Context Data (Real Stats):
