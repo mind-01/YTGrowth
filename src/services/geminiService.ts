@@ -1,27 +1,23 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { Type } from "@google/genai";
 
-let aiInstance: GoogleGenAI | null = null;
-
-const getAI = () => {
-  // Use process.env.GEMINI_API_KEY as recommended by the Gemini API skill
-  // We also check VITE_GEMINI_API_KEY as a fallback for Vercel deployments
-  const apiKey = process.env.GEMINI_API_KEY || 
-                 (import.meta as any).env?.VITE_GEMINI_API_KEY;
-                 
-  if (!apiKey) {
-    console.error("Gemini API Key is missing. Please ensure GEMINI_API_KEY or VITE_GEMINI_API_KEY is set in your environment variables.");
-    throw new Error("API_KEY_MISSING: Gemini API key is not configured. Please add GEMINI_API_KEY to your environment variables on Vercel and REDEPLOY your app.");
+const callGeminiBackend = async (payload: any) => {
+  const response = await fetch('/api/gemini/generate', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || `Server error: ${response.status}`);
   }
-  if (!aiInstance) {
-    aiInstance = new GoogleGenAI({ apiKey });
-  }
-  return aiInstance;
+  
+  return await response.json();
 };
 
 export const generateTitles = async (topic: string) => {
   try {
-    const ai = getAI();
-    const response = await ai.models.generateContent({
+    const response = await callGeminiBackend({
       model: "gemini-flash-latest",
       contents: `Generate 5 viral, high-CTR YouTube titles for the topic: "${topic}". Make them catchy and optimized for search.`,
       config: {
@@ -43,8 +39,7 @@ export const generateTitles = async (topic: string) => {
 };
 
 export const generateDescription = async (title: string) => {
-  const ai = getAI();
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Create a professional YouTube video description for the title: "${title}". Include an intro, key points, timestamps placeholder, and hashtags.`,
   });
@@ -52,8 +47,7 @@ export const generateDescription = async (title: string) => {
 };
 
 export const generateTags = async (topic: string) => {
-  const ai = getAI();
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Generate a list of 20 relevant YouTube tags for the topic: "${topic}". Return them as a comma-separated list.`,
   });
@@ -61,8 +55,6 @@ export const generateTags = async (topic: string) => {
 };
 
 export const generateThumbnailScore = async (topic: string, imageData?: string, mimeType?: string) => {
-  const ai = getAI();
-  
   const parts: any[] = [
     { text: `Analyze this YouTube thumbnail image for the topic: "${topic}".
     
@@ -92,7 +84,7 @@ export const generateThumbnailScore = async (topic: string, imageData?: string, 
     });
   }
 
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: { parts },
     config: {
@@ -116,8 +108,7 @@ export const generateThumbnailScore = async (topic: string, imageData?: string, 
 };
 
 export const generateThumbnailIdeas = async (topic: string) => {
-  const ai = getAI();
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Generate 4 professional YouTube thumbnail concepts for: "${topic}".
     For each concept, provide:
@@ -155,8 +146,7 @@ export const generateThumbnailIdeas = async (topic: string) => {
 };
 
 export const analyzeThumbnail = async (topic: string, title: string) => {
-  const ai = getAI();
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Analyze the potential CTR for a YouTube thumbnail with the title "${title}" on the topic "${topic}". Provide a score out of 100 and 3 suggestions for improvement.`,
     config: {
@@ -179,8 +169,7 @@ export const analyzeThumbnail = async (topic: string, title: string) => {
 };
 
 export const generateVideoIdeas = async (niche: string) => {
-  const ai = getAI();
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Generate 10 trending YouTube video ideas for the niche: "${niche}". 
     For each idea, provide:
@@ -218,8 +207,7 @@ export const generateVideoIdeas = async (niche: string) => {
 };
 
 export const generateHashtags = async (topic: string) => {
-  const ai = getAI();
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Generate 10 trending and relevant hashtags for a YouTube video about: "${topic}". Return them as a space-separated list starting with #.`,
   });
@@ -227,8 +215,7 @@ export const generateHashtags = async (topic: string) => {
 };
 
 export const generateChannelNames = async (input: string, niche: string, tone: string, language: string, length: string) => {
-  const ai = getAI();
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Generate 10 creative, high-quality, and catchy YouTube channel name ideas.
     
@@ -283,8 +270,6 @@ export const generateChannelNames = async (input: string, niche: string, tone: s
 };
 
 export const generateShortsIdeas = async (topic: string, language: string = 'Hinglish') => {
-  const ai = getAI();
-  
   let languageInstruction = "";
   if (language === 'English') {
     languageInstruction = "Write as a native American English speaker. Use high-energy, fast-paced YouTube slang (e.g., 'You won't believe this', 'Stop scrolling'). Zero Hindi words allowed. Focus on global viral trends. Tone: Catchy and viral.";
@@ -294,7 +279,7 @@ export const generateShortsIdeas = async (topic: string, language: string = 'Hin
     languageInstruction = "Write in a natural mix of Hindi and English (Hinglish). Use words like 'Doston', 'Secret batata hoon', 'Check karein'. Keep the tone relatable for the Indian creator community.";
   }
 
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Generate 5 viral YouTube Shorts ideas for the topic: "${topic}". Focus on high retention and engagement. 
     
@@ -342,8 +327,6 @@ export const generateShortsIdeas = async (topic: string, language: string = 'Hin
 };
 
 export const generateHooks = async (topic: string, length: string = '5', language: string = 'Hinglish') => {
-  const ai = getAI();
-  
   let languageInstruction = "";
   if (language === 'English') {
     languageInstruction = "Write in 100% formal/slang American English. No Hindi influence.";
@@ -366,7 +349,7 @@ export const generateHooks = async (topic: string, length: string = '5', languag
 
   const effectiveFormat = (length === '5' || length === '10') ? 'Long-form' : 'Short';
 
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Generate 5 powerful script hooks for a ${effectiveFormat} YouTube video about: "${topic}". 
     
@@ -387,8 +370,7 @@ export const generateHooks = async (topic: string, length: string = '5', languag
 };
 
 export const generateSEOChecklist = async (url: string) => {
-  const ai = getAI();
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Analyze the YouTube video at this URL for SEO: "${url}". 
     Return a JSON object with the following structure:
@@ -451,8 +433,7 @@ export const generateSEOChecklist = async (url: string) => {
 };
 
 export const enhanceKeywordResearch = async (topic: string, youtubeData: any) => {
-  const ai = getAI();
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Based on this YouTube search data for "${topic}":
     ${JSON.stringify(youtubeData.results.slice(0, 10))}
@@ -486,8 +467,6 @@ export const enhanceKeywordResearch = async (topic: string, youtubeData: any) =>
 };
 
 export const generateScriptOutline = async (input: string, language: string = 'Hinglish') => {
-  const ai = getAI();
-  
   let languageInstruction = "";
   if (language === 'English') {
     languageInstruction = "CRITICAL: Write the entire script and blueprint in 100% formal English. Do not use any Hindi or Hinglish words. Every single word must be in English.";
@@ -497,7 +476,7 @@ export const generateScriptOutline = async (input: string, language: string = 'H
     languageInstruction = "Use a mix of Hindi and English (Hinglish) as commonly used by Indian YouTubers. Use Hindi for the main narrative and English for technical or common modern terms.";
   }
 
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `You are a professional YouTube Script Writer. Write a detailed, engaging video script based on the following information:
     
@@ -518,10 +497,9 @@ export const generateScriptOutline = async (input: string, language: string = 'H
 };
 
 export const generateBestTimeToPost = async (category: string, region: string) => {
-  const ai = getAI();
   const currentTime = "2026-02-28T00:59:08-08:00"; // From metadata
   
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Analyze the best time to post on YouTube for the category: "${category}" in the region: "${region}".
     Current local time is: ${currentTime}.
@@ -570,8 +548,7 @@ export const generateBestTimeToPost = async (category: string, region: string) =
 };
 
 export const analyzeChannelMonetization = async (channelUrl: string, channelData: any, language: string) => {
-  const ai = getAI();
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Analyze this YouTube channel data for monetization growth:
     Channel: ${channelData.channelName}
@@ -639,8 +616,6 @@ export const analyzeChannelMonetization = async (channelUrl: string, channelData
 };
 
 export const generateChannelAudit = async (channelUrl: string, channelData: any, language: string = 'English') => {
-  const ai = getAI();
-  
   let languageInstruction = "";
   if (language === 'English') {
     languageInstruction = "Write all findings, working points, and action plans in 100% English.";
@@ -650,7 +625,7 @@ export const generateChannelAudit = async (channelUrl: string, channelData: any,
     languageInstruction = "Write all findings, working points, and action plans in Hinglish (a mix of Hindi and English as commonly used by Indian creators).";
   }
 
-    const response = await ai.models.generateContent({
+    const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Analyze this YouTube channel for a comprehensive health audit: ${channelUrl}.
     
@@ -709,8 +684,6 @@ export const generateChannelAudit = async (channelUrl: string, channelData: any,
 };
 
 export const generateCompetitorSpy = async (query: string, competitorData: any, language: string = 'English') => {
-  const ai = getAI();
-  
   let languageInstruction = "";
   if (language === 'English') {
     languageInstruction = "Write the entire report in 100% English. Use professional marketing terminology.";
@@ -720,7 +693,7 @@ export const generateCompetitorSpy = async (query: string, competitorData: any, 
     languageInstruction = "Write the entire report in Hinglish (a mix of Hindi and English as commonly used by Indian creators).";
   }
 
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Analyze this YouTube competitor data for: "${query}".
     
@@ -768,8 +741,6 @@ export const generateCompetitorSpy = async (query: string, competitorData: any, 
 };
 
 export const generateTrendingTopics = async (niche: string, timeFrame: string, location: string, language: string) => {
-  const ai = getAI();
-  
   let languageInstruction = "";
   if (language === 'English') {
     languageInstruction = "Write the entire report in 100% English.";
@@ -779,7 +750,7 @@ export const generateTrendingTopics = async (niche: string, timeFrame: string, l
     languageInstruction = "Write the entire report in Hinglish (a mix of Hindi and English).";
   }
 
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Find the most viral and trending YouTube topics for the niche: "${niche}".
     
@@ -831,8 +802,6 @@ export const generateTrendingTopics = async (niche: string, timeFrame: string, l
 };
 
 export const generateCommentSentiment = async (url: string, language: string = 'Hinglish') => {
-  const ai = getAI();
-  
   let languageInstruction = "";
   if (language === 'English' || language === 'en') {
     languageInstruction = "Write the entire analysis in 100% English.";
@@ -842,7 +811,7 @@ export const generateCommentSentiment = async (url: string, language: string = '
     languageInstruction = "Write the entire analysis in Hinglish (a mix of Hindi and English).";
   }
 
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Analyze the audience sentiment and comments for the YouTube video at this URL: "${url}".
     
@@ -906,8 +875,6 @@ export const generateCommentSentiment = async (url: string, language: string = '
 };
 
 export const generateGlobalReach = async (topic: string, language: string = 'Hinglish') => {
-  const ai = getAI();
-  
   let languageInstruction = "";
   if (language === 'English' || language === 'en') {
     languageInstruction = "Write the entire analysis in 100% English.";
@@ -917,7 +884,7 @@ export const generateGlobalReach = async (topic: string, language: string = 'Hin
     languageInstruction = "Write the entire analysis in Hinglish (a mix of Hindi and English).";
   }
 
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Act as a YouTube Global Expansion Strategist. Analyze the international potential for a video about: "${topic}".
     
@@ -1000,8 +967,6 @@ export const generateGlobalReach = async (topic: string, language: string = 'Hin
 };
 
 export const generateAnalyticsDashboard = async (url: string, auditData: any, language: string = 'Hinglish') => {
-  const ai = getAI();
-  
   let languageInstruction = "";
   if (language === 'English' || language === 'en') {
     languageInstruction = "Write the entire analysis in 100% English.";
@@ -1011,7 +976,7 @@ export const generateAnalyticsDashboard = async (url: string, auditData: any, la
     languageInstruction = "Write the entire analysis in Hinglish (a mix of Hindi and English).";
   }
 
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Act as a YouTube Data Scientist. Create a visual analytics dashboard report for the channel at "${url}".
     
@@ -1115,8 +1080,7 @@ export const generateAnalyticsDashboard = async (url: string, auditData: any, la
 };
 
 export const generateContentPlanner = async (niche: string, type: string) => {
-  const ai = getAI();
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Generate a ${type} YouTube content plan for the niche: "${niche}". 
     Provide a list of planned videos with titles and brief descriptions for each day/week.
@@ -1156,8 +1120,7 @@ export const generateContentPlanner = async (niche: string, type: string) => {
 };
 
 export const analyzeTitleScore = async (title: string) => {
-  const ai = getAI();
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Evaluate the strength of this YouTube title: "${title}".
     Analyze based on: Keyword presence, Emotional words, Curiosity factor, Length optimization, and Click potential.
@@ -1199,8 +1162,7 @@ export const analyzeTitleScore = async (title: string) => {
 };
 
 export const generateViralHooks = async (topic: string) => {
-  const ai = getAI();
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Generate 5 powerful viral hooks for the first 5 seconds of a video about: "${topic}".
     Generate multiple styles (e.g., Mistake-based, Secret-based, Trick-based).
@@ -1229,8 +1191,7 @@ export const generateViralHooks = async (topic: string) => {
 };
 
 export const generateThumbnailText = async (topic: string) => {
-  const ai = getAI();
-  const response = await ai.models.generateContent({
+  const response = await callGeminiBackend({
     model: "gemini-flash-latest",
     contents: `Generate 10 short, high-CTR thumbnail text ideas for the topic: "${topic}".
     Limit text to 2-4 words for maximum readability.
