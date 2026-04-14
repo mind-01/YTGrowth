@@ -447,6 +447,9 @@ export default function ToolPage() {
           break;
         case 'thumb-down':
           try {
+            if (!currentInput.includes('youtube.com') && !currentInput.includes('youtu.be')) {
+              throw new Error("Please enter a valid YouTube Video URL");
+            }
             const scrapeResponse = await fetch(`/api/youtube/scrape?url=${encodeURIComponent(currentInput)}`);
             const scrapeData = await scrapeResponse.json();
             if (scrapeData.error && !scrapeData.isRateLimited) throw new Error(scrapeData.error);
@@ -1658,12 +1661,10 @@ export default function ToolPage() {
                     </div>
                   </div>
                 </div>
-              ) : tool.id === 'thumb-down' && result ? (
+              ) : tool.id === 'thumb-down' && result && result.thumbnails ? (
                 <div className="space-y-8">
-
-                  {tool.id === 'thumb-down' && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      {Object.entries(result.thumbnails).map(([quality, url]: [string, any]) => (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {Object.entries(result.thumbnails).map(([quality, url]: [string, any]) => (
                         <div key={quality} className="bg-card-bg rounded-[40px] border border-border-primary p-6 shadow-sm flex flex-col gap-4">
                           <div className="flex items-center justify-between">
                             <span className="text-[10px] font-black text-brand-gray uppercase tracking-widest">{quality.replace('maxres', 'HD (MaxRes)').replace('high', 'High').replace('medium', 'Medium').replace('default', 'Default').replace('standard', 'Standard')}</span>
@@ -1704,7 +1705,6 @@ export default function ToolPage() {
                         </div>
                       ))}
                     </div>
-                  )}
                 </div>
               ) : tool.id === 'best-time' ? (
                 <div className="bg-card-bg rounded-[40px] border border-border-primary shadow-sm overflow-hidden">
