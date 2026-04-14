@@ -158,7 +158,7 @@ export default function Navbar() {
                 <path d="M9 8L16 12L9 16V8Z" fill="black" />
               </svg>
             </div>
-            <span className="text-xl font-black tracking-tighter">
+            <span className="text-2xl font-black tracking-tighter">
               <span className="text-brand-red">YT</span>
               <span className="text-brand-dark">Growth</span>
             </span>
@@ -188,7 +188,7 @@ export default function Navbar() {
                       initial={{ opacity: 0, y: 10, scale: 0.98 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                      className="absolute top-full left-0 mt-0 w-[280px] bg-card-bg rounded-b-2xl border border-border-primary shadow-2xl overflow-hidden p-4"
+                      className="absolute top-full left-0 mt-0 w-[280px] bg-card-bg rounded-b-2xl border border-border-primary shadow-2xl p-4 max-h-[70vh] overflow-y-auto custom-scrollbar"
                     >
                       <div className="space-y-1">
                         {TOOLS.filter(t => t.category === cat).map(tool => renderToolLink(tool))}
@@ -220,9 +220,9 @@ export default function Navbar() {
                     initial={{ opacity: 0, y: 10, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                    className="absolute top-full left-1/2 -translate-x-1/2 mt-0 w-[90vw] max-w-[1000px] bg-card-bg rounded-b-[2.5rem] border border-border-primary shadow-2xl overflow-hidden z-50"
+                    className="absolute top-full left-1/2 -translate-x-1/2 mt-0 w-[90vw] max-w-[1000px] bg-card-bg rounded-b-[2.5rem] border border-border-primary shadow-2xl z-50 max-h-[80vh] overflow-y-auto custom-scrollbar"
                   >
-                    <div className="p-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-10 max-h-none overflow-visible">
+                    <div className="p-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-12 gap-y-10">
                       {categories.map(category => {
                         const categoryTools = filteredTools.filter(t => t.category === category);
                         if (categoryTools.length === 0) return null;
@@ -400,7 +400,7 @@ export default function Navbar() {
               <path d="M9 8L16 12L9 16V8Z" fill="black" />
             </svg>
           </div>
-          <span className="text-lg font-black tracking-tighter">
+          <span className="text-xl font-black tracking-tighter">
             <span className="text-brand-red">YT</span>
             <span className="text-brand-dark">Growth</span>
           </span>
@@ -481,7 +481,7 @@ export default function Navbar() {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="lg:hidden absolute top-full left-0 right-0 bg-card-bg border-b border-border-primary shadow-2xl z-50 max-h-[80vh] overflow-y-auto"
+            className="lg:hidden absolute top-full left-0 right-0 bg-card-bg border-b border-border-primary shadow-2xl z-50 max-h-[80vh] overflow-y-auto custom-scrollbar"
           >
             <div className="p-4 border-b border-border-primary bg-bg-primary/30">
               <div className="relative">
