@@ -183,8 +183,8 @@ export const generateLocalShortsIdeas = (topic: string) => {
 };
 
 export const analyzeLocalSentiment = (text: string) => {
-  const positiveWords = ['good', 'great', 'awesome', 'amazing', 'love', 'best', 'helpful', 'thanks', 'wow'];
-  const negativeWords = ['bad', 'worst', 'hate', 'useless', 'terrible', 'boring', 'slow', 'wrong'];
+  const positiveWords = ['good', 'great', 'awesome', 'amazing', 'love', 'best', 'helpful', 'thanks', 'wow', 'nice', 'excellent', 'perfect'];
+  const negativeWords = ['bad', 'worst', 'hate', 'useless', 'terrible', 'boring', 'slow', 'wrong', 'poor', 'disappointed', 'fail'];
   
   const words = text.toLowerCase().split(/\W+/);
   let positiveCount = 0;
@@ -201,86 +201,190 @@ export const analyzeLocalSentiment = (text: string) => {
   const neutralPercent = 100 - positivePercent - negativePercent;
 
   return {
-    overall: positiveCount > negativeCount ? "Positive" : negativeCount > positiveCount ? "Negative" : "Neutral",
-    score: 50 + (positiveCount * 10) - (negativeCount * 10),
-    breakdown: {
+    sentiment: {
       positive: positivePercent,
       neutral: neutralPercent,
       negative: negativePercent
     },
-    topKeywords: words.filter(w => w.length > 4).slice(0, 5),
-    recommendation: positiveCount > negativeCount ? "Keep doing what you're doing!" : "Try to address the negative feedback in your next video."
+    analysis: [
+      { 
+        title: "Top Feedback", 
+        content: positivePercent > 50 ? "Audience loves the clarity and value of your content." : "Audience is looking for more depth and practical examples." 
+      },
+      { 
+        title: "Improvements", 
+        content: negativePercent > 20 ? "Address the concerns about video length and pacing." : "Consider adding more interactive elements to boost engagement." 
+      },
+      { 
+        title: "Reply Suggestion", 
+        content: "Thank your supporters and ask a follow-up question to keep the conversation going." 
+      }
+    ]
   };
 };
 
 export const generateLocalGlobalReach = (topic: string) => {
   return {
-    potential: "High",
-    topRegions: [
-      { region: "United States", interest: 95, language: "English" },
-      { region: "India", interest: 88, language: "Hindi/English" },
-      { region: "United Kingdom", interest: 82, language: "English" },
-      { region: "Brazil", interest: 75, language: "Portuguese" },
-      { region: "Germany", interest: 70, language: "German" }
+    globalDemand: 85,
+    strategySummary: `The topic "${topic}" has significant international appeal, especially in tech-forward and emerging markets. Expanding your reach through localized content could double your views.`,
+    topCountries: [
+      { name: "United States", flag: "🇺🇸", reason: "High search volume for premium content." },
+      { name: "India", flag: "🇮🇳", reason: "Massive audience growth in this niche." },
+      { name: "United Kingdom", flag: "🇬🇧", reason: "Strong engagement from English-speaking viewers." }
     ],
-    translationTips: [
-      "Translate your title and description into Spanish and Hindi for maximum reach.",
-      "Use YouTube's multi-audio track feature if possible.",
-      "Add closed captions in at least 5 major languages."
+    subtitleAdvice: [
+      { language: "Spanish", reason: "Reach 500M+ viewers in Latin America and Spain." },
+      { language: "Hindi", reason: "Capture the fastest-growing digital market." },
+      { language: "Portuguese", reason: "High engagement rates from the Brazilian community." }
+    ],
+    bestTimeZones: [
+      { zone: "EST (New York)", time: "10:00 AM", reason: "Morning peak for US East Coast." },
+      { zone: "IST (Mumbai)", time: "8:30 PM", reason: "Prime time evening viewing in India." },
+      { zone: "GMT (London)", time: "3:00 PM", reason: "Afternoon peak for European viewers." }
     ]
   };
 };
 
 export const generateLocalBestTime = (category: string, region: string) => {
-  const times = [
-    { day: "Monday", time: "6:00 PM", score: 85 },
-    { day: "Tuesday", time: "5:00 PM", score: 80 },
-    { day: "Wednesday", time: "6:00 PM", score: 90 },
-    { day: "Thursday", time: "7:00 PM", score: 88 },
-    { day: "Friday", time: "4:00 PM", score: 95 },
-    { day: "Saturday", time: "10:00 AM", score: 92 },
-    { day: "Sunday", time: "9:00 AM", score: 94 }
-  ];
   return {
-    bestTime: "6:00 PM",
-    bestDay: "Friday",
-    schedule: times,
-    reason: `Based on ${category} trends in ${region}, viewers are most active during early evenings on weekdays and mornings on weekends.`
+    goldenSlot: "6:30 PM",
+    heatmap: [
+      { day: "Monday", morning: "Medium", afternoon: "Medium", evening: "Peak" },
+      { day: "Tuesday", morning: "Low", afternoon: "Medium", evening: "Peak" },
+      { day: "Wednesday", morning: "Medium", afternoon: "Peak", evening: "Peak" },
+      { day: "Thursday", morning: "Low", afternoon: "Medium", evening: "Peak" },
+      { day: "Friday", morning: "Medium", afternoon: "Peak", evening: "Peak" },
+      { day: "Saturday", morning: "Peak", afternoon: "Peak", evening: "Medium" },
+      { day: "Sunday", morning: "Peak", afternoon: "Medium", evening: "Low" }
+    ],
+    aiTips: [
+      `For ${category} in ${region}, upload 2 hours before peak time to allow YouTube to index your video.`,
+      "Weekend mornings are best for long-form educational content.",
+      "Weekday evenings (6 PM - 9 PM) are ideal for entertainment and news."
+    ]
   };
 };
 
 export const generateLocalTrendingTopics = (niche: string) => {
   return [
-    { topic: `${niche} in 2026`, volume: "High", growth: "+45%", competition: "Medium" },
-    { topic: `Best ${niche} Tools`, volume: "Medium", growth: "+30%", competition: "Low" },
-    { topic: `${niche} for Beginners`, volume: "Very High", growth: "+60%", competition: "High" },
-    { topic: `Future of ${niche}`, volume: "Medium", growth: "+25%", competition: "Low" }
+    { 
+      topic: `${niche} in 2026`, 
+      whyTrending: "New industry standards and technological shifts.", 
+      searchVolume: "High", 
+      contentAngle: "Predictive analysis and future-proofing guide.",
+      viralScore: 92
+    },
+    { 
+      topic: `Best ${niche} Tools`, 
+      whyTrending: "Recent release of AI-powered productivity software.", 
+      searchVolume: "Medium", 
+      contentAngle: "Top 10 list with practical demonstrations.",
+      viralScore: 78
+    },
+    { 
+      topic: `${niche} for Beginners`, 
+      whyTrending: "Massive influx of new creators in this space.", 
+      searchVolume: "Very High", 
+      contentAngle: "Step-by-step roadmap for absolute beginners.",
+      viralScore: 85
+    }
   ];
 };
 
-export const generateLocalAnalyticsDashboard = (channelName: string, auditData: any) => {
+export const generateLocalAnalyticsDashboard = (channelName: string) => {
   return {
-    summary: `Channel "${channelName}" is performing well with a consistency score of ${auditData.consistencyScore}%.`,
-    metrics: [
-      { label: "Engagement Rate", value: `${auditData.engagementRate}%`, trend: "up" },
-      { label: "SEO Score", value: `${auditData.seoScore}/100`, trend: "neutral" },
-      { label: "Retention Estimate", value: `${auditData.retentionEstimate}%`, trend: "up" }
+    channelInfo: {
+      name: channelName || "Your Channel",
+      subs: 12500,
+      views: 450000,
+      watchTime: 18200
+    },
+    growthData: [
+      { month: 'Jan', views: 32000, subs: 800 },
+      { month: 'Feb', views: 38000, subs: 950 },
+      { month: 'Mar', views: 45000, subs: 1100 },
+      { month: 'Apr', views: 42000, subs: 1050 },
+      { month: 'May', views: 55000, subs: 1400 },
+      { month: 'Jun', views: 62000, subs: 1600 }
     ],
-    growthTips: [
-      "Focus on improving the first 30 seconds of your videos.",
-      "A/B test your thumbnails to increase CTR.",
-      "Engage more with your community in the comments section."
+    trafficSources: [
+      { name: 'YouTube Search', value: 45 },
+      { name: 'Suggested Videos', value: 30 },
+      { name: 'External', value: 15 },
+      { name: 'Direct', value: 10 }
+    ],
+    demographics: [
+      { age: '18-24', percentage: 35 },
+      { age: '25-34', percentage: 45 },
+      { age: '35-44', percentage: 15 },
+      { age: '45+', percentage: 5 }
+    ],
+    insights: [
+      "Your search traffic is growing, indicating strong SEO.",
+      "Audience retention drops at 2:30 mark in most videos.",
+      "Highest engagement comes from the 25-34 age group."
+    ],
+    recommendations: [
+      "Create more content around your top-performing keywords.",
+      "Improve your video intros to boost early retention.",
+      "Run a community poll to decide your next big project."
     ]
   };
 };
 
 export const generateLocalContentPlanner = (topic: string) => {
-  return [
-    { week: 1, title: `Introduction to ${topic}`, format: "Long-form", goal: "Awareness" },
-    { week: 2, title: `Top 5 ${topic} Hacks`, format: "Shorts", goal: "Engagement" },
-    { week: 3, title: `Deep Dive: ${topic} Secrets`, format: "Long-form", goal: "Authority" },
-    { week: 4, title: `Q&A: Everything about ${topic}`, format: "Live/Long-form", goal: "Community" }
-  ];
+  return {
+    planType: "Monthly",
+    items: [
+      { day: "Week 1", title: `Introduction to ${topic}`, description: "Comprehensive guide covering the basics and setting the stage." },
+      { day: "Week 2", title: `Top 5 ${topic} Hacks`, description: "Fast-paced video showing quick wins and productivity tips." },
+      { day: "Week 3", title: `Deep Dive: ${topic} Secrets`, description: "Advanced techniques and insider knowledge for experts." },
+      { day: "Week 4", title: `Q&A: Everything about ${topic}`, description: "Addressing common community questions and clearing doubts." }
+    ]
+  };
+};
+
+export const generateLocalAudit = (channel: string) => {
+  return {
+    channelName: channel || "YouTube Channel",
+    subscriberCount: 15000,
+    totalViews: 450000,
+    engagementRate: 4.2,
+    consistencyScore: 85,
+    seoScore: 78,
+    retentionEstimate: 62,
+    recentVideos: [
+      { title: "My Latest Video", views: 12000, publishedAt: "2 days ago" },
+      { title: "Growth Strategy", views: 8500, publishedAt: "1 week ago" }
+    ],
+    findings: {
+      working: "Your niche focus is strong and titles are well-optimized for search.",
+      notWorking: "Thumbnails lack emotional triggers and intros are slightly too long.",
+      actionPlan: [
+        "Improve thumbnail contrast and use larger text.",
+        "Add a hook in the first 10 seconds of every video.",
+        "Engage more with comments to boost engagement rate."
+      ]
+    }
+  };
+};
+
+export const generateLocalMonetization = (channel: string) => {
+  return {
+    channelName: channel || "YouTube Channel",
+    subscriberCount: 850,
+    viewCount: 25000,
+    watchTime: 1200,
+    isMonetized: false,
+    gapSubscribers: 150,
+    gapWatchTime: 2800,
+    profilePicture: "",
+    roadmap: [
+      "Create 3 more high-engagement videos this week.",
+      "Optimize your top 5 videos for search to boost watch time.",
+      "Promote your channel on social media to reach 1000 subs."
+    ]
+  };
 };
 
 export const generateLocalScriptOutline = (topic: string) => {
@@ -313,13 +417,15 @@ export const generateLocalHooks = (topic: string) => {
   return [
     {
       hook: `If you're still doing ${topic} the old way, you're losing views.`,
-      type: "Fear of Missing Out",
-      why: "It creates urgency and a need to learn the 'new' way."
+      style: "Fear of Missing Out"
     },
     {
       hook: `I found a way to master ${topic} in half the time.`,
-      type: "Value Proposition",
-      why: "It promises efficiency and time-saving."
+      style: "Value Proposition"
+    },
+    {
+      hook: `Most people think ${topic} is hard, but they're wrong.`,
+      style: "Controversial"
     }
   ];
 };
@@ -340,29 +446,15 @@ export const generateLocalChannelNames = (topic: string) => {
   ];
 };
 
-export const generateLocalCompetitorSpy = (topic: string, spyData: any) => {
+export const generateLocalCompetitorSpy = (topic: string) => {
   return {
-    summary: `Analysis of top 10 videos for "${topic}".`,
-    strengths: [
-      "High quality thumbnails with clear text overlays.",
-      "Strong use of keywords in the first 60 characters of titles.",
-      "Consistent upload schedules across top channels."
-    ],
-    weaknesses: [
-      "Lack of detailed timestamp chapters in several top videos.",
-      "Minimal engagement in the comment sections.",
-      "Descriptions are often too short and lack useful links."
-    ],
-    opportunities: [
-      "Create a more comprehensive guide than current top results.",
-      "Use better lighting and audio quality to stand out.",
-      "Focus on a specific sub-niche within ${topic} that is currently underserved."
-    ],
-    competitors: spyData.results.map((v: any) => ({
-      name: v.channelTitle,
-      avgViews: v.viewCount,
-      estimatedSubs: "N/A"
-    }))
+    channelName: topic || "Competitor",
+    trendingVideo: `How to Master ${topic} in 2026`,
+    bestKeywords: `${topic}, tutorial, guide, 2026, tips`,
+    thumbnailStyle: "High contrast, large text, emotional face",
+    avgViews: 45000,
+    viralPotential: 85,
+    postingFrequency: "3 times per week"
   };
 };
 
@@ -379,3 +471,52 @@ export const generateLocalThumbnailScore = (topic: string) => {
     ]
   };
 };
+
+export const generateLocalKeywordResearch = (query: string) => {
+  return {
+    query,
+    kdScore: 35,
+    isLowCompetition: true,
+    isHighOpportunity: true,
+    metrics: {
+      avgViews: 125000,
+      avgSubs: 45000
+    },
+    results: [
+      { id: "1", title: `How to master ${query}`, viewCount: 250000, channelTitle: "Growth Pro" },
+      { id: "2", title: `${query} for Beginners`, viewCount: 180000, channelTitle: "Easy Guide" },
+      { id: "3", title: `Top 10 ${query} Tips`, viewCount: 95000, channelTitle: "Niche King" }
+    ],
+    suggestions: [
+      `${query} tutorial`,
+      `${query} 2026`,
+      `${query} guide`,
+      `best ${query} tools`,
+      `${query} mistakes`
+    ]
+  };
+};
+
+export const generateLocalScrapeData = (url: string) => {
+  const videoId = url.includes('v=') ? url.split('v=')[1].split('&')[0] : "dQw4w9WgXcQ";
+  return {
+    videoId,
+    title: "YouTube Video Metadata",
+    description: "This is a fallback description for the analyzed video.",
+    tags: ["YouTube", "Growth", "Tutorial", "2026"],
+    viewCount: "150000",
+    publishDate: new Date().toISOString(),
+    category: "Education",
+    channelId: "UC1234567890",
+    channelName: "YouTube Creator",
+    thumbnails: {
+      default: `https://i.ytimg.com/vi/${videoId}/default.jpg`,
+      medium: `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
+      high: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+      standard: `https://i.ytimg.com/vi/${videoId}/sddefault.jpg`,
+      maxres: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`
+    }
+  };
+};
+
+
