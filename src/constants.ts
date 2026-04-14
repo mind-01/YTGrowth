@@ -39,6 +39,7 @@ export const TOOLS: Tool[] = [
   { id: 'title-gen', name: 'Title Generator', description: 'Generate viral, high-CTR titles', icon: Sparkles, category: 'SEO', path: '/tool/title-gen' },
   { id: 'desc-gen', name: 'Description Generator', description: 'Create SEO-friendly descriptions', icon: FileText, category: 'SEO', path: '/tool/desc-gen' },
   { id: 'tag-gen', name: 'Tag Generator', description: 'Find the best tags for your video', icon: Tag, category: 'SEO', path: '/tool/tag-gen' },
+  { id: 'thumb-down', name: 'Thumbnail Downloader', description: 'Download HD thumbnails in high or low quality', icon: Download, category: 'SEO', path: '/tool/thumb-down' },
   { id: 'hash-gen', name: 'Hashtag Generator', description: 'Generate trending hashtags', icon: Hash, category: 'SEO', path: '/tool/hash-gen' },
   { id: 'seo-check', name: 'SEO Checklist', description: 'Complete video optimization audit', icon: CheckSquare, category: 'SEO', path: '/tool/seo-check' },
   { id: 'keyword-res', name: 'Keyword Research', description: 'Find low competition keywords', icon: Search, category: 'SEO', path: '/tool/keyword-res' },
