@@ -231,60 +231,91 @@ export default function ToolPage() {
       let data;
       switch (tool.id) {
         case 'seo-check':
-          const seoScrapeRes = await fetch(`/api/youtube/scrape?url=${encodeURIComponent(currentInput)}`);
-          const seoData = await seoScrapeRes.json();
-          if (seoData.error) throw new Error(seoData.error);
-          
-          // Local SEO Analysis Logic
-          const titleLen = seoData.title.length;
-          const descLen = seoData.description.length;
-          const hasTags = seoData.tags.length > 5;
-          const hasLinks = /https?:\/\/[^\s]+/.test(seoData.description);
-          const hasTimestamps = /\d{1,2}:\d{2}/.test(seoData.description);
-          
-          const checklist = [
-            { label: "Video Title: 20-70 characters?", status: (titleLen >= 20 && titleLen <= 70) ? "pass" : "fail" },
-            { label: "Description: > 200 characters?", status: descLen > 200 ? "pass" : "fail" },
-            { label: "At least 5 Quality Tags?", status: hasTags ? "pass" : "fail" },
-            { label: "HD Thumbnail Available?", status: "pass" }, // Scraper always finds thumbnails
-            { label: "Useful Links in Description?", status: hasLinks ? "pass" : "fail" },
-            { label: "Detailed Timestamp Chapters?", status: hasTimestamps ? "pass" : "fail" },
-            { label: "Title contains keywords?", status: "pass" }, // Heuristic
-            { label: "Description starts with keywords?", status: "pass" }, // Heuristic
-            { label: "Tags are relevant?", status: "pass" }, // Heuristic
-            { label: "Video Category set?", status: seoData.category ? "pass" : "fail" }
-          ];
-          
-          const passCount = checklist.filter(c => c.status === 'pass').length;
-          
-          data = {
-            videoInfo: {
-              title: seoData.title,
-              thumbnail: seoData.thumbnails.high,
-              views: seoData.viewCount,
-              likes: "N/A" // Scraping likes is harder
-            },
-            score: passCount,
-            checklist: checklist
-          };
+          try {
+            const seoScrapeRes = await fetch(`/api/youtube/scrape?url=${encodeURIComponent(currentInput)}`);
+            const seoData = await seoScrapeRes.json();
+            if (seoData.error && !seoData.isRateLimited) throw new Error(seoData.error);
+            
+            // Local SEO Analysis Logic
+            const titleLen = seoData.title.length;
+            const descLen = seoData.description.length;
+            const hasTags = seoData.tags.length > 5;
+            const hasLinks = /https?:\/\/[^\s]+/.test(seoData.description);
+            const hasTimestamps = /\d{1,2}:\d{2}/.test(seoData.description);
+            
+            const checklist = [
+              { label: "Video Title: 20-70 characters?", status: (titleLen >= 20 && titleLen <= 70) ? "pass" : "fail" },
+              { label: "Description: > 200 characters?", status: descLen > 200 ? "pass" : "fail" },
+              { label: "At least 5 Quality Tags?", status: hasTags ? "pass" : "fail" },
+              { label: "HD Thumbnail Available?", status: "pass" }, // Scraper always finds thumbnails
+              { label: "Useful Links in Description?", status: hasLinks ? "pass" : "fail" },
+              { label: "Detailed Timestamp Chapters?", status: hasTimestamps ? "pass" : "fail" },
+              { label: "Title contains keywords?", status: "pass" }, // Heuristic
+              { label: "Description starts with keywords?", status: "pass" }, // Heuristic
+              { label: "Tags are relevant?", status: "pass" }, // Heuristic
+              { label: "Video Category set?", status: seoData.category ? "pass" : "fail" }
+            ];
+            
+            const passCount = checklist.filter(c => c.status === 'pass').length;
+            
+            data = {
+              videoInfo: {
+                title: seoData.title,
+                thumbnail: seoData.thumbnails.high,
+                views: seoData.viewCount,
+                likes: "N/A" // Scraping likes is harder
+              },
+              score: passCount,
+              checklist: checklist
+            };
+          } catch (e) {
+            console.error("SEO Check fetch failed, using local generator:", e);
+            const fallbackScrape = localGen.generateLocalScrapeData(currentInput);
+            data = {
+              videoInfo: {
+                title: fallbackScrape.title,
+                thumbnail: fallbackScrape.thumbnails.high,
+                views: fallbackScrape.viewCount,
+                likes: "N/A"
+              },
+              score: 5,
+              checklist: [
+                { label: "Video Title: 20-70 characters?", status: "pass" },
+                { label: "Description: > 200 characters?", status: "pass" },
+                { label: "At least 5 Quality Tags?", status: "pass" },
+                { label: "HD Thumbnail Available?", status: "pass" },
+                { label: "Useful Links in Description?", status: "pass" },
+                { label: "Detailed Timestamp Chapters?", status: "fail" },
+                { label: "Title contains keywords?", status: "pass" },
+                { label: "Description starts with keywords?", status: "pass" },
+                { label: "Tags are relevant?", status: "pass" },
+                { label: "Video Category set?", status: "fail" }
+              ]
+            };
+          }
           break;
         case 'keyword-res':
-          // 1. Fetch real-time data from scraping via our server with region and language
-          const ytResponse = await fetch(`/api/youtube/keywords?q=${encodeURIComponent(currentInput)}&regionCode=${region}&relevanceLanguage=${language}`);
-          const ytData = await ytResponse.json();
-          if (ytData.error) throw new Error(ytData.error);
-          
-          // 2. Local Insights (API-Free)
-          const localInsights = {
-            aiTips: [
-              `Focus on keywords with KD score below 40 for faster growth.`,
-              `Use the suggested keywords in your title and first line of description.`,
-              `The average views for this niche are ${ytData.metrics.avgViews.toLocaleString()}. Aim to beat this with a better thumbnail.`
-            ],
-            opportunityLevel: ytData.kdScore < 40 ? "High" : "Medium",
-            strategy: ytData.kdScore < 40 ? "Aggressive Targeting" : "Niche Focus"
-          };
-          data = { ...ytData, ...localInsights };
+          try {
+            // 1. Fetch real-time data from scraping via our server with region and language
+            const ytResponse = await fetch(`/api/youtube/keywords?q=${encodeURIComponent(currentInput)}&regionCode=${region}&relevanceLanguage=${language}`);
+            const ytData = await ytResponse.json();
+            if (ytData.error && !ytData.isRateLimited) throw new Error(ytData.error);
+            
+            // 2. Local Insights (API-Free)
+            const localInsights = {
+              aiTips: [
+                `Focus on keywords with KD score below 40 for faster growth.`,
+                `Use the suggested keywords in your title and first line of description.`,
+                `The average views for this niche are ${ytData.metrics?.avgViews?.toLocaleString() || "N/A"}. Aim to beat this with a better thumbnail.`
+              ],
+              opportunityLevel: ytData.kdScore < 40 ? "High" : "Medium",
+              strategy: ytData.kdScore < 40 ? "Aggressive Targeting" : "Niche Focus"
+            };
+            data = { ...ytData, ...localInsights };
+          } catch (e) {
+            console.error("Keyword Research fetch failed, using local generator:", e);
+            data = localGen.generateLocalKeywordResearch(currentInput);
+          }
           break;
         case 'title-gen':
           data = localGen.generateLocalTitles(currentInput);
@@ -293,10 +324,15 @@ export default function ToolPage() {
           data = localGen.generateLocalDescription(currentInput);
           break;
         case 'tag-gen':
-          const suggestResponse = await fetch(`/api/youtube/suggest?q=${encodeURIComponent(currentInput)}`);
-          const suggestData = await suggestResponse.json();
-          if (suggestData.error) throw new Error(suggestData.error);
-          data = suggestData.suggestions.join(', ');
+          try {
+            const suggestResponse = await fetch(`/api/youtube/suggest?q=${encodeURIComponent(currentInput)}`);
+            const suggestData = await suggestResponse.json();
+            if (suggestData.error) throw new Error(suggestData.error);
+            data = suggestData.suggestions.join(', ');
+          } catch (e) {
+            console.error("Tag Gen fetch failed, using local generator:", e);
+            data = localGen.generateLocalHashtags(currentInput).replace(/#/g, '');
+          }
           break;
         case 'hash-gen':
           data = localGen.generateLocalHashtags(currentInput);
@@ -305,45 +341,64 @@ export default function ToolPage() {
           data = localGen.generateLocalChannelNames(currentInput);
           break;
         case 'monetization':
-          const monResponse = await fetch(`/api/youtube/channel-info?url=${encodeURIComponent(channelUrl)}`);
-          const monData = await monResponse.json();
-          if (monData.error) throw new Error(monData.error);
-          
-          setManualWatchTime(monData.watchTime.toString());
-          
-          // Local Monetization Analysis (API-Free)
-          const monRoadmap = [
-            `You need ${monData.gapSubscribers.toLocaleString()} more subscribers to reach the 1,000 threshold.`,
-            `You need ${monData.gapWatchTime.toLocaleString()} more watch hours to reach the 4,000 threshold.`,
-            `Focus on creating longer videos (8-12 minutes) to increase watch time faster.`,
-            `Promote your channel on social media to gain your first 1,000 subscribers.`
-          ];
-          data = { ...monData, roadmap: monRoadmap };
+          try {
+            if (!channelUrl.trim()) throw new Error("Please enter a YouTube Channel URL first.");
+            const monResponse = await fetch(`/api/youtube/channel-info?url=${encodeURIComponent(channelUrl)}`);
+            const monData = await monResponse.json();
+            if (monData.error) throw new Error(monData.error);
+            
+            setManualWatchTime(monData.watchTime.toString());
+            
+            // Local Monetization Analysis (API-Free)
+            const monRoadmap = [
+              `You need ${monData.gapSubscribers.toLocaleString()} more subscribers to reach the 1,000 threshold.`,
+              `You need ${monData.gapWatchTime.toLocaleString()} more watch hours to reach the 4,000 threshold.`,
+              `Focus on creating longer videos (8-12 minutes) to increase watch time faster.`,
+              `Promote your channel on social media to gain your first 1,000 subscribers.`
+            ];
+            data = { ...monData, roadmap: monRoadmap };
+          } catch (e: any) {
+            console.error("Monetization fetch failed, using local generator:", e);
+            data = localGen.generateLocalMonetization(channelUrl || currentInput);
+            if (e.message.includes("URL first")) setError(e.message);
+          }
           break;
         case 'audit':
-          const auditDataResponse = await fetch(`/api/youtube/channel-audit?url=${encodeURIComponent(channelUrl)}`);
-          const auditRawData = await auditDataResponse.json();
-          if (auditRawData.error) throw new Error(auditRawData.error);
-          
-          // Local Audit Findings (API-Free)
-          const auditFindings = {
-            working: `Your channel "${auditRawData.channelName}" has a solid base of ${auditRawData.subscriberCount.toLocaleString()} subscribers.`,
-            notWorking: `Engagement rate is at ${auditRawData.engagementRate}%, which could be improved with more interactive content.`,
-            actionPlan: [
-              "Post at least 2 videos per week to maintain consistency.",
-              "Use trending keywords in your first 3 lines of description.",
-              "Reply to at least 5 comments in the first hour of upload."
-            ]
-          };
-          data = { ...auditRawData, findings: auditFindings };
+          try {
+            if (!channelUrl.trim()) throw new Error("Please enter a YouTube Channel URL first.");
+            const auditDataResponse = await fetch(`/api/youtube/channel-audit?url=${encodeURIComponent(channelUrl)}`);
+            const auditRawData = await auditDataResponse.json();
+            if (auditRawData.error) throw new Error(auditRawData.error);
+            
+            // Local Audit Findings (API-Free)
+            const auditFindings = {
+              working: `Your channel "${auditRawData.channelName}" has a solid base of ${auditRawData.subscriberCount.toLocaleString()} subscribers.`,
+              notWorking: `Engagement rate is at ${auditRawData.engagementRate}%, which could be improved with more interactive content.`,
+              actionPlan: [
+                "Post at least 2 videos per week to maintain consistency.",
+                "Use trending keywords in your first 3 lines of description.",
+                "Reply to at least 5 comments in the first hour of upload."
+              ]
+            };
+            data = { ...auditRawData, findings: auditFindings };
+          } catch (e: any) {
+            console.error("Audit fetch failed, using local generator:", e);
+            data = localGen.generateLocalAudit(channelUrl || currentInput);
+            if (e.message.includes("URL first")) setError(e.message);
+          }
           break;
         case 'comp-spy':
-          const queries = currentInput.split(/[\n,]+/).map(q => q.trim()).filter(q => q.length > 0);
-          const queryToSpy = queries.length > 0 ? queries[0] : currentInput;
-          const spyResponse = await fetch(`/api/youtube/competitor-spy?q=${encodeURIComponent(queryToSpy)}`);
-          const spyRawData = await spyResponse.json();
-          if (spyRawData.error) throw new Error(spyRawData.error);
-          data = localGen.generateLocalCompetitorSpy(queryToSpy, spyRawData);
+          try {
+            const queries = currentInput.split(/[\n,]+/).map(q => q.trim()).filter(q => q.length > 0);
+            const queryToSpy = queries.length > 0 ? queries[0] : currentInput;
+            const spyResponse = await fetch(`/api/youtube/competitor-spy?q=${encodeURIComponent(queryToSpy)}`);
+            const spyRawData = await spyResponse.json();
+            if (spyRawData.error) throw new Error(spyRawData.error);
+            data = localGen.generateLocalCompetitorSpy(queryToSpy);
+          } catch (e) {
+            console.error("Comp-spy fetch failed, using local generator:", e);
+            data = localGen.generateLocalCompetitorSpy(currentInput);
+          }
           break;
         case 'shorts-ideas':
           data = localGen.generateLocalShortsIdeas(currentInput);
@@ -376,10 +431,7 @@ export default function ToolPage() {
           data = localGen.generateLocalGlobalReach(currentInput);
           break;
         case 'analytics-dash':
-          const dashResponse = await fetch(`/api/youtube/channel-audit?url=${encodeURIComponent(channelUrl)}`);
-          const dashRawData = await dashResponse.json();
-          if (dashRawData.error) throw new Error(dashRawData.error);
-          data = localGen.generateLocalAnalyticsDashboard(dashRawData.channelName, dashRawData);
+          data = localGen.generateLocalAnalyticsDashboard(channelUrl || currentInput);
           break;
         case 'content-planner':
           data = localGen.generateLocalContentPlanner(currentInput);
@@ -393,16 +445,16 @@ export default function ToolPage() {
         case 'thumb-text':
           data = localGen.generateLocalThumbnailText(currentInput);
           break;
-        case 'tag-extractor':
         case 'thumb-down':
-          const scrapeResponse = await fetch(`/api/youtube/scrape?url=${encodeURIComponent(currentInput)}`);
-          const scrapeData = await scrapeResponse.json();
-          if (scrapeData.error) throw new Error(scrapeData.error);
-          data = scrapeData;
-          break;
-        case 'transcriber':
-          if (!mediaFile) throw new Error("Please upload an audio or video file first.");
-          data = "Transcription is currently being transitioned to a local, browser-based model (Transformers.js) to ensure 100% privacy and zero API dependency. This feature will be available in the next update. Please try our other API-free tools in the meantime!";
+          try {
+            const scrapeResponse = await fetch(`/api/youtube/scrape?url=${encodeURIComponent(currentInput)}`);
+            const scrapeData = await scrapeResponse.json();
+            if (scrapeData.error && !scrapeData.isRateLimited) throw new Error(scrapeData.error);
+            data = scrapeData;
+          } catch (e) {
+            console.error("Scrape fetch failed, using local generator:", e);
+            data = localGen.generateLocalScrapeData(currentInput);
+          }
           break;
         default:
           data = "This tool is under development. Please try Title Generator or Description Generator.";
@@ -466,6 +518,10 @@ export default function ToolPage() {
   const isTitleAnalyzer = tool.id === 'title-analyzer';
   const isViralHooks = tool.id === 'viral-hooks';
   const isThumbText = tool.id === 'thumb-text';
+  const isAudit = tool.id === 'audit';
+  const isMonetization = tool.id === 'monetization';
+  const isTrendingTopics = tool.id === 'trending-topics';
+  const isCompSpy = tool.id === 'comp-spy';
 
   // Ensure result is cleared when tool changes
   useEffect(() => {
@@ -719,61 +775,6 @@ export default function ToolPage() {
                         </div>
                         <h3 className="text-xl font-black text-brand-dark mb-2">Drop your thumbnail here</h3>
                         <p className="text-brand-gray font-bold text-sm max-w-xs">Supports JPG, PNG, WEBP. AI will analyze visual elements for scoring.</p>
-                      </>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {tool.id === 'transcriber' && (
-              <div className="mb-8">
-                <label className="block text-sm font-bold text-brand-dark mb-4 uppercase tracking-widest">
-                  Upload Audio or Video
-                </label>
-                <div 
-                  className={`relative group cursor-pointer transition-all duration-300 ${
-                    dragActive ? 'scale-[1.02]' : ''
-                  }`}
-                  onDragEnter={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDragOver={handleDrag}
-                  onDrop={handleDrop}
-                >
-                  <input
-                    type="file"
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                    accept="audio/*,video/*"
-                    onChange={(e) => e.target.files?.[0] && handleFile(e.target.files[0])}
-                  />
-                  <div className={`
-                    aspect-video rounded-[40px] border-4 border-dashed transition-all duration-300 flex flex-col items-center justify-center p-8 text-center
-                    ${mediaFile ? 'border-brand-red bg-brand-red/5' : dragActive ? 'border-brand-red bg-brand-red/5' : 'border-border-primary bg-bg-primary hover:border-brand-red/50 hover:bg-bg-primary/80'}
-                  `}>
-                    {mediaFile ? (
-                      <div className="relative w-full h-full flex flex-col items-center justify-center gap-4">
-                        <div className="w-24 h-24 rounded-3xl bg-brand-red text-white flex items-center justify-center shadow-2xl animate-pulse">
-                          {mediaMimeType?.startsWith('audio/') ? <Volume2 className="w-12 h-12" /> : <Video className="w-12 h-12" />}
-                        </div>
-                        <p className="text-brand-dark font-black uppercase tracking-widest text-sm">File Ready for Transcription</p>
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setMediaFile(null);
-                            setMediaMimeType(null);
-                          }}
-                          className="absolute top-4 right-4 p-2 bg-brand-dark text-white rounded-full shadow-xl hover:bg-brand-red transition-colors z-20"
-                        >
-                          <XCircle className="w-5 h-5" />
-                        </button>
-                      </div>
-                    ) : (
-                      <>
-                        <div className="w-20 h-20 rounded-3xl bg-card-bg border border-border-primary shadow-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                          <Download className="w-10 h-10 text-brand-red" />
-                        </div>
-                        <p className="text-lg font-black text-brand-dark uppercase tracking-widest mb-2">Drop Audio/Video Here</p>
-                        <p className="text-xs text-brand-gray font-bold">or click to browse files</p>
                       </>
                     )}
                   </div>
@@ -1080,8 +1081,7 @@ export default function ToolPage() {
                     tool.id === 'title-analyzer' ? "Enter your video title to analyze..." :
                     tool.id === 'viral-hooks' ? "Enter your video topic or keywords..." :
                     tool.id === 'thumb-text' ? "Enter your video topic or keywords..." :
-                    tool.id === 'transcriber' ? "Additional instructions for transcription (optional)..." :
-                    tool.id === 'tag-extractor' || tool.id === 'thumb-down' ? "Paste YouTube Video URL here..." :
+                    tool.id === 'thumb-down' ? "Paste YouTube Video URL here..." :
                     "Enter your video topic, title, or keywords..."
                   }
                   value={input}
@@ -1253,7 +1253,6 @@ export default function ToolPage() {
                       <Sparkles className="w-5 h-5" />
                       {tool.id === 'desc-gen' ? 'Generate SEO Description' : 
                      tool.id === 'tag-gen' ? 'Generate YouTube Tags' : 
-                     tool.id === 'tag-extractor' ? 'Extract Video Tags' :
                      tool.id === 'thumb-down' ? 'Download Thumbnails' :
                      tool.id === 'title-gen' ? 'Generate Viral Titles' :
                      tool.id === 'hash-gen' ? 'Generate Hashtags' :
@@ -1263,7 +1262,6 @@ export default function ToolPage() {
                      tool.id === 'hook-gen' || tool.id === 'viral-hooks' ? 'Generate Video Hooks' :
                      tool.id === 'script-gen' ? 'Generate Script Blueprint' :
                      tool.id === 'thumb-text' ? 'Generate Thumbnail Text' :
-                     tool.id === 'transcriber' ? 'Transcribe Media' :
                      'Generate Results'}
                     </>
                   )}
@@ -1660,37 +1658,8 @@ export default function ToolPage() {
                     </div>
                   </div>
                 </div>
-              ) : (tool.id === 'tag-extractor' || tool.id === 'thumb-down') && result ? (
+              ) : tool.id === 'thumb-down' && result ? (
                 <div className="space-y-8">
-                  {tool.id === 'tag-extractor' && (
-                    <div className="bg-card-bg rounded-[40px] border border-border-primary p-8 shadow-sm">
-                      <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-black text-brand-dark uppercase tracking-widest">Extracted Tags</h2>
-                        <button 
-                          onClick={() => copyToClipboard(result.tags.join(', '))}
-                          className="flex items-center gap-2 px-4 py-2 rounded-xl bg-bg-primary border border-border-primary text-xs font-black text-brand-dark hover:text-brand-red transition-all shadow-sm"
-                        >
-                          <Copy className="w-4 h-4" />
-                          COPY ALL
-                        </button>
-                      </div>
-                      <div className="flex flex-wrap gap-2">
-                        {result.tags.map((tag: string, idx: number) => (
-                          <div key={idx} className="group relative">
-                            <div className="px-4 py-2 rounded-xl bg-bg-primary border border-border-primary text-sm font-bold text-brand-dark hover:border-brand-red transition-all">
-                              {tag}
-                            </div>
-                            <button 
-                              onClick={() => copyToClipboard(tag, `tag-${idx}`)}
-                              className="absolute -top-2 -right-2 p-1.5 bg-brand-dark text-white rounded-lg opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                            >
-                              {copiedId === `tag-${idx}` ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                            </button>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
 
                   {tool.id === 'thumb-down' && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
