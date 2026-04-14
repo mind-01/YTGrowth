@@ -768,6 +768,28 @@ app.post("/api/gemini/generate", async (req, res) => {
   }
 });
 
+// Proxy endpoint for downloading images to bypass CORS and force download
+app.get("/api/proxy-download", async (req, res) => {
+  const { url, filename } = req.query;
+  if (!url) return res.status(400).send("URL is required");
+
+  try {
+    const response = await axios({
+      url: url as string,
+      method: 'GET',
+      responseType: 'stream'
+    });
+
+    res.setHeader('Content-Disposition', `attachment; filename="${filename || 'download.jpg'}"`);
+    res.setHeader('Content-Type', response.headers['content-type'] || 'image/jpeg');
+    
+    response.data.pipe(res);
+  } catch (error) {
+    console.error("Download proxy error:", error);
+    res.status(500).send("Failed to download image");
+  }
+});
+
 // Vite middleware for development
 if (process.env.NODE_ENV !== "production") {
   const vite = await createViteServer({
