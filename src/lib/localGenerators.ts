@@ -498,7 +498,18 @@ export const generateLocalKeywordResearch = (query: string) => {
 };
 
 export const generateLocalScrapeData = (url: string) => {
-  const videoId = url.includes('v=') ? url.split('v=')[1].split('&')[0] : "dQw4w9WgXcQ";
+  let videoId = "dQw4w9WgXcQ"; // Default fallback
+  
+  if (url.includes("watch?v=")) {
+    videoId = url.split("watch?v=")[1].split("&")[0];
+  } else if (url.includes("youtu.be/")) {
+    videoId = url.split("youtu.be/")[1].split("?")[0];
+  } else if (url.includes("/shorts/")) {
+    videoId = url.split("/shorts/")[1].split("?")[0];
+  } else if (url.includes("/live/")) {
+    videoId = url.split("/live/")[1].split("?")[0];
+  }
+
   return {
     videoId,
     title: "YouTube Video Metadata",
