@@ -1690,9 +1690,10 @@ export default function ToolPage() {
                           </div>
                           <button 
                             onClick={() => {
+                              const downloadUrl = `/api/proxy-download?url=${encodeURIComponent(url)}&filename=youtube-thumbnail-${quality}.jpg`;
                               const link = document.createElement('a');
-                              link.href = url;
-                              link.download = `thumbnail-${quality}.jpg`;
+                              link.href = downloadUrl;
+                              link.setAttribute('download', `youtube-thumbnail-${quality}.jpg`);
                               document.body.appendChild(link);
                               link.click();
                               document.body.removeChild(link);
