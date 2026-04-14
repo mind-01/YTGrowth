@@ -186,6 +186,10 @@ app.get("/api/youtube/scrape", async (req, res) => {
     videoId = videoUrl.split("youtu.be/")[1].split("?")[0];
   } else if (videoUrl.includes("/shorts/")) {
     videoId = videoUrl.split("/shorts/")[1].split("?")[0];
+  } else if (videoUrl.includes("/live/")) {
+    videoId = videoUrl.split("/live/")[1].split("?")[0];
+  } else if (videoUrl.includes("/v/")) {
+    videoId = videoUrl.split("/v/")[1].split("?")[0];
   }
 
   try {
@@ -259,60 +263,47 @@ app.get("/api/youtube/scrape", async (req, res) => {
   } catch (error: any) {
     if (error.response?.status === 429) {
       console.warn("YouTube Rate Limit (429) hit during video scraping.");
-      if (videoId) {
-        return res.json({
-          videoId,
-          title: "Video Metadata Unavailable (Rate Limited)",
-          description: "YouTube is currently limiting requests. Using local fallback data.",
-          tags: ["YouTube", "Video", "Growth"],
-          viewCount: "0",
-          publishDate: new Date().toISOString(),
-          category: "Education",
-          channelId: "",
-          channelName: "YouTube Creator",
-          thumbnails: {
-            default: `https://i.ytimg.com/vi/${videoId}/default.jpg`,
-            medium: `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
-            high: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
-            standard: `https://i.ytimg.com/vi/${videoId}/sddefault.jpg`,
-            maxres: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`
-          },
-          isRateLimited: true
-        });
-      }
       return res.json({
-        error: "Rate Limited",
-        isRateLimited: true,
-        title: "Rate Limited",
-        description: "YouTube is currently limiting requests. Please try again in a few minutes."
+        videoId,
+        title: "Video Metadata Unavailable (Rate Limited)",
+        description: "YouTube is currently limiting requests. Using local fallback data.",
+        tags: ["YouTube", "Video", "Growth"],
+        viewCount: "0",
+        publishDate: new Date().toISOString(),
+        category: "Education",
+        channelId: "",
+        channelName: "YouTube Creator",
+        thumbnails: {
+          default: `https://i.ytimg.com/vi/${videoId || 'dQw4w9WgXcQ'}/default.jpg`,
+          medium: `https://i.ytimg.com/vi/${videoId || 'dQw4w9WgXcQ'}/mqdefault.jpg`,
+          high: `https://i.ytimg.com/vi/${videoId || 'dQw4w9WgXcQ'}/hqdefault.jpg`,
+          standard: `https://i.ytimg.com/vi/${videoId || 'dQw4w9WgXcQ'}/sddefault.jpg`,
+          maxres: `https://i.ytimg.com/vi/${videoId || 'dQw4w9WgXcQ'}/maxresdefault.jpg`
+        },
+        isRateLimited: true
       });
     }
     
     console.error("Scraping Error:", error.message);
     
-    // If we have a videoId, we can still return thumbnails even if scraping fails
-    if (videoId) {
-      return res.json({
-        videoId,
-        title: "Video Metadata Unavailable",
-        description: "Failed to fetch metadata. Thumbnails are still available.",
-        tags: [],
-        viewCount: "0",
-        publishDate: "",
-        category: "",
-        channelId: "",
-        channelName: "Unknown",
-        thumbnails: {
-          default: `https://i.ytimg.com/vi/${videoId}/default.jpg`,
-          medium: `https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`,
-          high: `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
-          standard: `https://i.ytimg.com/vi/${videoId}/sddefault.jpg`,
-          maxres: `https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg`
-        }
-      });
-    }
-    
-    res.status(500).json({ error: "Failed to fetch video data. Please check the URL or try again later." });
+    return res.json({
+      videoId,
+      title: "Video Metadata Unavailable",
+      description: "Failed to fetch metadata. Thumbnails are still available.",
+      tags: [],
+      viewCount: "0",
+      publishDate: new Date().toISOString(),
+      category: "Unknown",
+      channelId: "",
+      channelName: "Unknown",
+      thumbnails: {
+        default: `https://i.ytimg.com/vi/${videoId || 'dQw4w9WgXcQ'}/default.jpg`,
+        medium: `https://i.ytimg.com/vi/${videoId || 'dQw4w9WgXcQ'}/mqdefault.jpg`,
+        high: `https://i.ytimg.com/vi/${videoId || 'dQw4w9WgXcQ'}/hqdefault.jpg`,
+        standard: `https://i.ytimg.com/vi/${videoId || 'dQw4w9WgXcQ'}/sddefault.jpg`,
+        maxres: `https://i.ytimg.com/vi/${videoId || 'dQw4w9WgXcQ'}/maxresdefault.jpg`
+      }
+    });
   }
 });
 
